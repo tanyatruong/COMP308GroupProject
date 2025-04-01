@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:auth": "node ./auth-service/index.js",
+    "start:ai": "node ./ai-service/index.js",
+    "start:business": "node ./business-events-service/index.js",
+    "start:community": "node ./community-service/index.js",
+    "start:gateway": "node gateway.js",
+    "start:all": "npm-run-all --parallel start:auth start:ai start:business start:community start:gateway"
   },
   "author": "",
   "license": "ISC",
