@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
-import { Form, Button, Card, Container, Row, Col, Alert } from 'react-bootstrap';
+import { Form, Button, Card, Container, Row, Col } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UPDATE_BUSINESS_PROFILE } from '../../graphql/mutations';
 import { GET_BUSINESS_PROFILE } from '../../graphql/queries';
 import Loader from '../UI/Loader';
 import ErrorMessage from '../UI/ErrorMessage';
 import SuccessMessage from '../UI/SuccessMessage';
-import './BusinessProfile.css';
 
 const EditBusinessProfile = () => {
   const { id } = useParams();
@@ -110,7 +109,7 @@ const EditBusinessProfile = () => {
       {updateError && <ErrorMessage message={updateError.message} />}
       {success && <SuccessMessage message="Business profile updated successfully!" />}
       
-      <Card>
+      <Card className="shadow-sm">
         <Card.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
@@ -193,14 +192,18 @@ const EditBusinessProfile = () => {
                   Add
                 </Button>
               </div>
-              <div className="tags-container">
+              <div className="d-flex flex-wrap mt-2">
                 {formData.businessTags.map((tag, index) => (
-                  <span key={index} className="tag">
+                  <div key={index} className="bg-light rounded-pill py-2 px-3 me-2 mb-2 d-inline-flex align-items-center">
                     {tag}
-                    <button type="button" className="tag-remove" onClick={() => removeTag(tag)}>
-                      &times;
-                    </button>
-                  </span>
+                    <button 
+                      type="button" 
+                      className="btn-close ms-2" 
+                      style={{ fontSize: '0.5rem' }}
+                      onClick={() => removeTag(tag)}
+                      aria-label="Remove tag"
+                    />
+                  </div>
                 ))}
               </div>
             </Form.Group>

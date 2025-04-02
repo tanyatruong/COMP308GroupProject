@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { Form, Button, Card, Container, Row, Col } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -7,7 +7,6 @@ import { GET_OFFER, GET_OFFERS_BY_BUSINESS } from '../../graphql/queries';
 import Loader from '../UI/Loader';
 import ErrorMessage from '../UI/ErrorMessage';
 import SuccessMessage from '../UI/SuccessMessage';
-import './Offers.css';
 
 const EditOffer = () => {
   const { id } = useParams();
@@ -17,7 +16,8 @@ const EditOffer = () => {
     content: '',
     images: [],
     startDate: '',
-    endDate: ''
+    endDate: '',
+    businessId: ''
   });
   const [success, setSuccess] = useState(false);
 
@@ -93,7 +93,7 @@ const EditOffer = () => {
       {updateError && <ErrorMessage message={updateError.message} />}
       {success && <SuccessMessage message="Offer updated successfully!" />}
       
-      <Card>
+      <Card className="shadow-sm">
         <Card.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">

@@ -6,7 +6,6 @@ import { FaStar, FaEdit, FaPlus } from 'react-icons/fa';
 import { GET_BUSINESS_PROFILE } from '../../graphql/queries';
 import Loader from '../UI/Loader';
 import ErrorMessage from '../UI/ErrorMessage';
-import './BusinessProfile.css';
 
 const BusinessProfileView = () => {
   const { id } = useParams();
@@ -29,7 +28,7 @@ const BusinessProfileView = () => {
         </Button>
       </div>
 
-      <Card className="mb-4">
+      <Card className="mb-4 shadow-sm">
         <Card.Body>
           <Row>
             <Col md={8}>
@@ -37,11 +36,11 @@ const BusinessProfileView = () => {
               <div className="mb-3 d-flex align-items-center">
                 {averageRating > 0 ? (
                   <>
-                    <div className="rating-stars me-2">
+                    <div className="me-2">
                       {[...Array(5)].map((_, i) => (
                         <FaStar 
                           key={i} 
-                          className={i < Math.round(averageRating) ? 'star-filled' : 'star-empty'} 
+                          className={`me-1 ${i < Math.round(averageRating) ? 'text-warning' : 'text-muted'}`}
                         />
                       ))}
                     </div>
@@ -51,7 +50,7 @@ const BusinessProfileView = () => {
                   <span className="text-muted">No ratings yet</span>
                 )}
               </div>
-              <p className="business-description">{description}</p>
+              <p className="lead mb-4">{description}</p>
               
               <h5>Address:</h5>
               <p>
@@ -61,10 +60,10 @@ const BusinessProfileView = () => {
 
               <div className="mt-4">
                 <h5>Business Tags:</h5>
-                <div className="tags-container">
+                <div className="d-flex flex-wrap">
                   {businessTags && businessTags.length > 0 ? (
                     businessTags.map((tag, index) => (
-                      <Badge key={index} bg="secondary" className="tag me-2 mb-2">
+                      <Badge key={index} bg="secondary" className="me-2 mb-2 py-2 px-3 rounded-pill">
                         {tag}
                       </Badge>
                     ))
@@ -73,6 +72,38 @@ const BusinessProfileView = () => {
                   )}
                 </div>
               </div>
+            </Col>
+            <Col md={4}>
+              {images && images.length > 0 ? (
+                <div>
+                  <img 
+                    src={images[0]} 
+                    alt={businessName} 
+                    className="img-fluid rounded w-100 mb-2"
+                    style={{ height: '200px', objectFit: 'cover' }}
+                  />
+                  {images.length > 1 && (
+                    <Row className="mt-2">
+                      {images.slice(1, 4).map((img, index) => (
+                        <Col key={index} xs={4}>
+                          <img 
+                            src={img} 
+                            alt={`${businessName} ${index + 2}`} 
+                            className="img-fluid rounded w-100"
+                            style={{ height: '60px', objectFit: 'cover' }}
+                          />
+                        </Col>
+                      ))}
+                    </Row>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-light rounded d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                  <div className="text-center text-muted">
+                    <p>No images available</p>
+                  </div>
+                </div>
+              )}
             </Col>
           </Row>
         </Card.Body>
@@ -98,33 +129,3 @@ const BusinessProfileView = () => {
 };
 
 export default BusinessProfileView;
-            <Col md={4}>
-              {images && images.length > 0 ? (
-                <div className="business-images">
-                  <img 
-                    src={images[0]} 
-                    alt={businessName} 
-                    className="img-fluid rounded main-image"
-                  />
-                  {images.length > 1 && (
-                    <Row className="mt-2">
-                      {images.slice(1, 4).map((img, index) => (
-                        <Col key={index} xs={4}>
-                          <img 
-                            src={img} 
-                            alt={`${businessName} ${index + 2}`} 
-                            className="img-fluid rounded thumbnail-image"
-                          />
-                        </Col>
-                      ))}
-                    </Row>
-                  )}
-                </div>
-              ) : (
-                <div className="no-image-placeholder d-flex justify-content-center align-items-center">
-                  <div className="text-center text-muted">
-                    <p>No images available</p>
-                  </div>
-                </div>
-              )}
-            </Col>

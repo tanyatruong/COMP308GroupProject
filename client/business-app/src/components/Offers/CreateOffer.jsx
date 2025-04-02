@@ -7,7 +7,6 @@ import { GET_BUSINESS_PROFILES, GET_OFFERS_BY_BUSINESS } from '../../graphql/que
 import Loader from '../UI/Loader';
 import ErrorMessage from '../UI/ErrorMessage';
 import SuccessMessage from '../UI/SuccessMessage';
-import './Offers.css';
 
 const CreateOffer = () => {
   const navigate = useNavigate();
@@ -86,7 +85,7 @@ const CreateOffer = () => {
       {createError && <ErrorMessage message={createError.message} />}
       {success && <SuccessMessage message="Offer created successfully!" />}
       
-      <Card>
+      <Card className="shadow-sm">
         <Card.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
