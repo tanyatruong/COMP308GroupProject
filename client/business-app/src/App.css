@@ -1,0 +1,92 @@
+/* Essential styles that can't be easily replicated with Bootstrap */
+
+/* Hover transition effect for cards */
+.transition-hover {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.transition-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Sidebar styling */
+.business-app-container {
+  min-height: 100vh;
+}
+
+.sidebar {
+  background-color: #212529;
+  min-height: 100vh;
+  color: white;
+}
+
+.sidebar-heading {
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0.75rem 1.25rem;
+  border-left: 4px solid transparent;
+}
+
+.sidebar .nav-link:hover {
+  color: rgba(255, 255, 255, 1);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar .nav-link.active {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #007bff;
+}
+
+.main-content {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Star rating colors */
+.text-warning {
+  color: #ffc107 !important;
+}
+
+/* Tag styling */
+.tag {
+  background-color: #e9ecef;
+  border-radius: 1rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tag-remove {
+  margin-left: 0.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.tag-remove:hover {
+  color: #dc3545;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    min-height: auto;
+  }
+  
+  .main-content {
+    padding: 1rem !important;
+  }
+}
