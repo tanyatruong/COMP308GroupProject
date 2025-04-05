@@ -1,48 +1,33 @@
 import { gql } from '@apollo/client';
 
-// Business Profile Mutations
 export const CREATE_BUSINESS_PROFILE = gql`
   mutation CreateBusinessProfile($input: BusinessProfileInput!) {
     createBusinessProfile(input: $input) {
       id
       businessName
+      description
+      businessTags
       location {
-        address
+        id
         city
         postalCode
+        address
       }
-      description
-      images
-      businessTags
     }
   }
 `;
 
 export const UPDATE_BUSINESS_PROFILE = gql`
-  mutation UpdateBusinessProfile($id: ID!, $input: BusinessProfileInput!) {
+  mutation UpdateBusinessProfile($id: ID!, $input: BusinessProfileUpdateInput!) {
     updateBusinessProfile(id: $id, input: $input) {
       id
       businessName
-      location {
-        address
-        city
-        postalCode
-      }
       description
-      images
       businessTags
-      updatedAt
     }
   }
 `;
 
-export const DELETE_BUSINESS_PROFILE = gql`
-  mutation DeleteBusinessProfile($id: ID!) {
-    deleteBusinessProfile(id: $id)
-  }
-`;
-
-// Offers Mutations
 export const CREATE_OFFER = gql`
   mutation CreateOffer($input: OfferInput!) {
     createOffer(input: $input) {
@@ -50,26 +35,21 @@ export const CREATE_OFFER = gql`
       title
       content
       images
-      startDate
-      endDate
-      business {
-        id
-        businessName
-      }
+      expiresAt
+      isActive
     }
   }
 `;
 
 export const UPDATE_OFFER = gql`
-  mutation UpdateOffer($id: ID!, $input: OfferInput!) {
+  mutation UpdateOffer($id: ID!, $input: OfferUpdateInput!) {
     updateOffer(id: $id, input: $input) {
       id
       title
       content
       images
-      startDate
-      endDate
-      updatedAt
+      expiresAt
+      isActive
     }
   }
 `;
@@ -80,15 +60,48 @@ export const DELETE_OFFER = gql`
   }
 `;
 
-// Review Mutations
 export const RESPOND_TO_REVIEW = gql`
-  mutation RespondToReview($input: ResponseInput!) {
-    respondToReview(input: $input) {
+  mutation RespondToReview($reviewId: ID!, $response: String!) {
+    respondToReview(reviewId: $reviewId, response: $response) {
       id
-      responses {
-        content
-        responseDate
+      responses
+    }
+  }
+`;
+
+export const CREATE_EVENT = gql`
+  mutation CreateEvent($input: EventInput!) {
+    createEvent(input: $input) {
+      id
+      title
+      description
+      startDate
+      endDate
+      tags
+      location {
+        id
+        city
+        postalCode
+        address
       }
+    }
+  }
+`;
+
+export const CANCEL_EVENT = gql`
+  mutation CancelEvent($id: ID!) {
+    cancelEvent(id: $id) {
+      id
+      isCancelled
+    }
+  }
+`;
+
+export const SUGGEST_VOLUNTEERS = gql`
+  mutation SuggestVolunteers($eventId: ID!) {
+    suggestVolunteersForEvent(eventId: $eventId) {
+      id
+      username
     }
   }
 `;

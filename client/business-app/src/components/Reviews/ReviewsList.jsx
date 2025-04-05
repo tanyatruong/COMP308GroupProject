@@ -1,203 +1,180 @@
 import React, { useState } from 'react';
-import { useQuery } from '@apollo/client';
-import { Container, Row, Col, Card, Form, Button, Tabs, Tab, Badge } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { GET_BUSINESS_PROFILES, GET_REVIEWS_BY_BUSINESS } from '../../graphql/queries';
-import Loader from '../UI/Loader';
-import ErrorMessage from '../UI/ErrorMessage';
-import ReviewCard from './ReviewCard';
-import SentimentAnalysis from './SentimentAnalysis';
+import { Card, Form, Button, Badge, Alert } from 'react-bootstrap';
+import { format } from 'date-fns';
+import { Star, StarFill } from 'react-bootstrap-icons';
 
-const ReviewsList = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('all');
-  const [filterRating, setFilterRating] = useState('all');
-  const [sortBy, setSortBy] = useState('latest');
-
-  // Get business profiles
-  const { loading: businessLoading, error: businessError, data: businessData } = useQuery(GET_BUSINESS_PROFILES);
+const getSentimentColor = (sentiment) => {
+  if (!sentiment) return 'secondary';
   
-  // Get business ID
-  const businessId = businessData?.getBusinessProfilesByOwner[0]?.id;
+  switch(sentiment.toLowerCase()) {
+    case 'very positive': return 'success';
+    case 'positive': return 'info';
+    case 'neutral': return 'secondary';
+    case 'negative': return 'warning';
+    case 'very negative': return 'danger';
+    default: return 'secondary';
+  }
+};
 
-  // Get reviews
-  const { loading: reviewsLoading, error: reviewsError, data: reviewsData, refetch } = useQuery(GET_REVIEWS_BY_BUSINESS, {
-    variables: { businessId },
-    skip: !businessId
-  });
+const ReviewsList = ({ reviews, onRespondToReview }) => {
+  const [responses, setResponses] = useState({});
+  const [showResponseForm, setShowResponseForm] = useState({});
 
-  const loading = businessLoading || reviewsLoading;
-  const error = businessError || reviewsError;
+  const handleResponseChange = (reviewId, value) => {
+    setResponses({
+      ...responses,
+      [reviewId]: value
+    });
+  };
 
-  if (loading) return <Loader />;
-  if (error) return <ErrorMessage message={error.message} />;
+  const toggleResponseForm = (reviewId) => {
+    setShowResponseForm({
+      ...showResponseForm,
+      [reviewId]: !showResponseForm[reviewId]
+    });
+  };
 
-  if (!businessId) {
+  const submitResponse = (reviewId) => {
+    if (responses[reviewId]?.trim()) {
+      onRespondToReview(reviewId, responses[reviewId]);
+      setResponses({
+        ...responses,
+        [reviewId]: ''
+      });
+      setShowResponseForm({
+        ...showResponseForm,
+        [reviewId]: false
+      });
+    }
+  };
+
+  if (!reviews || reviews.length === 0) {
     return (
-      <Container>
-        <ErrorMessage message="You need to create a business profile first." />
-        <Button 
-          variant="primary" 
-          onClick={() => navigate('/create-business')}
-          className="mt-3"
-        >
-          Create Business Profile
-        </Button>
-      </Container>
+      <Alert variant="info">
+        No reviews yet. As customers review your business, they'll appear here.
+      </Alert>
     );
   }
 
-  const allReviews = reviewsData?.getReviewsByBusiness || [];
-
-  // Filter reviews based on tab
-  const filterReviews = () => {
-    let filtered = [...allReviews];
-    
-    // Filter by response status
-    if (activeTab === 'responded') {
-      filtered = filtered.filter(review => review.responses && review.responses.length > 0);
-    } else if (activeTab === 'needsResponse') {
-      filtered = filtered.filter(review => !review.responses || review.responses.length === 0);
-    }
-    
-    // Filter by rating
-    if (filterRating !== 'all') {
-      filtered = filtered.filter(review => review.rating === parseInt(filterRating));
-    }
-    
-    // Sort reviews
-    if (sortBy === 'latest') {
-      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    } else if (sortBy === 'oldest') {
-      filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    } else if (sortBy === 'highest') {
-      filtered.sort((a, b) => b.rating - a.rating);
-    } else if (sortBy === 'lowest') {
-      filtered.sort((a, b) => a.rating - b.rating);
-    }
-    
-    return filtered;
-  };
-
-  const filteredReviews = filterReviews();
-  const business = businessData.getBusinessProfilesByOwner[0];
-
-  // Count reviews with no response
-  const pendingResponseCount = allReviews.filter(
-    review => !review.responses || review.responses.length === 0
-  ).length;
+  // Sort reviews by date (newest first)
+  const sortedReviews = [...reviews].sort((a, b) => 
+    new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   return (
-    <Container>
-      <h1 className="mb-4">Customer Reviews</h1>
-      
-      <Row className="mb-4">
-        <Col md={4}>
-          <Card className="h-100 shadow-sm">
-            <Card.Body>
-              <h5>Reviews Summary</h5>
-              <Row className="text-center mt-3">
-                <Col xs={4}>
-                  <h3>{allReviews.length}</h3>
-                  <div className="text-muted small">Total Reviews</div>
-                </Col>
-                <Col xs={4}>
-                  <h3>{business.averageRating?.toFixed(1) || 'N/A'}</h3>
-                  <div className="text-muted small">Average Rating</div>
-                </Col>
-                <Col xs={4}>
-                  <h3>
-                    {pendingResponseCount}
-                    {pendingResponseCount > 0 && <Badge bg="danger" pill className="ms-1 fs-6">{pendingResponseCount}</Badge>}
-                  </h3>
-                  <div className="text-muted small">Pending</div>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={8}>
-          <SentimentAnalysis reviews={allReviews} />
-        </Col>
-      </Row>
-      
-      <Card className="shadow-sm">
-        <Card.Header className="bg-white">
-          <Tabs
-            activeKey={activeTab}
-            onSelect={(k) => setActiveTab(k)}
-            className="mb-3"
-          >
-            <Tab eventKey="all" title={`All Reviews (${allReviews.length})`} />
-            <Tab 
-              eventKey="needsResponse" 
-              title={
-                <span>
-                  Needs Response ({pendingResponseCount})
-                  {pendingResponseCount > 0 && <Badge bg="danger" pill className="ms-1">{pendingResponseCount}</Badge>}
-                </span>
-              }
-            />
-            <Tab eventKey="responded" title="Responded" />
-          </Tabs>
-        </Card.Header>
-        <Card.Body>
-          <Row className="mb-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Filter by Rating</Form.Label>
-                <Form.Select 
-                  value={filterRating}
-                  onChange={(e) => setFilterRating(e.target.value)}
+    <div>
+      <Alert variant="info" className="mb-4">
+        <div className="d-flex align-items-center">
+          <div className="me-3">
+            <span className="h5">💡</span>
+          </div>
+          <div>
+            <strong>AI-Powered Sentiment Analysis</strong> is analyzing your customer reviews. 
+            Use the sentiment indicators to quickly identify positive and negative feedback.
+          </div>
+        </div>
+      </Alert>
+
+      {sortedReviews.map((review) => (
+        <Card key={review.id} className="mb-4">
+          <Card.Body>
+            <div className="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h5 className="mb-1">{review.title}</h5>
+                <div className="mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    i < review.rating 
+                      ? <StarFill key={i} className="text-warning me-1" />
+                      : <Star key={i} className="text-warning me-1" />
+                  ))}
+                </div>
+              </div>
+              
+              {review.sentimentAnalysis && (
+                <Badge 
+                  bg={getSentimentColor(review.sentimentAnalysis)}
+                  className="ms-2"
                 >
-                  <option value="all">All Ratings</option>
-                  <option value="5">5 Stars</option>
-                  <option value="4">4 Stars</option>
-                  <option value="3">3 Stars</option>
-                  <option value="2">2 Stars</option>
-                  <option value="1">1 Star</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Sort By</Form.Label>
-                <Form.Select 
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <option value="latest">Latest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="highest">Highest Rating</option>
-                  <option value="lowest">Lowest Rating</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-          
-          {filteredReviews.length === 0 ? (
-            <div className="text-center p-5">
-              <h5 className="text-muted">No reviews found</h5>
-              {activeTab === 'needsResponse' ? (
-                <p>Great job! You've responded to all reviews.</p>
-              ) : (
-                <p>No reviews match your current filters.</p>
+                  {review.sentimentAnalysis}
+                </Badge>
               )}
             </div>
-          ) : (
-            <div>
-              {filteredReviews.map(review => (
-                <ReviewCard 
-                  key={review.id} 
-                  review={review} 
-                  onResponseAdded={() => refetch()}
-                />
-              ))}
+            
+            <Card.Text>{review.content}</Card.Text>
+            
+            <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+              <small className="text-muted">
+                By {review.author?.username || 'Anonymous'} on {' '}
+                {format(new Date(review.createdAt), 'MMM d, yyyy')}
+              </small>
+              
+              {review.sentimentScore && (
+                <small className="text-muted">
+                  Sentiment Score: {review.sentimentScore.toFixed(1)}/10
+                </small>
+              )}
             </div>
-          )}
-        </Card.Body>
-      </Card>
-    </Container>
+
+            {/* Previous responses */}
+            {review.responses && review.responses.length > 0 && (
+              <div className="mb-3">
+                <h6>Your Responses:</h6>
+                {review.responses.map((response, index) => (
+                  <Card key={index} className="mb-2 bg-light">
+                    <Card.Body className="py-2 px-3">
+                      <small>{response}</small>
+                    </Card.Body>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Response form */}
+            {showResponseForm[review.id] ? (
+              <div className="mt-3">
+                <Form.Group>
+                  <Form.Label>Your Response</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={responses[review.id] || ''}
+                    onChange={(e) => handleResponseChange(review.id, e.target.value)}
+                    placeholder="Write your response here..."
+                  />
+                </Form.Group>
+                <div className="d-flex justify-content-end mt-2">
+                  <Button 
+                    variant="outline-secondary" 
+                    size="sm" 
+                    onClick={() => toggleResponseForm(review.id)}
+                    className="me-2"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="primary" 
+                    size="sm" 
+                    onClick={() => submitResponse(review.id)}
+                  >
+                    Submit Response
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button 
+                variant="outline-primary" 
+                size="sm" 
+                onClick={() => toggleResponseForm(review.id)}
+              >
+                {review.responses && review.responses.length > 0 
+                  ? 'Add Another Response' 
+                  : 'Respond to Review'}
+              </Button>
+            )}
+          </Card.Body>
+        </Card>
+      ))}
+    </div>
   );
 };
 

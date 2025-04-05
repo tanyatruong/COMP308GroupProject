@@ -1,166 +1,147 @@
-import React, { useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
-import { Form, Button, Card, Container, Row, Col } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { CREATE_OFFER } from '../../graphql/mutations';
-import { GET_BUSINESS_PROFILES, GET_OFFERS_BY_BUSINESS } from '../../graphql/queries';
-import Loader from '../UI/Loader';
-import ErrorMessage from '../UI/ErrorMessage';
-import SuccessMessage from '../UI/SuccessMessage';
+import React from 'react';
+import { Form, Button, Card } from 'react-bootstrap';
+import { Formik } from 'formik';
+import * as yup from 'yup';
+import { useMutation } from '@apollo/client';
+import { UPDATE_OFFER } from '../../graphql/mutations';
 
-const CreateOffer = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+// Validation schema for offers
+const offerSchema = yup.object().shape({
+  title: yup.string().required('Title is required'),
+  content: yup.string().required('Content is required'),
+  expiresAt: yup.date().nullable().min(new Date(), 'Expiration date must be in the future')
+});
+
+const CreateOffer = ({ existingOffer, onCreateOffer, onCancel }) => {
+  const [updateOffer] = useMutation(UPDATE_OFFER, {
+    onCompleted: () => {
+      window.location.reload(); // Simple refresh - in a real app you'd update the cache
+    }
+  });
+
+  const initialValues = existingOffer ? {
+    title: existingOffer.title,
+    content: existingOffer.content,
+    expiresAt: existingOffer.expiresAt ? new Date(existingOffer.expiresAt).toISOString().split('T')[0] : '',
+    isActive: existingOffer.isActive
+  } : {
     title: '',
     content: '',
-    images: [],
-    startDate: new Date().toISOString().split('T')[0], // Today in YYYY-MM-DD format
-    endDate: ''
-  });
-  const [success, setSuccess] = useState(false);
-
-  // Get business profiles
-  const { loading: businessLoading, error: businessError, data: businessData } = useQuery(GET_BUSINESS_PROFILES);
-  
-  // Get business ID
-  const businessId = businessData?.getBusinessProfilesByOwner[0]?.id;
-
-  // Create offer mutation
-  const [createOffer, { loading: createLoading, error: createError }] = useMutation(CREATE_OFFER, {
-    variables: {
-      input: {
-        ...formData,
-        businessId
-      }
-    },
-    onCompleted: () => {
-      setSuccess(true);
-      // Redirect to offers list after 2 seconds
-      setTimeout(() => {
-        navigate('/offers');
-      }, 2000);
-    },
-    refetchQueries: [
-      { 
-        query: GET_OFFERS_BY_BUSINESS, 
-        variables: { businessId } 
-      }
-    ]
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    expiresAt: '',
+    isActive: true
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    createOffer();
+  const handleSubmit = (values) => {
+    const formattedValues = {
+      ...values,
+      expiresAt: values.expiresAt ? new Date(values.expiresAt).toISOString() : null
+    };
+
+    if (existingOffer) {
+      updateOffer({ 
+        variables: {
+          id: existingOffer.id,
+          input: formattedValues
+        }
+      });
+    } else {
+      onCreateOffer(formattedValues);
+    }
   };
-
-  if (businessLoading) return <Loader />;
-  if (businessError) return <ErrorMessage message={businessError.message} />;
-
-  if (!businessId) {
-    return (
-      <Container>
-        <ErrorMessage message="You need to create a business profile first." />
-        <Button 
-          variant="primary" 
-          onClick={() => navigate('/create-business')}
-          className="mt-3"
-        >
-          Create Business Profile
-        </Button>
-      </Container>
-    );
-  }
 
   return (
-    <Container>
-      <h1 className="mb-4">Create New Offer</h1>
-      {createError && <ErrorMessage message={createError.message} />}
-      {success && <SuccessMessage message="Offer created successfully!" />}
-      
-      <Card className="shadow-sm">
+    <div>
+      <h3 className="mb-4">{existingOffer ? 'Edit Promotion' : 'Create New Promotion'}</h3>
+      <Card>
         <Card.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Offer Title</Form.Label>
-              <Form.Control
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-                placeholder="E.g., Special Weekend Discount, Buy One Get One Free"
-              />
-              <Form.Text className="text-muted">
-                Make it catchy to attract customers' attention
-              </Form.Text>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Offer Details</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={4}
-                name="content"
-                value={formData.content}
-                onChange={handleChange}
-                required
-                placeholder="Describe your offer in detail"
-              />
-              <Form.Text className="text-muted">
-                Include important details like discount percentages, conditions, etc.
-              </Form.Text>
-            </Form.Group>
-
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Start Date</Form.Label>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={offerSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ handleSubmit, handleChange, setFieldValue, values, touched, errors }) => (
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Promotion Title</Form.Label>
                   <Form.Control
-                    type="date"
-                    name="startDate"
-                    value={formData.startDate}
+                    type="text"
+                    name="title"
+                    value={values.title}
                     onChange={handleChange}
-                    required
+                    isInvalid={touched.title && !!errors.title}
+                    placeholder="e.g. Summer Special 20% Off"
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.title}
+                  </Form.Control.Feedback>
                 </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>End Date (Optional)</Form.Label>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Promotion Details</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={4}
+                    name="content"
+                    value={values.content}
+                    onChange={handleChange}
+                    isInvalid={touched.content && !!errors.content}
+                    placeholder="Provide details about your promotion..."
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.content}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Expiration Date (Optional)</Form.Label>
                   <Form.Control
                     type="date"
-                    name="endDate"
-                    value={formData.endDate}
+                    name="expiresAt"
+                    value={values.expiresAt}
                     onChange={handleChange}
-                    min={formData.startDate}
+                    isInvalid={touched.expiresAt && !!errors.expiresAt}
                   />
                   <Form.Text className="text-muted">
-                    Leave blank for ongoing offers
+                    Leave blank if this promotion doesn't expire
                   </Form.Text>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.expiresAt}
+                  </Form.Control.Feedback>
                 </Form.Group>
-              </Col>
-            </Row>
 
-            <div className="d-flex justify-content-end">
-              <Button variant="secondary" className="me-2" onClick={() => navigate('/offers')}>
-                Cancel
-              </Button>
-              <Button variant="primary" type="submit" disabled={createLoading}>
-                {createLoading ? 'Creating...' : 'Create Offer'}
-              </Button>
-            </div>
-          </Form>
+                {existingOffer && (
+                  <Form.Group className="mb-3">
+                    <Form.Check
+                      type="switch"
+                      id="isActive"
+                      label="Active"
+                      checked={values.isActive}
+                      onChange={() => setFieldValue('isActive', !values.isActive)}
+                    />
+                    <Form.Text className="text-muted">
+                      Inactive promotions won't be shown to customers
+                    </Form.Text>
+                  </Form.Group>
+                )}
+
+                <div className="d-flex justify-content-end mt-4">
+                  <Button 
+                    variant="outline-secondary" 
+                    onClick={onCancel} 
+                    className="me-2"
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="primary" type="submit">
+                    {existingOffer ? 'Update Promotion' : 'Create Promotion'}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </Card.Body>
       </Card>
-    </Container>
+    </div>
   );
 };
 
