@@ -2,24 +2,29 @@ import React, {useState} from 'react'
 import { Card, Container, Form} from 'react-bootstrap'
 import './login.css';
 import {gql, useMutation} from '@apollo/client'
+import { useNavigate } from 'react-router-dom';
 
 const LOGIN = gql`
     mutation Login($role: String!, $username: String!, $password: String!) {
         Login(role: $role, username: $username, password: $password) {
         ... on Resident {
             id
+            role
             }
         ... on BusinessOwner {
             id
+            role
             }
         ... on CommunityOrganizer {
             id
+            role
             }
         }
     }
 `
 
 const LogIn = () => {
+    const navigate = useNavigate();
     const [role, setRole] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -30,6 +35,7 @@ const LogIn = () => {
     });
     const [error, setError] = useState('');
     const [login] = useMutation(LOGIN);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -42,7 +48,11 @@ const LogIn = () => {
                 }
             });
             if(response.data.Login){
-                console.log("Logged in successfully", response.data.Login);
+                const user = response.data.Login;
+                if(user.role === "BusinessOwner"){
+                    navigate('/businessdashboard');
+                }
+                // Add other roles once they are created
             }
         }catch(err){
             setError(err.message);

@@ -1,0 +1,17 @@
+body{
+    width: 100%;
+}
+.mainCard{
+    margin: auto;
+    background-color: rgb(207, 207, 207);
+    border-radius: 10px;
+    border: 3px solid rgb(255, 255, 255);
+}
+.welcome{
+    color: black;
+}
+
+.buttonContainer{
+    display: flex;
+    justify-content: space-around;
+}

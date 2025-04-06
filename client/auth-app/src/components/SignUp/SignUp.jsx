@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import { Card, Col, Container, Form} from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom';
 import './signup.css';
 import {gql, useMutation} from '@apollo/client'
 
@@ -28,6 +29,7 @@ const BO_SIGNUP = gql`
     }
 `
 const SignUp = () => {
+    const navigate = useNavigate();
     const [role, setRole] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -57,7 +59,8 @@ const SignUp = () => {
                     }
                 });
                 if (response.data.resSignup){
-                    console.log("Resident signed up successfully", response.data.resSignup);
+                    const user = response.data.resSignup;
+                    navigate('/login');
                 }
             }catch(err){
                 setError(err.message);
@@ -74,7 +77,7 @@ const SignUp = () => {
                     }
                 });
                 if (response.data.coSignup){
-                    console.log("Community Organizer signed up successfully", response.data.coSignup);
+                    navigate('/login');
                 }
             }catch(err){
                 setError(err.message);
@@ -91,7 +94,8 @@ const SignUp = () => {
                     }
                 });
                 if (response.data.boSignup){
-                    console.log("Business Owner signed up successfully", response.data.boSignup);
+                    navigate('/login');
+                
                 }
             }catch(err){
                 setError(err.message);
