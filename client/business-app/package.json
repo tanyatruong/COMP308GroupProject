@@ -13,6 +13,7 @@
   "dependencies": {
     "@apollo/client": "^3.13.6",
     "bootstrap": "^5.3.2",
+    "business-app": "file:",
     "date-fns": "^2.30.0",
     "formik": "^2.4.6",
     "graphql": "^16.10.0",
