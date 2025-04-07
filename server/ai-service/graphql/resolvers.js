@@ -7,9 +7,9 @@ dotenv.config();
 const resolvers = {
     Query: {
         analyzeSentiment: async (_, { reviews }, { user, genAI }) => {
-            // if (!user) {
-            //     throw new Error("Unauthorized access. Please log in.");
-            // }
+            if (!user) {
+                throw new Error("Unauthorized access. Please log in.");
+            }
             if (reviews.length === 0){
                 return "No reviews";
             }
@@ -22,7 +22,25 @@ const resolvers = {
                 `
             });
             return response.text;
+        },
+        summarizeDiscussion: async (_, { posts }, { user, genAI}) => {
+            if (!user) {
+                throw new Error("Unauthorized access. Please log in.");
+            }
+            if (posts.length === 0){
+                return "No posts";
+            }
+            const response = await genAI.models.generateContent({
+                model: "gemini-2.0-flash",
+                contents: `
+                    Summarize the following discussion posts and provide a short summary of the topics discussed.
+                    Provide only a paragraph summarizing the discussion with no other characters or text.
+                    ${posts.join('\n')}
+                `
+            });
+            return response.text;
         }
+        
     }
 }
 
