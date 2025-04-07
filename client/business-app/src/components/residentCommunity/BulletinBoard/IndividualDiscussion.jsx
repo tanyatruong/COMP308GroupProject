@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-const BulletinBoard = () => {
-  return <h1>BulletinBoard</h1>;
+const IndividualDiscussion = () => {
+  return <h1>IndividualDiscussion</h1>;
 };
 
-export default BulletinBoard;
+export default IndividualDiscussion;
