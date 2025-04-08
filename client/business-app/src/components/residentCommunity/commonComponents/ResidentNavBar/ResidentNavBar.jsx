@@ -15,11 +15,11 @@ const ResidentNavBar = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="/bulletinboard">Bulletin Board</Nav.Link>
-              <Nav.Link href="/neighborhoodhelprequests">
+              <Nav.Link href="/resident/bulletinboard">Bulletin Board</Nav.Link>
+              <Nav.Link href="/resident/neighborhoodhelprequests">
                 Neighborhood help requests
               </Nav.Link>
-              <Nav.Link href="/marketplace">Marketplace</Nav.Link>
+              <Nav.Link href="/resident/marketplace">Marketplace</Nav.Link>
               {/* <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                 <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                 <NavDropdown.Item href="#action/3.2">
