@@ -16,6 +16,7 @@ import ResidentDashboard from "./components/residentCommunity/residentDashboard/
 import BulletinBoard from "./components/residentCommunity/BulletinBoard/BulletinBoard";
 import Marketplace from "./components/residentCommunity/Marketplace/Marketplace";
 import NeighborhoodHelpRequests from "./components/residentCommunity/NeighborhoodHelpRequests/NeighborhoodHelpRequests";
+import IndividualDiscussion from "./components/residentCommunity/BulletinBoard/IndividualDiscussion";
 
 function App() {
   const [userType, setUserType] = useState("business"); // Default to business view
@@ -88,7 +89,8 @@ function App() {
             <Route path="/resident/bulletinboard" element={<BulletinBoard />} />
             <Route path="/resident/marketplace" element={<Marketplace />} />
             <Route path="/resident/neighborhoodhelprequests" element={<NeighborhoodHelpRequests />} />
-          </Routes>
+            <Route path="/resident/bulletinboard/:postId" element={<IndividualDiscussion />} />
+            </Routes>
         </Container>
       </div>
     </Router>
