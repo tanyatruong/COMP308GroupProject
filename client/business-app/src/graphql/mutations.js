@@ -105,3 +105,32 @@ export const SUGGEST_VOLUNTEERS = gql`
     }
   }
 `;
+
+export const CREATE_POST = gql`
+  mutation CreatePost($input: PostInput!) {
+    createPost(input: $input) {
+      id
+      title
+      content
+      createdAt
+      author {
+        id
+        username
+      }
+    }
+  }
+`;
+
+export const ADD_COMMENT = gql`
+  mutation AddComment($input: CommentInput!) {
+    addComment(input: $input) {
+      id
+      text
+      createdAt
+      author {
+        id
+        username
+      }
+    }
+  }
+`;
