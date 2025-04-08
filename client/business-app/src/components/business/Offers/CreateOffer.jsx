@@ -3,7 +3,7 @@ import { Form, Button, Card } from 'react-bootstrap';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useMutation } from '@apollo/client';
-import { UPDATE_OFFER } from '../../graphql/mutations';
+import { UPDATE_OFFER } from '../../../graphql/mutations';
 
 // Validation schema for offers
 const offerSchema = yup.object().shape({

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Row, Col, Button, Badge, Modal } from 'react-bootstrap';
 import { format } from 'date-fns';
 import { useMutation } from '@apollo/client';
-import { DELETE_OFFER } from '../../graphql/mutations';
+import { DELETE_OFFER } from '../../../graphql/mutations';
 
 const OffersList = ({ offers, onEditClick }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);

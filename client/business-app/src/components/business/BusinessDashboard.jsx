@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Nav, Tab, Alert } from 'react-bootstrap';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_BUSINESS_PROFILE } from '../graphql/queries';
+import { GET_BUSINESS_PROFILE } from '../../graphql/queries';
 import { 
   CREATE_BUSINESS_PROFILE, 
   CREATE_OFFER, 
   RESPOND_TO_REVIEW 
-} from '../graphql/mutations';
+} from '../../graphql/mutations';
 import BusinessProfile from './BusinessProfile';
 import OffersList from './Offers/OffersList';
 import CreateOffer from './Offers/CreateOffer';
