@@ -13,7 +13,6 @@ import {
 
 import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 
-
 const ResidentDashboard = () => {
   return (
     <>
@@ -34,7 +33,7 @@ const ResidentDashboard = () => {
                 Post or interact with: local updates, news, and discuss topics.
               </Card.Text>
               <Link to="/resident/bulletinboard" className="btn btn-primary">
-              Bulletin Board
+                Bulletin Board
               </Link>
             </Card.Body>
           </Card>
@@ -50,7 +49,10 @@ const ResidentDashboard = () => {
               <Card.Text>
                 Request help of, or give help to, your community
               </Card.Text>
-              <Button variant="primary" href="/neighborhoodhelprequests">
+              <Button
+                variant="primary"
+                href="/resident/neighborhoodhelprequests"
+              >
                 Neighborhood Help Requests
               </Button>
             </Card.Body>
@@ -65,7 +67,7 @@ const ResidentDashboard = () => {
                 Some quick example text to build on the card title and make up
                 the bulk of the card's content.
               </Card.Text>
-              <Button variant="primary" href="/marketplace">
+              <Button variant="primary" href="/resident/marketplace">
                 Marketplace
               </Button>
             </Card.Body>

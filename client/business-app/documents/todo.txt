@@ -1,0 +1,29 @@
+Priority 1
+--
+
+P2
+--
+TODO-fix following issue when npm run deploy(build) is attempted:
+"
+\COMP308GroupProject\client\business-app> npm run deploy
+
+> business-app@0.0.0 deploy
+> npm run build && npm run preview
+
+
+> business-app@0.0.0 build
+> vite build
+
+vite v5.4.17 building for production...
+✓ 3158 modules transformed.
+x Build failed in 18.97s
+error during build:
+Could not resolve entry module "./src/components/BusinessProfile".
+    at getRollupError (file:///C:/School%20stuff/CentennialCollege/W2025/COMP%20308%20(SEC.%20402)%20-%20Emerging%20Technologies/groupProject/COMP308GroupProject/client/business-app/node_modules/rollup/dist/es/shared/parseAst.js:397:41)
+    at error (file:///C:/School%20stuff/CentennialCollege/W2025/COMP%20308%20(SEC.%20402)%20-%20Emerging%20Technologies/groupProject/COMP308GroupProject/client/business-app/node_modules/rollup/dist/es/shared/parseAst.js:393:42)
+    at ModuleLoader.loadEntryModule (file:///C:/School%20stuff/CentennialCollege/W2025/COMP%20308%20(SEC.%20402)%20-%20Emerging%20Technologies/groupProject/COMP308GroupProject/client/business-app/node_modules/rollup/dist/es/shared/node-entry.js:21310:20)
+    at async Promise.all (index 0)
+"
+P3
+--
+
