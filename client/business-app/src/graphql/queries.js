@@ -97,3 +97,45 @@ export const GET_UPCOMING_EVENTS = gql`
     }
   }
 `;
+
+export const GET_ALL_POSTS = gql`
+  query GetAllPosts {
+    posts {
+      id
+      title
+      content
+      createdAt
+      author {
+        id
+        username
+      }
+      comments {
+        id
+      }
+    }
+  }
+`;
+
+export const GET_POST_WITH_COMMENTS = gql`
+  query GetPostWithComments($postId: ID!) {
+    post(id: $postId) {
+      id
+      title
+      content
+      createdAt
+      author {
+        id
+        username
+      }
+      comments {
+        id
+        text
+        createdAt
+        author {
+          id
+          username
+        }
+      }
+    }
+  }
+`;

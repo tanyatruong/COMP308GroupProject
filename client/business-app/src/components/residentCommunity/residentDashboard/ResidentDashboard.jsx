@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Container,
   Row,
@@ -11,6 +12,7 @@ import {
 } from "react-bootstrap";
 
 import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
+
 
 const ResidentDashboard = () => {
   return (
@@ -31,9 +33,9 @@ const ResidentDashboard = () => {
               <Card.Text>
                 Post or interact with: local updates, news, and discuss topics.
               </Card.Text>
-              <Button variant="primary" href="bulletinboard">
-                Bulletin Board
-              </Button>
+              <Link to="/resident/bulletinboard" className="btn btn-primary">
+              Bulletin Board
+              </Link>
             </Card.Body>
           </Card>
         </Col>
