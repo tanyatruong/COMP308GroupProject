@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Nav, Tab, Alert } from 'react-bootstrap';
 import { useQuery, useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 import { GET_BUSINESS_PROFILE } from '../../graphql/queries';
 import { 
-  CREATE_BUSINESS_PROFILE, 
-  CREATE_OFFER, 
   RESPOND_TO_REVIEW 
 } from '../../graphql/mutations';
 import BusinessProfile from './BusinessProfile';
 import OffersList from './Offers/OffersList';
-import CreateOffer from './Offers/CreateOffer';
 import ReviewsList from './Reviews/ReviewsList';
 
 const BusinessDashboard = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
-  const [isCreatingOffer, setIsCreatingOffer] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', variant: 'info' });
 
   // Simulate user authentication
@@ -35,27 +33,6 @@ const BusinessDashboard = () => {
     fetchPolicy: 'network-only'
   });
 
-  const [createBusinessProfile] = useMutation(CREATE_BUSINESS_PROFILE, {
-    onCompleted: () => {
-      showNotification('Business profile created successfully!', 'success');
-      refetch();
-    },
-    onError: (error) => {
-      showNotification(`Error creating profile: ${error.message}`, 'danger');
-    }
-  });
-
-  const [createOffer] = useMutation(CREATE_OFFER, {
-    onCompleted: () => {
-      showNotification('Offer created successfully!', 'success');
-      setIsCreatingOffer(false);
-      refetch();
-    },
-    onError: (error) => {
-      showNotification(`Error creating offer: ${error.message}`, 'danger');
-    }
-  });
-
   const [respondToReview] = useMutation(RESPOND_TO_REVIEW, {
     onCompleted: () => {
       showNotification('Response added successfully!', 'success');
@@ -71,36 +48,6 @@ const BusinessDashboard = () => {
     setTimeout(() => {
       setNotification({ ...notification, show: false });
     }, 5000);
-  };
-
-  const handleCreateProfile = async (profileData) => {
-    try {
-      await createBusinessProfile({
-        variables: {
-          input: {
-            ...profileData,
-            businessOwnerId: user.id
-          }
-        }
-      });
-    } catch (err) {
-      console.error("Error creating profile:", err);
-    }
-  };
-
-  const handleCreateOffer = async (offerData) => {
-    try {
-      await createOffer({
-        variables: {
-          input: {
-            ...offerData,
-            businessId: data.businessProfileByOwner.id
-          }
-        }
-      });
-    } catch (err) {
-      console.error("Error creating offer:", err);
-    }
   };
 
   const handleRespondToReview = async (reviewId, response) => {
@@ -164,33 +111,51 @@ const BusinessDashboard = () => {
               <Card.Body>
                 <Tab.Content>
                   <Tab.Pane eventKey="profile">
-                    <BusinessProfile 
-                      profile={hasBusinessProfile ? data.businessProfileByOwner : null} 
-                      onCreateProfile={handleCreateProfile}
-                    />
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <h3 className="mb-0">Business Profile</h3>
+                    </div>
+                    {hasBusinessProfile ? (
+                      <>
+                        <BusinessProfile 
+                          profile={data.businessProfileByOwner} 
+                          onlyDisplay={true}
+                        />
+                        
+                        {/* Added business action buttons here */}
+                        <div className="mt-4">
+                          <h4 className="mb-3">Quick Actions</h4>
+                          <div className="d-flex flex-wrap gap-2">
+                            <Button variant="primary" onClick={() => navigate('/business/create-offer')}>
+                              Create New Offer
+                            </Button>
+                            <Button variant="outline-primary" onClick={() => navigate('/business/offers')}>
+                              View All Offers
+                            </Button>
+                            <Button variant="outline-primary" onClick={() => navigate('/business/reviews')}>
+                              View All Reviews
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <Alert variant="info">
+                        No business profile found. Please create one through the GraphQL API.
+                      </Alert>
+                    )}
                   </Tab.Pane>
                   
                   {hasBusinessProfile && (
                     <>
                       <Tab.Pane eventKey="promotions">
-                        {isCreatingOffer ? (
-                          <CreateOffer 
-                            onCreateOffer={handleCreateOffer} 
-                            onCancel={() => setIsCreatingOffer(false)}
-                          />
-                        ) : (
-                          <>
-                            <div className="d-flex justify-content-between align-items-center mb-4">
-                              <h3 className="mb-0">Business Promotions</h3>
-                              <Button variant="primary" onClick={() => setIsCreatingOffer(true)}>
-                                Create New Promotion
-                              </Button>
-                            </div>
-                            <OffersList 
-                              offers={data.businessProfileByOwner.offers || []}
-                            />
-                          </>
-                        )}
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <h3 className="mb-0">Business Promotions</h3>
+                          <Button variant="primary" onClick={() => navigate('/business/create-offer')}>
+                            Create New Promotion
+                          </Button>
+                        </div>
+                        <OffersList 
+                          offers={data.businessProfileByOwner.offers || []}
+                        />
                       </Tab.Pane>
                       
                       <Tab.Pane eventKey="reviews">

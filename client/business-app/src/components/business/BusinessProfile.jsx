@@ -13,8 +13,8 @@ const profileSchema = yup.object().shape({
   address: yup.string().required('Address is required')
 });
 
-const BusinessProfile = ({ profile, onCreateProfile, onUpdateProfile }) => {
-  const [isEditing, setIsEditing] = useState(!profile);
+const BusinessProfile = ({ profile, onUpdateProfile, onlyDisplay = false }) => {
+  const [isEditing, setIsEditing] = useState(false);
 
   const initialValues = profile ? {
     businessName: profile.businessName,
@@ -48,24 +48,21 @@ const BusinessProfile = ({ profile, onCreateProfile, onUpdateProfile }) => {
     delete formattedValues.postalCode;
     delete formattedValues.address;
 
-    if (profile) {
-      onUpdateProfile?.(profile.id, formattedValues);
-    } else {
-      onCreateProfile(formattedValues);
-    }
-    
+    onUpdateProfile?.(profile.id, formattedValues);
     setIsEditing(false);
   };
 
   if (!isEditing && profile) {
     return (
       <div>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h3 className="mb-0">Business Profile</h3>
-          <Button variant="outline-primary" onClick={() => setIsEditing(true)}>
-            Edit Profile
-          </Button>
-        </div>
+        {!onlyDisplay && (
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h3 className="mb-0">Business Profile</h3>
+            <Button variant="outline-primary" onClick={() => setIsEditing(true)}>
+              Edit Profile
+            </Button>
+          </div>
+        )}
 
         <Card className="mb-4">
           <Card.Body>
@@ -96,9 +93,13 @@ const BusinessProfile = ({ profile, onCreateProfile, onUpdateProfile }) => {
     );
   }
 
+  if (onlyDisplay) {
+    return <div>No profile data available</div>;
+  }
+
   return (
     <div>
-      <h3 className="mb-4">{profile ? 'Edit Profile' : 'Create Business Profile'}</h3>
+      <h3 className="mb-4">Edit Business Profile</h3>
       
       <Formik
         initialValues={initialValues}
@@ -205,17 +206,15 @@ const BusinessProfile = ({ profile, onCreateProfile, onUpdateProfile }) => {
             </Row>
 
             <div className="mt-4 d-flex justify-content-end">
-              {profile && (
-                <Button 
-                  variant="outline-secondary" 
-                  className="me-2" 
-                  onClick={() => setIsEditing(false)}
-                >
-                  Cancel
-                </Button>
-              )}
+              <Button 
+                variant="outline-secondary" 
+                className="me-2" 
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
+              </Button>
               <Button variant="primary" type="submit">
-                {profile ? 'Update Profile' : 'Create Profile'}
+                Update Profile
               </Button>
             </div>
           </Form>
