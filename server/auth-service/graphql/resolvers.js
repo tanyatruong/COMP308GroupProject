@@ -58,6 +58,14 @@ const resolvers = {
                 default:
                     throw new Error("Unable to process user.")
             }
+        },
+        residents: async (_, __) => {
+            try{ 
+                return await Resident.find().populate('location');
+            } catch(err){
+                console.error("Error fetching residents:", err);
+                throw new Error("Error fetching residents.");
+            }
         }
     },
     Mutation: {

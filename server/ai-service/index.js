@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const { GoogleGenAI } = require("@google/genai");
+const tf = require('@tensorflow/tfjs-node');
+const path = require("path");
 dotenv.config();
 const app = express();
 const port = 4003;
@@ -16,6 +18,14 @@ app.use(express.json());
 app.use(cookieParser());
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+let eventModel = null;
+const loadEventMatchModel = async () => {
+    const modelDir = path.join(__dirname, 'volunteerEventMatching', 'eventMatchModel');
+    eventModel = await tf.loadLayersModel(`file://${modelDir}/model.json`);
+    console.log("Event matching model loaded");
+    return eventModel;
+}
 
 const getUserFromToken = (token) => {
     if(!token)return null;
@@ -32,11 +42,12 @@ const server = new ApolloServer({
     context: ({req, res}) => {
         const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
         const user = getUserFromToken(token);
-        return {user, req, res, genAI};
+        return {user, req, res, genAI, eventModel};
     },
 });
 
 const startServer = async () => {
+    await loadEventMatchModel();
     await server.start();
     server.applyMiddleware({app, cors: false});
 
