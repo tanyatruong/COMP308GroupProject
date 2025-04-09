@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const HelpRequestCommentModel = require("../../../models/neighbourhoodHelpRequests/HelpRequestComment.model.server.js");
 const HelpRequestPostModel = require("../../../models/neighbourhoodHelpRequests/HelpRequestPost.model.server.js");
 
@@ -111,3 +112,21 @@ const resolversHelpRequestComment = {
 };
 
 module.exports = { resolversHelpRequestComment };
+=======
+const { Post } = require("../models/Post");
+const { Comment } = require("../models/Comment");
+
+const helpRequestCommentResolvers = {
+  Post: {},
+
+  Comment: {},
+
+  Resident: {},
+
+  Query: {},
+
+  Mutation: {},
+};
+
+module.exports = { helpRequestCommentResolvers };
+>>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)

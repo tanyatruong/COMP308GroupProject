@@ -1,6 +1,11 @@
 const HelpRequestPostModel = require("../../../models/neighbourhoodHelpRequests/HelpRequestPost.model.server.js");
+<<<<<<< HEAD
 const mongoose = require("mongoose");
 const resolversHelpRequestPost = {
+=======
+
+const helpRequestCommentResolvers = {
+>>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
   // Post: {},
 
   // Comment: {},
@@ -19,16 +24,26 @@ const resolversHelpRequestPost = {
   },
 
   Mutation: {
+<<<<<<< HEAD
     createHelpRequestPost: async (_, { input }) => {
       const { authorid, ...postData } = input;
       const HelpRequestPost = new HelpRequestPostModel({
         ...postData,
         // author: new mongoose.Types.ObjectId(authorId),
         authorid: authorid,
+=======
+    // createHelpRequestPost(input: CreateHelpRequestPostObject!): Post!
+    createHelpRequestPost: async (_, { input }) => {
+      const { authorId, ...postData } = input;
+      const HelpRequestPost = new HelpRequestPostModel({
+        ...postData,
+        author: authorId,
+>>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
         comments: [],
       });
 
       await HelpRequestPost.save();
+<<<<<<< HEAD
 
       // const returnValue = {
       //   id: HelpRequestPost._id.toString(),
@@ -77,3 +92,11 @@ const resolversHelpRequestPost = {
 };
 
 module.exports = { resolversHelpRequestPost };
+=======
+      return HelpRequestPost;
+    },
+  },
+};
+
+module.exports = { helpRequestCommentResolvers };
+>>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
