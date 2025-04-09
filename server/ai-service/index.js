@@ -27,6 +27,14 @@ const loadEventMatchModel = async () => {
     return eventModel;
 }
 
+let helpRequestModel = null;
+const loadHelpRequestModel = async () => {
+    const modelDir = path.join(__dirname, 'volunteerHelpRequestMatching', 'helpRequestMatchModel');
+    helpRequestModel = await tf.loadLayersModel(`file://${modelDir}/model.json`);
+    console.log("Help request model loaded");
+    return helpRequestModel;
+}
+
 const getUserFromToken = (token) => {
     if(!token)return null;
     try{
@@ -42,12 +50,14 @@ const server = new ApolloServer({
     context: ({req, res}) => {
         const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
         const user = getUserFromToken(token);
-        return {user, req, res, genAI, eventModel};
+        return {user, req, res, genAI, eventModel, helpRequestModel};
     },
 });
 
 const startServer = async () => {
     await loadEventMatchModel();
+    await loadHelpRequestModel();
+    
     await server.start();
     server.applyMiddleware({app, cors: false});
 

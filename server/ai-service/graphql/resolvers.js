@@ -120,6 +120,29 @@ const resolvers = {
                 console.error("Error suggesting volunteers:", err);
                 throw new Error("Error suggesting volunteers.");
             }
+        },
+        suggestHelpRequestVolunteers: async (_, { tags, city}, { user, helpRequestModel}) => {
+            try {
+                const residents = await getResidents();
+                const inputData = residents.map((resident) => {
+                    const matchingInterest = tags.some(tag => resident.interests.includes(tag)) ? 1 : 0;
+                    const matchingLocation = resident.location.city === city ? 1 : 0;
+                    return [matchingInterest, matchingLocation];
+                });
+
+                const inputTensor = tf.tensor2d(inputData);
+                const predictions = helpRequestModel.predict(inputTensor);
+                const predictionData = predictions.dataSync();
+
+                const suggestedResidents = residents.filter((resident, index) => {
+                    return predictionData[index] > 0.5;
+                });
+                
+                return suggestedResidents;
+            } catch(err){
+                console.error("Error suggesting volunteers:", err);
+                throw new Error("Error suggesting volunteers.");
+            }
         }
         
     }
