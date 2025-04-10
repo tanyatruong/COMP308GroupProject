@@ -6,6 +6,7 @@ const typeDefs = gql`
         summarizeDiscussion(posts: [String]!): String!
         suggestEventVolunteers(tags: [String]!, city: String!) : [Resident]!
         suggestHelpRequestVolunteers(tags: [String]!, city: String!) : [Resident]!
+        suggestEventTime(title: String!, tags: [String]!): String!
     }
     extend type Location @key(fields: "id") {
         id: ID! @external

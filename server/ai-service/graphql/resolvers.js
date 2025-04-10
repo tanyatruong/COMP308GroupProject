@@ -49,8 +49,6 @@ const getResidents = async () => {
 } 
 
 
-
-
 const resolvers = {
     Query: {
         analyzeSentiment: async (_, { reviews }, { user, genAI }) => {
@@ -143,6 +141,19 @@ const resolvers = {
                 console.error("Error suggesting volunteers:", err);
                 throw new Error("Error suggesting volunteers.");
             }
+        },
+        suggestEventTime: async (_, { title, tags}, { user, genAI}) => {
+            // if (!user) {
+            //     throw new Error("Unauthorized access. Please log in.");
+            // }
+            const response = await genAI.models.generateContent({
+                model: "gemini-2.0-flash",
+                contents: `
+                    Suggest the best time for the event "${title}" based on the following tags: ${tags.join(', ')}.
+                    Provide only a day of the week and time with no other characters or text. Example output: "Monday at 7:00PM"
+                `
+            });
+            return response.text;
         }
         
     }
