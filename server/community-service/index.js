@@ -2,12 +2,16 @@ const { ApolloServer } = require("apollo-server-express");
 const { buildFederatedSchema } = require("@apollo/federation");
 const express = require("express");
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
 const {
   typeDefsHelpRequestPost,
 } = require("./graphql/neighbourhoodHelpRequests/schemas/HelpRequestPost.typeDefs.server.js");
 const {
   resolversHelpRequestPost,
 } = require("./graphql/neighbourhoodHelpRequests/resolvers/HelpRequestPost.resolver.server.js");
+<<<<<<< HEAD
 const {
   typeDefsHelpRequestComment,
 } = require("./graphql/neighbourhoodHelpRequests/schemas/HelpRequestComment.typeDefs.server.js");
@@ -23,6 +27,11 @@ const resolversHelpRequestPost = require("./graphql/neighbourhoodHelpRequests/re
 const { typeDefs } = require("./graphql/typeDefs.js");
 const { resolvers } = require("./graphql/resolvers.js");
 >>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
+=======
+const { typeDefs } = require("./graphql/typeDefs.js");
+const { resolvers } = require("./graphql/resolvers.js");
+const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
+>>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -45,6 +54,7 @@ app.use(
 );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const mergedTypeDefs = mergeTypeDefs([
   typeDefs,
   typeDefsHelpRequestPost,
@@ -66,10 +76,15 @@ const aggregatedResolvers = {
   ...typeDefs, //Landon/BulletinBoard
 };
 >>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
+=======
+const mergedTypeDefs = mergeTypeDefs([typeDefs, typeDefsHelpRequestPost]); //https://the-guild.dev/graphql/tools/docs/schema-merging#merging-type-definitions
+const mergedResolvers = mergeResolvers([resolvers, resolversHelpRequestPost]); //https://the-guild.dev/graphql/tools/docs/schema-merging#merging-resolvers
+>>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
 
 // Set up Apollo Server with Federation
 const server = new ApolloServer({
   schema: buildFederatedSchema([
+<<<<<<< HEAD
 <<<<<<< HEAD
     { typeDefs: mergedTypeDefs, resolvers: mergedResolvers },
   ]),
@@ -81,6 +96,9 @@ const server = new ApolloServer({
   // ]),
 =======
     { typeDefs: aggregatedTypeDefs, resolvers: aggregatedResolvers },
+=======
+    { typeDefs: mergedTypeDefs, resolvers: mergedResolvers },
+>>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
   ]),
 >>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
   context: ({ req, res }) => {

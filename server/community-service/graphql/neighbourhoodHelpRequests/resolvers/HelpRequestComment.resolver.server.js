@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 const HelpRequestCommentModel = require("../../../models/neighbourhoodHelpRequests/HelpRequestComment.model.server.js");
 const HelpRequestPostModel = require("../../../models/neighbourhoodHelpRequests/HelpRequestPost.model.server.js");
 
@@ -115,17 +116,32 @@ module.exports = { resolversHelpRequestComment };
 =======
 const { Post } = require("../models/Post");
 const { Comment } = require("../models/Comment");
+=======
+const HelpRequestCommentModel = require("../../../models/neighbourhoodHelpRequests/HelpRequestComment.model.server.js");
+const HelpRequestPostModel = require("../../../models/neighbourhoodHelpRequests/HelpRequestPost.model.server.js");
+>>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
 
 const helpRequestCommentResolvers = {
-  Post: {},
+  Query: {
+    getHelpRequestComment: async (_, { id }) => {
+      return await HelpRequestCommentModel.findById(id);
+    },
+    getHelpRequestCommentsOfHelpRequestPost: async (_, { postid }) => {
+      const helpRequestPost = await HelpRequestPostModel.findById(postid);
+      return helpRequestPost.comments;
+    },
+  },
 
-  Comment: {},
+  Mutation: {
+    addHelpRequestCommentToHelpRequestPost: async () => {},
+    deleteHelpRequestComment: async () => {},
+  },
 
-  Resident: {},
+  // Post: {},
 
-  Query: {},
+  // Comment: {},
 
-  Mutation: {},
+  // Resident: {},
 };
 
 module.exports = { helpRequestCommentResolvers };
