@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const HelpRequestPostSchema = new Schema(
   {
-    author: {
+    authorid: {
       type: Schema.Types.ObjectId,
       ref: "Resident",
       required: true,

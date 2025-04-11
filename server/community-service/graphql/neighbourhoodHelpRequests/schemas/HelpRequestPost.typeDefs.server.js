@@ -8,45 +8,55 @@ const typeDefsHelpRequestPost = gql`
 
   extend type Mutation {
     createHelpRequestPost(input: CreateHelpRequestPostInput!): HelpRequestPost!
-    # updateHelpRequestPost(id: ID!, input: PostUpdateInput!): Post!
-    # deleteHelpRequestPost(id: ID!): Boolean!
+    updateHelpRequestPost(
+      id: ID!
+      input: UpdateHelpRequestPostInput!
+    ): HelpRequestPost!
+    deleteHelpRequestPost(id: ID!): deletedHelpRequestPostReturnObject
   }
 
   type HelpRequestPost @key(fields: "id") {
     id: ID!
-    author: Resident!
+    authorid: ID!
     title: String!
     content: String!
-    comments: [Comment!]
+    comments: [ID!]
     createdAt: String!
     updatedAt: String!
-  }
-
-  type HelpRequestComment @key(fields: "id") {
-    id: ID!
-    text: String!
-    author: Resident!
-    postId: ID!
-    createdAt: String!
   }
 
   input CreateHelpRequestPostInput {
     title: String!
     content: String!
-    authorId: ID!
+    authorid: ID!
   }
 
-  #   input UpdatePostInput {
-  #     title: String
-  #     content: String
-  #   }
+  input UpdateHelpRequestPostInput {
+    title: String
+    content: String
+  }
+
+  type deletedHelpRequestPostReturnObject {
+    message: String!
+    success: Boolean!
+    error: String!
+    deleteObjectId: ID!
+  }
 
   # Reference external types
-  extend type Resident @key(fields: "id") {
-    id: ID! @external
-    posts: [Post!]
-    comments: [Comment!]
-  }
+  # extend type Resident @key(fields: "id") {
+  #   id: ID! @external
+  #   posts: [Post!]
+  #   comments: [Comment!]
+  # }
+
+  # type HelpRequestComment @key(fields: "id") {
+  #   id: ID!
+  #   text: String!
+  #   authorid: ID!
+  #   postId: ID!
+  #   createdAt: String!
+  # }
 `;
 
 module.exports = { typeDefsHelpRequestPost };

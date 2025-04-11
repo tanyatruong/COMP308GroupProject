@@ -1,10 +1,15 @@
 const { ApolloServer } = require("apollo-server-express");
 const { buildFederatedSchema } = require("@apollo/federation");
 const express = require("express");
-const typeDefsHelpRequestPost = require("./graphql/neighbourhoodHelpRequests/schemas/HelpRequestPost.typeDefs.server.js");
-const resolversHelpRequestPost = require("./graphql/neighbourhoodHelpRequests/resolvers/HelpRequestPost.resolver.server.js");
+const {
+  typeDefsHelpRequestPost,
+} = require("./graphql/neighbourhoodHelpRequests/schemas/HelpRequestPost.typeDefs.server.js");
+const {
+  resolversHelpRequestPost,
+} = require("./graphql/neighbourhoodHelpRequests/resolvers/HelpRequestPost.resolver.server.js");
 const { typeDefs } = require("./graphql/typeDefs.js");
 const { resolvers } = require("./graphql/resolvers.js");
+const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -26,20 +31,13 @@ app.use(
   })
 );
 
-const aggregatedTypeDefs = {
-  ...typeDefsHelpRequestPost, //Tomislav/NeighborhoodHelpRequests
-  ...typeDefs, //Landon/BulletinBoard
-};
-
-const aggregatedResolvers = {
-  ...resolversHelpRequestPost, //Tomislav/NeighborhoodHelpRequests
-  ...typeDefs, //Landon/BulletinBoard
-};
+const mergedTypeDefs = mergeTypeDefs([typeDefs, typeDefsHelpRequestPost]); //https://the-guild.dev/graphql/tools/docs/schema-merging#merging-type-definitions
+const mergedResolvers = mergeResolvers([resolvers, resolversHelpRequestPost]); //https://the-guild.dev/graphql/tools/docs/schema-merging#merging-resolvers
 
 // Set up Apollo Server with Federation
 const server = new ApolloServer({
   schema: buildFederatedSchema([
-    { typeDefs: aggregatedTypeDefs, resolvers: aggregatedResolvers },
+    { typeDefs: mergedTypeDefs, resolvers: mergedResolvers },
   ]),
   context: ({ req, res }) => {
     const token = req.cookies.token;
