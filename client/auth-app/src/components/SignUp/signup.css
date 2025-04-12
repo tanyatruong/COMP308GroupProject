@@ -1,7 +1,7 @@
-.card {
+.signupcard {
     background-color:rgb(207, 207, 207);
     width: 450px;
-    height: 400px;
+    height: 500px;
     border-radius: 10px;
     border: 3px solid rgb(255, 255, 255);
 }
@@ -32,4 +32,7 @@ td{
 }
 .roleSelect{
     padding: 25px;
+}
+.signupBtn {
+    margin-top: 2rem;
 }
