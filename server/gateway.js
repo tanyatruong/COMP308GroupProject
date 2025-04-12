@@ -22,9 +22,9 @@ const gateway = new ApolloGateway({
   supergraphSdl: new IntrospectAndCompose({
     subgraphs: [
       { name: "community", url: "http://localhost:4004/graphql" },
-      //   { name: "auth", url: "http://localhost:4001/graphql" },
-      //   { name: "business", url: "http://localhost:4002/graphql" },
-      //   { name: "ai", url: "http://localhost:4003/graphql" },
+      { name: "auth", url: "http://localhost:4001/graphql" },
+      { name: "business", url: "http://localhost:4002/graphql" },
+      { name: "ai", url: "http://localhost:4003/graphql" },
     ],
   }),
   buildService({ name, url }) {
