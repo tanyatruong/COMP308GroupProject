@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 const HelpRequestCommentSchema = new Schema(
   {
-    author: {
+    authorid: {
       type: Schema.Types.ObjectId,
       ref: "Resident",
       required: true,
     },
-    postId: {
+    postid: {
       type: Schema.Types.ObjectId,
       ref: "HelpRequestPost",
       required: true,

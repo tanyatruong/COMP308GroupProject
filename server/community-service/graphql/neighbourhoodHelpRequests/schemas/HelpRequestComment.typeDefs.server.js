@@ -1,6 +1,6 @@
 const { gql } = require("apollo-server-express");
 
-const typeDefs = gql`
+const typeDefsHelpRequestComment = gql`
   extend type Query {
     getHelpRequestComment(id: ID!): HelpRequestComment!
     getHelpRequestCommentsOfHelpRequestPost(postid: ID!): [HelpRequestComment]!
@@ -8,7 +8,7 @@ const typeDefs = gql`
 
   extend type Mutation {
     # Create
-    addHelpRequestCommentToHelpRequestPost(
+    createAndAddHelpRequestCommentToHelpRequestPost(
       input: CreateHelpRequestCommentInput!
     ): HelpRequestComment!
     # Maybe implement later
@@ -18,15 +18,15 @@ const typeDefs = gql`
 
   type HelpRequestComment @key(fields: "id") {
     id: ID!
-    text: String!
     authorid: ID!
-    postId: ID!
+    postid: ID!
+    text: String!
     createdAt: String!
   }
 
   input CreateHelpRequestCommentInput {
-    authorId: ID!
-    postId: ID!
+    authorid: ID!
+    postid: ID!
     text: String!
   }
 
@@ -44,4 +44,4 @@ const typeDefs = gql`
   # }
 `;
 
-module.exports = { typeDefs };
+module.exports = { typeDefsHelpRequestComment };
