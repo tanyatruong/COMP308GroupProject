@@ -1,6 +1,7 @@
 const { gql } = require("apollo-server-express");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const typeDefsHelpRequestComment = gql`
   extend type Query {
     getHelpRequestComment(id: ID!): HelpRequestComment!
@@ -17,6 +18,9 @@ const typeDefsHelpRequestComment = gql`
     deleteHelpRequestComment(id: ID!): deletedHelpRequestCommentReturnObject!
 =======
 const typeDefs = gql`
+=======
+const typeDefsHelpRequestComment = gql`
+>>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
   extend type Query {
     getHelpRequestComment(id: ID!): HelpRequestComment!
     getHelpRequestCommentsOfHelpRequestPost(postid: ID!): [HelpRequestComment]!
@@ -24,7 +28,7 @@ const typeDefs = gql`
 
   extend type Mutation {
     # Create
-    addHelpRequestCommentToHelpRequestPost(
+    createAndAddHelpRequestCommentToHelpRequestPost(
       input: CreateHelpRequestCommentInput!
     ): HelpRequestComment!
     # Maybe implement later
@@ -41,6 +45,7 @@ const typeDefs = gql`
     id: ID!
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     authorid: ID!
     postid: ID!
 =======
@@ -50,12 +55,16 @@ const typeDefs = gql`
 =======
 >>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
     text: String!
+=======
+>>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
     authorid: ID!
-    postId: ID!
+    postid: ID!
+    text: String!
     createdAt: String!
   }
 
   input CreateHelpRequestCommentInput {
+<<<<<<< HEAD
 <<<<<<< HEAD
     authorid: ID!
     postid: ID!
@@ -80,6 +89,10 @@ module.exports = { typeDefsHelpRequestComment };
 =======
     authorId: ID!
     postId: ID!
+=======
+    authorid: ID!
+    postid: ID!
+>>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
     text: String!
   }
 
@@ -97,5 +110,9 @@ module.exports = { typeDefsHelpRequestComment };
   # }
 `;
 
+<<<<<<< HEAD
 module.exports = { typeDefs };
 >>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
+=======
+module.exports = { typeDefsHelpRequestComment };
+>>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)

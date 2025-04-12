@@ -127,14 +127,14 @@ module.exports = { resolversHelpRequestPost };
         const deleteHelpRequestPostResultObject =
           await HelpRequestPostModel.findByIdAndDelete(id);
         return {
-          message: `Deletion Successful of object id: ${id}`,
+          message: `Deletion Successful of Post object id: ${id}`,
           success: true,
           error: "No error",
           deleteObjectId: id,
         };
       } catch (error) {
         return {
-          message: `Deletion Failed of object id: ${id}`,
+          message: `Deletion Failed of Post object id: ${id}`,
           success: false,
           error: error,
           deleteObjectId: id,
