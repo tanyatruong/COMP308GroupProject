@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 import { Container, Row, Col } from "react-bootstrap";
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ca3c99c (frontend of neighborhoodHelpRequest in progress)
 import { Card, Form, Button, ListGroup } from "react-bootstrap";
 
 // import queries
@@ -16,9 +19,12 @@ const postFilterEnum = {
   AllPosts: "AllPosts",
   MyPosts: "MyPosts",
 };
+<<<<<<< HEAD
 =======
 import Button from "react-bootstrap/Button";
 >>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
+=======
+>>>>>>> ca3c99c (frontend of neighborhoodHelpRequest in progress)
 
 const NeighborhoodHelpRequests = () => {
   const [postFilter, setPostFilter] = useState(postFilterEnum.AllPosts);
@@ -62,6 +68,9 @@ const NeighborhoodHelpRequests = () => {
     <>
       <ResidentNavBar />
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ca3c99c (frontend of neighborhoodHelpRequest in progress)
       <Card className="p-3">
         <Card className="px-3 py-1 mx-1 mb-3 shadow-sm">
           <h1>NeighborhoodHelpRequests</h1>
@@ -147,6 +156,7 @@ const NeighborhoodHelpRequests = () => {
           )}
         </Container>
       </Card>
+<<<<<<< HEAD
 =======
       <Container id="filterBarContainer">
         <Row>
@@ -160,6 +170,8 @@ const NeighborhoodHelpRequests = () => {
       </Container>
       <h1>NeighborhoodHelpRequests</h1>;
 >>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
+=======
+>>>>>>> ca3c99c (frontend of neighborhoodHelpRequest in progress)
     </>
   );
 };
