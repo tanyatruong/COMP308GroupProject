@@ -1,20 +1,13 @@
 const { ApolloServer } = require("apollo-server-express");
 const { buildFederatedSchema } = require("@apollo/federation");
 const express = require("express");
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
+
 const {
   typeDefsHelpRequestPost,
 } = require("./graphql/neighbourhoodHelpRequests/schemas/HelpRequestPost.typeDefs.server.js");
 const {
   resolversHelpRequestPost,
 } = require("./graphql/neighbourhoodHelpRequests/resolvers/HelpRequestPost.resolver.server.js");
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
 const {
   typeDefsHelpRequestComment,
 } = require("./graphql/neighbourhoodHelpRequests/schemas/HelpRequestComment.typeDefs.server.js");
@@ -24,17 +17,6 @@ const {
 const { typeDefs } = require("./graphql/typeDefs.js");
 const { resolvers } = require("./graphql/resolvers.js");
 const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
-=======
-const typeDefsHelpRequestPost = require("./graphql/neighbourhoodHelpRequests/schemas/HelpRequestPost.typeDefs.server.js");
-const resolversHelpRequestPost = require("./graphql/neighbourhoodHelpRequests/resolvers/HelpRequestPost.resolver.server.js");
-const { typeDefs } = require("./graphql/typeDefs.js");
-const { resolvers } = require("./graphql/resolvers.js");
->>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
-=======
-const { typeDefs } = require("./graphql/typeDefs.js");
-const { resolvers } = require("./graphql/resolvers.js");
-const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
->>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -56,11 +38,6 @@ app.use(
   })
 );
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
 const mergedTypeDefs = mergeTypeDefs([
   typeDefs,
   typeDefsHelpRequestPost,
@@ -71,30 +48,10 @@ const mergedResolvers = mergeResolvers([
   resolversHelpRequestPost,
   resolversHelpRequestComment,
 ]); //https://the-guild.dev/graphql/tools/docs/schema-merging#merging-resolvers
-<<<<<<< HEAD
-=======
-const aggregatedTypeDefs = {
-  ...typeDefsHelpRequestPost, //Tomislav/NeighborhoodHelpRequests
-  ...typeDefs, //Landon/BulletinBoard
-};
-
-const aggregatedResolvers = {
-  ...resolversHelpRequestPost, //Tomislav/NeighborhoodHelpRequests
-  ...typeDefs, //Landon/BulletinBoard
-};
->>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
-=======
-const mergedTypeDefs = mergeTypeDefs([typeDefs, typeDefsHelpRequestPost]); //https://the-guild.dev/graphql/tools/docs/schema-merging#merging-type-definitions
-const mergedResolvers = mergeResolvers([resolvers, resolversHelpRequestPost]); //https://the-guild.dev/graphql/tools/docs/schema-merging#merging-resolvers
->>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
-=======
->>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
 
 // Set up Apollo Server with Federation
 const server = new ApolloServer({
   schema: buildFederatedSchema([
-<<<<<<< HEAD
-<<<<<<< HEAD
     { typeDefs: mergedTypeDefs, resolvers: mergedResolvers },
   ]),
   // schema: buildFederatedSchema([
@@ -103,16 +60,6 @@ const server = new ApolloServer({
   //     resolvers: resolversHelpRequestComment,
   //   },
   // ]),
-<<<<<<< HEAD
-=======
-    { typeDefs: aggregatedTypeDefs, resolvers: aggregatedResolvers },
-=======
-    { typeDefs: mergedTypeDefs, resolvers: mergedResolvers },
->>>>>>> 890cb28 (HelpRequestPosts Backend (except gateway) done)
-  ]),
->>>>>>> bcfec50 (mongo models for HelpRequest Post and comment complete. Post Resolver/typdef in progress. indexjs updated to aggregate resolvers and typeDefs)
-=======
->>>>>>> e6f6811 (neighborhood HelpRequests Comment functionalities of community microservice, WORK)
   context: ({ req, res }) => {
     const token = req.cookies.token;
     let user = null;
