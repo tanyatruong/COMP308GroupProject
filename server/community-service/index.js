@@ -32,7 +32,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://studio.apollographql.com"],
+    origin: [
+      "http://localhost:4000",
+      "http://localhost:5173",
+      "https://studio.apollographql.com",
+    ],
     credentials: true,
     exposedHeaders: ["Set-Cookie"],
   })
