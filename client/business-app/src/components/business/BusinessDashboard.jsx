@@ -30,7 +30,8 @@ const BusinessDashboard = () => {
   const { loading, error, data, refetch } = useQuery(GET_BUSINESS_PROFILE, {
     variables: { ownerId: user?.id },
     skip: !user?.id,
-    fetchPolicy: 'network-only'
+    fetchPolicy: 'network-only',
+    onError: (error) => console.error("GraphQL error:", error)
   });
 
   const [respondToReview] = useMutation(RESPOND_TO_REVIEW, {

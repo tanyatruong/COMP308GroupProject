@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 4002;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://studio.apollographql.com'],
+    origin: ['http://localhost:3003', 'http://localhost:5173', 'https://studio.apollographql.com'],
     credentials: true,
     exposedHeaders: ['Set-Cookie'],
 }));

@@ -42,6 +42,8 @@ const typeDefs = gql`
     
     # AI volunteer matching
     suggestVolunteersForEvent(eventId: ID!): [Resident!]!
+    suggestEventTime(title: String!, tags: [String]!): String!
+
   }
 
   type BusinessProfile @key(fields: "id") {

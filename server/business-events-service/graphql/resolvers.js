@@ -3,8 +3,10 @@ const { Offer } = require('../models/Offer');
 const { Review } = require('../models/Review');
 const { Event } = require('../models/Event');
 const { Location } = require('../models/Location');
-const { analyzeReviewSentiment } = require('../services/aiService');
-const { findVolunteersForEvent } = require('../services/aiVolunteerService');
+const { analyzeReviewSentiment, suggestEventTime } = require('../services/aiService');
+const { findVolunteersForEvent, findVolunteersForHelpRequest } = require('../services/aiVolunteerService');
+
+const aiServiceEndpoint = 'http://localhost:4003/graphql';
 
 const resolvers = {
   BusinessProfile: {
@@ -351,6 +353,7 @@ const resolvers = {
     },
     
     // Event mutations
+    // Create Event
     createEvent: async (_, { input }) => {
       const { authorId, locationInput, locationId, ...eventData } = input;
       
@@ -386,7 +389,7 @@ const resolvers = {
       } else {
         throw new Error('Either locationId or locationInput must be provided');
       }
-      
+
       // Convert date strings to Date objects
       const startDate = new Date(eventData.startDate);
       const endDate = new Date(eventData.endDate);
@@ -409,6 +412,7 @@ const resolvers = {
       return event;
     },
     
+    // Update Event
     updateEvent: async (_, { id, input }) => {
       // Convert dates if provided
       const updates = { ...input };
@@ -501,6 +505,16 @@ const resolvers = {
       
       return event;
     },
+
+    suggestEventTime: async (_, { title, tags }) => {
+      try {
+        const suggestion = await suggestEventTime(title, tags);
+        return suggestion;
+      } catch (error) {
+        console.error("Error suggesting event time:", error);
+        return "Error generating event time suggestion";
+      }
+    },
     
     // AI volunteer matching
     suggestVolunteersForEvent: async (_, { eventId }) => {
@@ -511,38 +525,8 @@ const resolvers = {
       }
       
       try {
-        // In a real implementation with a complete system:
-        // 1. We would fetch all residents from the Resident service
-        // 2. We would use AI to match them based on interests, location, and past behavior
-        
-        // Since we don't have direct access to Resident collection in this service,
-        // we'll simulate this functionality
-        
-        // For demo purposes, assuming we have some test resident IDs
-        // In a real implementation, we would fetch this from another service
-        const simulatedResidents = [
-          { 
-            _id: "6001f1e5c2dc3e001b56b1a1", 
-            interests: ["community", "volunteering", "environment"],
-            location: event.location._id,
-            previousEvents: ["5ff5e1a2c2dc3e001b56b001", "5ff5e1a2c2dc3e001b56b002"]
-          },
-          { 
-            _id: "6001f1e5c2dc3e001b56b1a2", 
-            interests: ["education", "technology", "networking"],
-            location: "5ff5e1a2c2dc3e001b56c001", // Different location
-            previousEvents: []
-          },
-          { 
-            _id: "6001f1e5c2dc3e001b56b1a3", 
-            interests: ["environment", "health", "sports"],
-            location: event.location._id,
-            previousEvents: ["5ff5e1a2c2dc3e001b56b003"]
-          },
-        ];
-        
-        // Use our AI matching service
-        const suggestedVolunteerIds = await findVolunteersForEvent(event, simulatedResidents);
+        // Use our AI matching service to find potential volunteers
+        const suggestedVolunteerIds = await findVolunteersForEvent(event);
         
         // Update the event with suggested volunteers
         event.suggestedVolunteers = suggestedVolunteerIds;
@@ -557,5 +541,6 @@ const resolvers = {
     }
   }
 };
+
 
 module.exports = { resolvers };
