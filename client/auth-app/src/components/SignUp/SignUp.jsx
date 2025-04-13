@@ -104,7 +104,7 @@ const SignUp = () => {
     }
   return (
     <Container>
-        <Card className='card'>
+        <div className='signupcard'>
         <Form onSubmit={handleSubmit}>
             <Card.Header as="h2" className="title">Sign Up</Card.Header>
 
@@ -228,10 +228,10 @@ const SignUp = () => {
             </table>
             
             <div className="text-end mt-3">
-                <button type="submit" className="btn btn-primary">Sign Up</button>
+                <button type="submit" className="btn btn-primary signupBtn">Sign Up</button>
             </div>
             </Form>
-        </Card>    
+        </div>    
     </Container>
   )
 }

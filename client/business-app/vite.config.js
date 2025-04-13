@@ -13,11 +13,11 @@ export default defineConfig({
       name: 'businessApp',
       filename: 'remoteEntry.js',
       exposes: {
-        './BusinessDashboard': './src/components/BusinessDashboard',
-        './BusinessProfile': './src/components/BusinessProfile',
-        './OffersList': './src/components/Offers/OffersList',
-        './CreateOffer': './src/components/Offers/CreateOffer',
-        './ReviewsList': './src/components/Reviews/ReviewsList'
+        './BusinessDashboard': './src/components/business/BusinessDashboard',
+        './BusinessProfile': './src/components/business/BusinessProfile',
+        './OffersList': './src/components/business/Offers/OffersList',
+        './CreateOffer': './src/components/business/Offers/CreateOffer',
+        './ReviewsList': './src/components/business/Reviews/ReviewsList'
       },
       shared: ['react', 'react-dom', '@apollo/client', 'graphql', 'react-bootstrap', 'react-router-dom'],
     }),

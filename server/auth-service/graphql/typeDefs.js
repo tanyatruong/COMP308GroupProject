@@ -7,6 +7,22 @@ const typeDefs = gql`
         postalCode: String!
         address: String!
     }
+    extend type Event @key(fields: "id") {
+        id: ID! @external
+        author: CommunityOrganizer! @external
+        title: String! @external
+        description: String! @external
+        startDate: String! @external
+        endDate: String! @external
+        location: Location! @external
+        tags: [String!]! @external
+        participants: [Resident!]! @external
+        maxParticipants: Int @external
+        isCancelled: Boolean! @external
+        suggestedVolunteers: [Resident!]! @external
+        createdAt: String! @external
+        updatedAt: String! @external
+    }
 
     type Resident @key(fields: "id") {
         id: ID!
@@ -15,7 +31,7 @@ const typeDefs = gql`
         password: String!
         interests: [String!]!
         location: Location!
-        previousEvents: [ID!]
+        previousEvents: [Event]!
     }
     
     type BusinessOwner @key(fields: "id") {
@@ -42,6 +58,7 @@ const typeDefs = gql`
 
     type Query{
         me: LoginResult
+        residents: [Resident!]!
     }
 
     type Mutation {
