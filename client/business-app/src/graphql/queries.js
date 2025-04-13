@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_BUSINESS_PROFILE = gql`
-  query GetBusinessProfileByOwner($ownerId: ID!) {
+query GetBusinessProfileByOwner($ownerId: ID!) {
     businessProfileByOwner(ownerId: $ownerId) {
       id
       businessName
@@ -28,15 +28,20 @@ export const GET_BUSINESS_PROFILE = gql`
         title
         content
         rating
-        sentimentScore
         sentimentAnalysis
         responses
         createdAt
-        author {
-          id
-          username
-        }
       }
+    }
+  }
+`;
+
+export const CREATE_BUSINESS_PROFILE = gql`
+  mutation CreateBusinessProfile($input: BusinessProfileInput!) {
+    createBusinessProfile(input: $input) {
+      id
+      businessName
+      description
     }
   }
 `;

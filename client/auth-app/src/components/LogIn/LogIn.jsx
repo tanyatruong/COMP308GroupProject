@@ -49,6 +49,12 @@ const LogIn = () => {
             });
             if(response.data.Login){
                 const user = response.data.Login;
+                // Save user data to localStorage
+                console.log("Login successful:", user);
+                localStorage.setItem('userId', user.id);
+                localStorage.setItem('username', username);
+                localStorage.setItem('role', user.role);
+                
                 if(user.role === "BusinessOwner"){
                     navigate('/businessdashboard');
                 }
@@ -58,6 +64,7 @@ const LogIn = () => {
             setError(err.message);
         }
     }
+    
   return (
     <Container>
         <Card className='card'>

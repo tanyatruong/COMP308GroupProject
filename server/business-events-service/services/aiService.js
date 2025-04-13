@@ -29,25 +29,9 @@ async function analyzeReviewSentiment(reviewContent) {
       };
     }
     
-    // Parse the sentiment score based on the response text
-    let sentimentScore = 5.0; // Default neutral score
-    const sentimentText = data.data.analyzeSentiment;
-    
-    if (sentimentText.toLowerCase().includes('very positive')) {
-      sentimentScore = 9.0;
-    } else if (sentimentText.toLowerCase().includes('positive')) {
-      sentimentScore = 7.0;
-    } else if (sentimentText.toLowerCase().includes('neutral')) {
-      sentimentScore = 5.0;
-    } else if (sentimentText.toLowerCase().includes('negative')) {
-      sentimentScore = 3.0;
-    } else if (sentimentText.toLowerCase().includes('very negative')) {
-      sentimentScore = 1.0;
-    }
-    
     return {
-      sentimentScore,
-      sentimentAnalysis: sentimentText
+      sentimentScore: null,
+      sentimentAnalysis: data.data.analyzeSentiment
     };
   } catch (error) {
     console.error('Error calling AI service for sentiment analysis:', error);

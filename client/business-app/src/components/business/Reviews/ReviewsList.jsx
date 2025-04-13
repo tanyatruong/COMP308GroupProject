@@ -91,12 +91,14 @@ const ReviewsList = ({ reviews, onRespondToReview }) => {
               </div>
               
               {review.sentimentAnalysis && (
-                <Badge 
-                  bg={getSentimentColor(review.sentimentAnalysis)}
-                  className="ms-2"
-                >
-                  {review.sentimentAnalysis}
-                </Badge>
+                <div className="mt-2">
+                  <Badge 
+                    bg={getSentimentColor(review.sentimentAnalysis)}
+                    className="ms-2"
+                  >
+                    {review.sentimentAnalysis}
+                  </Badge>
+                </div>
               )}
             </div>
             
@@ -108,11 +110,6 @@ const ReviewsList = ({ reviews, onRespondToReview }) => {
                 {format(new Date(review.createdAt), 'MMM d, yyyy')}
               </small>
               
-              {review.sentimentScore && (
-                <small className="text-muted">
-                  Sentiment Score: {review.sentimentScore.toFixed(1)}/10
-                </small>
-              )}
             </div>
 
             {/* Previous responses */}

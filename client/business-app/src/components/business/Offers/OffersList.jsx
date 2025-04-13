@@ -53,14 +53,14 @@ const OffersList = ({ offers, onEditClick }) => {
                 {offer.expiresAt && (
                   <p className="text-muted mb-2">
                     <small>
-                      Expires: {format(new Date(offer.expiresAt), 'MMM d, yyyy')}
+                      Expires: {offer.expiresAt ? format(new Date(offer.expiresAt), 'MMM d, yyyy') : 'No expiration'}
                     </small>
                   </p>
                 )}
-                
+
                 <p className="text-muted mb-3">
                   <small>
-                    Created: {format(new Date(offer.createdAt), 'MMM d, yyyy')}
+                    Created: {offer.createdAt ? format(new Date(offer.createdAt), 'MMM d, yyyy') : 'Recently'}
                   </small>
                 </p>
 
