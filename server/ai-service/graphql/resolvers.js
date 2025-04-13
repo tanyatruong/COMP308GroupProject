@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 
-const tf = require('@tensorflow/tfjs-node');
+const tf = require('@tensorflow/tfjs');
 dotenv.config();
 
 const gatewayEndpoint = 'http://localhost:4000/graphql';

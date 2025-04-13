@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const { GoogleGenAI } = require("@google/genai");
-const tf = require('@tensorflow/tfjs-node');
+const tf = require('@tensorflow/tfjs');
 const path = require("path");
 dotenv.config();
 const app = express();
@@ -18,19 +18,21 @@ app.use(express.json());
 app.use(cookieParser());
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+app.use('/models', express.static(path.join(__dirname, 'volunteerEventMatching')));
+app.use('/models', express.static(path.join(__dirname, 'volunteerHelpRequestMatching')));
 
 let eventModel = null;
 const loadEventMatchModel = async () => {
-    const modelDir = path.join(__dirname, 'volunteerEventMatching', 'eventMatchModel');
-    eventModel = await tf.loadLayersModel(`file://${modelDir}/model.json`);
+    const modelUrl = `http://localhost:${port}/models/eventMatchModel/model.json`;
+    eventModel = await tf.loadLayersModel(modelUrl);
     console.log("Event matching model loaded");
     return eventModel;
 }
 
 let helpRequestModel = null;
 const loadHelpRequestModel = async () => {
-    const modelDir = path.join(__dirname, 'volunteerHelpRequestMatching', 'helpRequestMatchModel');
-    helpRequestModel = await tf.loadLayersModel(`file://${modelDir}/model.json`);
+    const modelUrl = `http://localhost:${port}/models/helpRequestMatchModel/model.json`;
+    helpRequestModel = await tf.loadLayersModel(modelUrl);
     console.log("Help request model loaded");
     return helpRequestModel;
 }
@@ -55,14 +57,15 @@ const server = new ApolloServer({
 });
 
 const startServer = async () => {
-    await loadEventMatchModel();
-    await loadHelpRequestModel();
+    
     
     await server.start();
     server.applyMiddleware({app, cors: false});
 
-    app.listen(port, () => {
+    app.listen(port, async () => {
         console.log(`AI service started on port ${port}`);
+        await loadEventMatchModel();
+        await loadHelpRequestModel();
     });
 };
 
