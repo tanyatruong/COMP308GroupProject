@@ -63,6 +63,11 @@ const LogIn = () => {
         <Card className='card'>
         <Form onSubmit={handleSubmit}>
             <Card.Header as="h2" className="title">Log In</Card.Header>
+            {error && (
+                <div className="errorMsg mt-3" role="alert">
+                    {error}
+                </div>
+            )}
             <table className="table borderless" style={{ width: 'auto' }}>
                 <tbody>
                 <tr>

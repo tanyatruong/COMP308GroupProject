@@ -33,3 +33,6 @@ td{
 .roleSelect{
     padding: 25px;
 }
+.errorMsg{
+    color: red
+}

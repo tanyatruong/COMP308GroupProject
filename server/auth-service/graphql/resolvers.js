@@ -145,11 +145,11 @@ const resolvers = {
                 case "Resident":
                     const resident = await Resident.findOne({username});
                     if(!resident){
-                        throw new Error('Resident not found.');
+                        throw new Error('Invalid username or password.');
                     }
                     const residentPasswordValid = await bcrypt.compare(password, resident.password);
                     if(!residentPasswordValid){
-                        throw new Error("Invalid Password");
+                        throw new Error("Invalid username or password.");
                     }
                     const residentToken = jwt.sign({id: resident._id, role: resident.role}, SECRET_KEY, {expiresIn: '1h'});
                     res.cookie("token", residentToken, {httpOnly: true, secure: false, samesite: 'lax'});
@@ -159,11 +159,11 @@ const resolvers = {
                 case "CommunityOrganizer":
                     const communityOrganizer = await CommunityOrganizer.findOne({username});
                     if(!communityOrganizer){
-                        throw new Error('Community organizer not found');
+                        throw new Error('Invalid username or password.');
                     }
                     const coPasswordValid = await bcrypt.compare(password, communityOrganizer.password);
                     if(!coPasswordValid){
-                        throw new Error('Invalid Password.');
+                        throw new Error('Invalid username or password.');
                     }
                     const coToken = jwt.sign({id: communityOrganizer._id, role: communityOrganizer.role}, SECRET_KEY, {expiresIn: '1h'});
                     res.cookie("token", coToken, {httpOnly: true, secure: false, samesite: 'lax'});
@@ -173,11 +173,11 @@ const resolvers = {
                 case "BusinessOwner":
                     const businessOwner = await BusinessOwner.findOne({username});
                     if(!businessOwner){
-                        throw new Error("Business owner not found");
+                        throw new Error("Invalid username or password.");
                     }
                     const boPasswordValid = await bcrypt.compare(password, businessOwner.password);
                     if(!boPasswordValid){
-                        throw new Error("Invalid password");
+                        throw new Error("Invalid username or password.");
                     }
                     const boToken = jwt.sign({id: businessOwner._id, role: businessOwner.role}, SECRET_KEY, {expiresIn: '1h'});
                     res.cookie("token", boToken, {httpOnly: true, secure: false, samesite: 'lax'});
