@@ -5,6 +5,10 @@ import Home from './components/home/Home';
 
 // Import remote components using Module Federation
 const BusinessDashboard = lazy(() => import('businessApp/BusinessDashboard'));
+const CreateOffer = lazy(() => import('businessApp/CreateOffer'));
+const OffersList = lazy(() => import('businessApp/OffersList'));
+const ReviewsList = lazy(() => import('businessApp/ReviewsList'));
+
 const LogIn = lazy (() => import('authApp/LogIn'));
 const SignUp = lazy (() => import('authApp/SignUp'));
 
@@ -12,10 +16,13 @@ function App() {
   return (
     <Router>
       <div className='App'>
-        <Suspense fallback={<div>Loading Business Component...</div>}>
+        <Suspense fallback={<div>Loading Component...</div>}>
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/businessdashboard' element={<BusinessDashboard />} />
+            <Route path='/business/create-offer' element={<CreateOffer />} />
+            <Route path='/business/offers' element={<OffersList />} />
+            <Route path='/business/reviews' element={<ReviewsList />} />
             <Route path='/login' element={<LogIn />} />
             <Route path='/signup' element={<SignUp />} />
           </Routes>

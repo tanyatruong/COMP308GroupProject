@@ -17,6 +17,7 @@ import BusinessProfile from "./components/business/BusinessProfile";
 import OffersList from "./components/business/Offers/OffersList";
 import CreateOffer from "./components/business/Offers/CreateOffer";
 import ReviewsList from "./components/business/Reviews/ReviewsList";
+import CreateBusinessProfile from "./components/business/CreateBusinessProfile";
 
 // Resident components
 import ResidentDashboard from "./components/residentCommunity/residentDashboard/ResidentDashboard";
