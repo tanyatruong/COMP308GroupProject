@@ -141,3 +141,9 @@ export const GET_POST_WITH_COMMENTS = gql`
     }
   }
 `;
+
+export const SUMMARIZE_DISCUSSION = gql`
+  query SummarizeDiscussion($posts: [String]!) {
+    summarizeDiscussion(posts: $posts)
+  }
+`;
