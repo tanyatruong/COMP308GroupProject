@@ -11,10 +11,39 @@ const IndividualDiscussion = () => {
   const [comment, setComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   
+  const currentUserId = "507f1f77bcf86cd799439011"; // test
+  
+  // Function for date formatting
+  const formatDate = (dateValue) => {
+    if (!dateValue) return 'No date available';
+    
+    try {
+      if (!isNaN(dateValue) && typeof dateValue === 'string') {
+        const date = new Date(parseInt(dateValue));
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleString();
+        }
+      }
+      
+      const date = new Date(dateValue);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleString();
+      }
+      
+      return dateValue;
+    } catch (e) {
+      console.error('Date formatting error:', e);
+      return 'Invalid date';
+    }
+  };
+  
   // Query to fetch post details and comments
   const { loading, error, data, refetch } = useQuery(GET_POST_WITH_COMMENTS, {
     variables: { postId },
-    skip: !postId
+    fetchPolicy: "network-only",
+    onError: (err) => {
+      console.error("Error fetching post:", err);
+    }
   });
   
   // Mutation to add a comment
@@ -24,6 +53,7 @@ const IndividualDiscussion = () => {
       refetch();
     },
     onError: (error) => {
+      console.error("Comment error:", error);
       setErrorMessage(`Error adding comment: ${error.message}`);
     }
   });
@@ -40,7 +70,7 @@ const IndividualDiscussion = () => {
         variables: { 
           input: {
             postId,
-            text: comment,
+            text: comment.trim(),
             authorId: currentUserId
           }
         }
@@ -52,24 +82,49 @@ const IndividualDiscussion = () => {
   
   if (loading) {
     return (
-      <Container className="text-center my-5">
-        <Spinner animation="border" />
+      <Container>
+        <ResidentNavBar />
+        <div className="text-center my-5">
+          <Spinner animation="border" />
+          <p>Loading discussion...</p>
+        </div>
       </Container>
     );
   }
   
   if (error) {
     return (
-      <Container className="my-5">
-        <Alert variant="danger">Error loading discussion: {error.message}</Alert>
-        <Link to="/resident/bulletinboard">
-          <Button variant="primary">Back to Bulletin Board</Button>
-        </Link>
+      <Container>
+        <ResidentNavBar />
+        <div className="my-5">
+          <Alert variant="danger">
+            Error loading discussion: {error.message}
+          </Alert>
+          <Link to="/resident/bulletinboard">
+            <Button variant="primary">Back to Bulletin Board</Button>
+          </Link>
+        </div>
       </Container>
     );
   }
   
   const post = data?.post;
+  
+  if (!post) {
+    return (
+      <Container>
+        <ResidentNavBar />
+        <div className="my-5">
+          <Alert variant="warning">
+            Post not found or has been deleted.
+          </Alert>
+          <Link to="/resident/bulletinboard">
+            <Button variant="primary">Back to Bulletin Board</Button>
+          </Link>
+        </div>
+      </Container>
+    );
+  }
   
   return (
     <Container>
@@ -83,64 +138,68 @@ const IndividualDiscussion = () => {
         </Link>
       </div>
       
-      {post && (
-        <>
-          <Card className="mb-4">
-            <Card.Header className="d-flex justify-content-between align-items-center">
-              <h4>{post.title}</h4>
-              <div>
-              <small className="text-muted me-2">Posted by User {post.author.id}</small>
-              <small className="text-muted">{new Date(post.createdAt).toLocaleString()}</small>
-              </div>
-            </Card.Header>
-            <Card.Body>
-              <Card.Text>{post.content}</Card.Text>
-            </Card.Body>
-          </Card>
-          
-          <h4>Comments ({post.comments?.length || 0})</h4>
-          
-          {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-          
-          <Form onSubmit={handleAddComment} className="mb-4">
-            <Form.Group className="mb-3">
-              <Form.Label>Add a Comment</Form.Label>
-              <Form.Control 
-                as="textarea" 
-                rows={2} 
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Share your thoughts..."
-              />
-            </Form.Group>
-            <Button 
-              variant="primary" 
-              type="submit" 
-              disabled={commentLoading}
-            >
-              {commentLoading ? 'Posting...' : 'Post Comment'}
-            </Button>
-          </Form>
-          
-          <ListGroup className="mb-4">
-            {post.comments?.map(comment => (
-              <ListGroup.Item key={comment.id}>
-                <div className="d-flex justify-content-between">
-                <strong>User {comment.author.id}</strong>
-                <small className="text-muted">
-                    {new Date(comment.createdAt).toLocaleString()}
-                  </small>
-                </div>
-                <p className="mb-0 mt-2">{comment.text}</p>
-              </ListGroup.Item>
-            ))}
-            
-            {(!post.comments || post.comments.length === 0) && (
-              <Alert variant="light">No comments yet. Be the first to comment!</Alert>
+      <Card className="mb-4">
+        <Card.Header>
+          <h4>{post.title}</h4>
+          <div>
+            {post.author && (
+              <small className="text-muted me-2">Posted by User {post.author.id && post.author.id.substring(0, 6)}</small>
             )}
-          </ListGroup>
-        </>
+            <small className="text-muted">{formatDate(post.createdAt)}</small>
+          </div>
+        </Card.Header>
+        <Card.Body>
+          <Card.Text>{post.content}</Card.Text>
+        </Card.Body>
+      </Card>
+      
+      <h4>Comments ({post.comments?.length || 0})</h4>
+      
+      {errorMessage && (
+        <Alert variant="danger" onClose={() => setErrorMessage("")} dismissible>
+          {errorMessage}
+        </Alert>
       )}
+      
+      <Form onSubmit={handleAddComment} className="mb-4">
+        <Form.Group className="mb-3">
+          <Form.Label>Add a Comment</Form.Label>
+          <Form.Control 
+            as="textarea" 
+            rows={2} 
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Share your thoughts..."
+          />
+        </Form.Group>
+        <Button 
+          variant="primary" 
+          type="submit" 
+          disabled={commentLoading}
+        >
+          {commentLoading ? 'Posting...' : 'Post Comment'}
+        </Button>
+      </Form>
+      
+      <ListGroup className="mb-4">
+        {post.comments?.length > 0 ? (
+          post.comments.map(comment => (
+            <ListGroup.Item key={comment.id}>
+              <div className="d-flex justify-content-between">
+                {comment.author && (
+                  <strong>User {comment.author.id && comment.author.id.substring(0, 6)}</strong>
+                )}
+                <small className="text-muted">
+                  {formatDate(comment.createdAt)}
+                </small>
+              </div>
+              <p className="mb-0 mt-2">{comment.text}</p>
+            </ListGroup.Item>
+          ))
+        ) : (
+          <Alert variant="light">No comments yet. Be the first to comment!</Alert>
+        )}
+      </ListGroup>
     </Container>
   );
 };
