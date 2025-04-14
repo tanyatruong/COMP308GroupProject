@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Nav, Tab, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import { useQuery, useMutation } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { GET_BUSINESS_PROFILE } from '../../graphql/queries';
 import { RESPOND_TO_REVIEW } from '../../graphql/mutations';
 import BusinessProfile from './BusinessProfile';
@@ -11,8 +11,8 @@ import ReviewsList from './Reviews/ReviewsList';
 
 const BusinessDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('profile');
   const [notification, setNotification] = useState({ show: false, message: '', variant: 'info' });
 
   // Set up user data from localStorage
@@ -85,6 +85,22 @@ const BusinessDashboard = () => {
     refetch();
   };
 
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem('userId');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    
+    // Navigate to home
+    navigate('/');
+  };
+
+  // Navigation functions
+  const navigateToProfile = () => navigate('/business/profile');
+  const navigateToOffers = () => navigate('/business/offers');
+  const navigateToReviews = () => navigate('/business/reviews');
+  const navigateToCreateOffer = () => navigate('/business/create-offer');
+
   if (loading) return <div className="text-center p-5">Loading...</div>;
   
   const hasBusinessProfile = !error && data && data.businessProfileByOwner;
@@ -96,93 +112,89 @@ const BusinessDashboard = () => {
           {notification.message}
         </Alert>
       )}
-      
+  
       <Row className="mb-4">
-        <Col>
-          <h2 className="mb-0">Business Owner Dashboard</h2>
-          <p className="text-muted">Manage your business profile, promotions, and customer reviews</p>
+        <Col className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <h2 className="mb-0">Business Owner Dashboard</h2>
+            <small className="text-muted">Manage your business profile, promotions, and reviews</small>
+          </div>
+          <Button variant="outline-danger" onClick={handleLogout}>
+            Logout
+          </Button>
         </Col>
       </Row>
-
-      {/* If no business profile exists, show the create form */}
+  
       {!hasBusinessProfile ? (
         <CreateBusinessProfile onSuccess={handleProfileCreated} />
       ) : (
-        <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
-          <Row>
-            <Col md={3} lg={2}>
-              <Card className="mb-4">
-                <Card.Body className="p-0">
-                  <Nav variant="pills" className="flex-column">
-                    <Nav.Item>
-                      <Nav.Link eventKey="profile" className="rounded-0">Profile</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                      <Nav.Link eventKey="promotions" className="rounded-0">Promotions</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                      <Nav.Link eventKey="reviews" className="rounded-0">Reviews</Nav.Link>
-                    </Nav.Item>
-                  </Nav>
+        <>
+          {/* Navigation Toolbar */}
+          <Row className="mb-4">
+            <Col>
+              <div className="btn-group d-flex flex-wrap gap-2">
+                <Button variant="outline-primary" className="flex-fill" onClick={navigateToProfile}>
+                  🏢 Profile
+                </Button>
+                <Button variant="outline-primary" className="flex-fill" onClick={navigateToOffers}>
+                  💡 Promotions
+                </Button>
+                <Button variant="outline-primary" className="flex-fill" onClick={navigateToReviews}>
+                  ⭐ Reviews
+                </Button>
+              </div>
+            </Col>
+          </Row>
+  
+          {/* Dashboard Overview Cards */}
+          <Row className="g-4 mb-4">
+            <Col md={4}>
+              <Card className="h-100 shadow-sm border-0">
+                <Card.Body className="text-center">
+                  <h5 className="fw-semibold">Business Profile</h5>
+                  <p className="text-muted">{data.businessProfileByOwner.businessName}</p>
+                  <Button variant="primary" onClick={navigateToProfile}>View Profile</Button>
                 </Card.Body>
               </Card>
             </Col>
-            
-            <Col md={9} lg={10}>
-              <Card>
-                <Card.Body>
-                  <Tab.Content>
-                    <Tab.Pane eventKey="profile">
-                      <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h3 className="mb-0">Business Profile</h3>
-                      </div>
-                      <BusinessProfile 
-                        profile={data.businessProfileByOwner} 
-                        onlyDisplay={true}
-                      />
-                      
-                      {/* Added business action buttons here */}
-                      <div className="mt-4">
-                        <h4 className="mb-3">Quick Actions</h4>
-                        <div className="d-flex flex-wrap gap-2">
-                          <Button variant="primary" onClick={() => navigate('/business/create-offer')}>
-                            Create New Offer
-                          </Button>
-                          <Button variant="outline-primary" onClick={() => navigate('/business/offers')}>
-                            View All Offers
-                          </Button>
-                          <Button variant="outline-primary" onClick={() => navigate('/business/reviews')}>
-                            View All Reviews
-                          </Button>
-                        </div>
-                      </div>
-                    </Tab.Pane>
-                    
-                    <Tab.Pane eventKey="promotions">
-                      <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h3 className="mb-0">Business Promotions</h3>
-                        <Button variant="primary" onClick={() => navigate('/business/create-offer')}>
-                          Create New Promotion
-                        </Button>
-                      </div>
-                      <OffersList 
-                        offers={data.businessProfileByOwner.offers || []}
-                      />
-                    </Tab.Pane>
-                    
-                    <Tab.Pane eventKey="reviews">
-                      <h3 className="mb-3">Customer Reviews</h3>
-                      <ReviewsList 
-                        reviews={data.businessProfileByOwner.reviews || []} 
-                        onRespondToReview={handleRespondToReview} 
-                      />
-                    </Tab.Pane>
-                  </Tab.Content>
+            <Col md={4}>
+              <Card className="h-100 shadow-sm border-0">
+                <Card.Body className="text-center">
+                  <h5 className="fw-semibold">Promotions</h5>
+                  <p className="text-muted">{data.businessProfileByOwner.offers?.length || 0} Active Offers</p>
+                  <div className="d-flex justify-content-center gap-2">
+                    <Button variant="primary" onClick={navigateToCreateOffer}>+ New</Button>
+                    <Button variant="outline-primary" onClick={navigateToOffers}>View All</Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={4}>
+              <Card className="h-100 shadow-sm border-0">
+                <Card.Body className="text-center">
+                  <h5 className="fw-semibold">Customer Reviews</h5>
+                  <p className="text-muted">{data.businessProfileByOwner.reviews?.length || 0} Reviews</p>
+                  <Button variant="primary" onClick={navigateToReviews}>View Reviews</Button>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
-        </Tab.Container>
+  
+          {/* Recent Activity */}
+          <Card className="border-0 shadow-sm">
+            <Card.Header className="bg-white border-0">
+              <h5 className="mb-0">Welcome to your Business Dashboard</h5>
+            </Card.Header>
+            <Card.Body>
+              <p className="text-muted">Here are a few introductions</p>
+              <ul className="mb-0">
+                <li>✅ COMP308 - Emerging Technologies | Winter 2025 </li>
+                <li>✅ Representing from Group 1</li>
+                <li>✅ Tanya Truong is in charge of the Business Owner feature.</li>
+              </ul>
+            </Card.Body>
+          </Card>
+        </>
       )}
     </Container>
   );

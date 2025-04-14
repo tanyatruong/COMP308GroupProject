@@ -25,12 +25,6 @@ const reviewSchema = new mongoose.Schema({
         min: 1,
         max: 5
     },
-    sentimentScore: {
-        type: Number
-    },
-    sentimentAnalysis: {
-        type: String
-    },
     responses: {
         type: [String],
         default: []

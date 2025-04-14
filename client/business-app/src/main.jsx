@@ -10,18 +10,22 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
-// Create an HTTP link to the GraphQL server
+// Link to the Apollo Gateway
 const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql", // Business App GraphQL endpoint
-  credentials: "include",
+  uri: 'http://localhost:4000/graphql', // Apollo Gateway endpoint
+  credentials: 'include'
 });
 
 // Add authentication to the request headers
 const authLink = setContext((_, { headers }) => {
+  // Get any authentication tokens from localStorage (just in case it's needed)
+  const token = localStorage.getItem('authToken');
+  
   return {
     headers: {
       ...headers,
-    },
+      authorization: token ? `Bearer ${token}` : "",
+    }
   };
 });
 

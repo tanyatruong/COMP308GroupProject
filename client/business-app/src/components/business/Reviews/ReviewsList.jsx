@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Badge, Button, Form, Alert, Row, Col } from 'react-bootstrap';
-import { format } from 'date-fns';
+import { Card, Badge, Button, Form, Alert, Row, Col, Container } from 'react-bootstrap';
 import { Star, StarFill } from 'react-bootstrap-icons';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import { GET_BUSINESS_PROFILE } from '../../../graphql/queries';
 import { RESPOND_TO_REVIEW } from '../../../graphql/mutations';
+import { ANALYZE_SENTIMENT } from '../../../graphql/queries';
+import { useNavigate } from 'react-router-dom';
 
-// Helper component for displaying star ratings
+// Format date from timestamp
+const formatDate = (timestamp) => {
+  if (!timestamp) return 'N/A';
+  const date = new Date(Number(timestamp));
+  return isNaN(date.getTime())
+    ? 'N/A'
+    : `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+};
+
+// Display stars based on the review rating
 const StarRating = ({ rating }) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
@@ -19,12 +29,13 @@ const StarRating = ({ rating }) => {
   return <div className="d-flex">{stars}</div>;
 };
 
-// Individual review item component
+// ReviewItem component to display individual reviews
 const ReviewItem = ({ review, onRespondToReview }) => {
   const [showResponseForm, setShowResponseForm] = useState(false);
   const [response, setResponse] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Handle reponse to review
   const handleSubmitResponse = async (e) => {
     e.preventDefault();
     if (response.trim()) {
@@ -41,16 +52,8 @@ const ReviewItem = ({ review, onRespondToReview }) => {
     }
   };
 
-  // Get sentiment badge color
-  const getSentimentBadgeColor = (sentiment) => {
-    if (!sentiment) return 'secondary';
-    switch (sentiment.toLowerCase()) {
-      case 'positive': return 'success';
-      case 'negative': return 'danger';
-      case 'neutral': return 'warning';
-      default: return 'secondary';
-    }
-  };
+  const latestResponse = review.responses?.[review.responses.length - 1];
+  const latestResponseDate = review.responseDates?.[review.responseDates.length - 1];
 
   return (
     <Card className="mb-4 shadow-sm">
@@ -58,33 +61,20 @@ const ReviewItem = ({ review, onRespondToReview }) => {
         <div className="d-flex justify-content-between align-items-start mb-2">
           <div>
             <Card.Title>{review.title || 'Review'}</Card.Title>
-            <div className="mb-2">
-              <Badge 
-                bg={getSentimentBadgeColor(review.sentimentAnalysis)} 
-                className="me-2"
-              >
-                {review.sentimentAnalysis || 'No Sentiment'}
-              </Badge>
-              <small className="text-muted">
-                {/* Posted on {format(new Date(review.createdAt), 'MMM d, yyyy')} */}
-              </small>
-            </div>
           </div>
           <StarRating rating={review.rating} />
         </div>
-        
+
         <Card.Text>{review.content}</Card.Text>
-        
-        {review.responses && review.responses.length > 0 && (
+        <div className="text-muted mb-2">Reviewed on: {formatDate(review.createdAt)}</div>
+
+        {latestResponse && (
           <div className="bg-light p-3 rounded mt-3 mb-3">
             <h6 className="mb-2">Your Response:</h6>
-            <p className="mb-1">{review.responses[review.responses.length - 1]}</p>
-            <small className="text-muted">
-              {/* Responded on {format(new Date(), 'MMM d, yyyy')} Ideally would use response timestamp if available */}
-            </small>
+            <p className="mb-1">{latestResponse}</p>
           </div>
         )}
-        
+
         {!showResponseForm && (!review.responses || review.responses.length === 0) && (
           <Button 
             variant="outline-primary" 
@@ -95,7 +85,7 @@ const ReviewItem = ({ review, onRespondToReview }) => {
             Respond to Review
           </Button>
         )}
-        
+
         {showResponseForm && (
           <Form onSubmit={handleSubmitResponse} className="mt-3">
             <Form.Group>
@@ -137,22 +127,12 @@ const ReviewItem = ({ review, onRespondToReview }) => {
   );
 };
 
-// Statistics summary component
-const ReviewStats = ({ reviews }) => {
+const ReviewStats = ({ reviews, sentimentSummary }) => {
   if (!reviews || reviews.length === 0) return null;
-  
-  // Calculate average rating
   const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
-  
-  // Count by sentiment
-  const sentimentCounts = reviews.reduce((counts, review) => {
-    const sentiment = review.sentimentAnalysis || 'Undefined';
-    counts[sentiment] = (counts[sentiment] || 0) + 1;
-    return counts;
-  }, {});
-  
+
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 shadow-sm">
       <Card.Body>
         <h5 className="mb-3">Review Statistics</h5>
         <Row>
@@ -167,149 +147,119 @@ const ReviewStats = ({ reviews }) => {
             </div>
             <div className="text-muted">Average Rating</div>
           </Col>
-          <Col md={4} className="text-center">
-            <div className="d-flex justify-content-center gap-2">
-              {sentimentCounts['Positive'] && (
-                <Badge bg="success" className="py-1 px-2">
-                  {sentimentCounts['Positive']} Positive
-                </Badge>
-              )}
-              {sentimentCounts['Negative'] && (
-                <Badge bg="danger" className="py-1 px-2">
-                  {sentimentCounts['Negative']} Negative
-                </Badge>
-              )}
-              {sentimentCounts['Neutral'] && (
-                <Badge bg="warning" className="py-1 px-2">
-                  {sentimentCounts['Neutral']} Neutral
-                </Badge>
-              )}
-            </div>
-            <div className="text-muted mt-1">Sentiment Analysis</div>
-          </Col>
         </Row>
+        {sentimentSummary && (
+          <Row className="mt-3">
+            <Col>
+              <h5 className="mb-2">AI Sentiment Analysis</h5>
+              <p className="bg-light p-3 rounded">{sentimentSummary}</p>
+            </Col>
+          </Row>
+        )}
       </Card.Body>
     </Card>
   );
 };
 
-// Main component to export
 const ReviewsList = ({ reviews: propReviews, onRespondToReview: propOnRespondToReview }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [sentimentSummary, setSentimentSummary] = useState('');
+  const navigate = useNavigate();
 
-  // Get user ID from localStorage
-  const userId = localStorage.getItem('userId') || '67fbccd0b088a381cdcef65c';
-
-  // Query business profile if reviews weren't passed as props
-  const { 
-    loading: profileLoading, 
-    error: profileError, 
-    data: profileData,
-    refetch: refetchProfile
-  } = useQuery(GET_BUSINESS_PROFILE, {
+  const userId = localStorage.getItem('userId');
+  const { loading: profileLoading, error: profileError, data: profileData, refetch: refetchProfile } = useQuery(GET_BUSINESS_PROFILE, {
     variables: { ownerId: userId },
     fetchPolicy: 'network-only',
     skip: Array.isArray(propReviews)
   });
 
-  // Set up mutation for responding to reviews if not provided via props
-  const [respondToReviewMutation, { loading: respondLoading }] = useMutation(RESPOND_TO_REVIEW, {
-    onCompleted: () => {
-      if (!propReviews) {
-        refetchProfile();
+  const [analyzeSentiment, { loading: analyzingLoading }] = useLazyQuery(ANALYZE_SENTIMENT, {
+    onCompleted: (data) => {
+      if (data && data.analyzeSentiment) {
+        setSentimentSummary(data.analyzeSentiment);
       }
     },
     onError: (error) => {
-      setError(`Failed to respond to review: ${error.message}`);
+      console.error("Error analyzing sentiment:", error);
     }
   });
 
+  const [respondToReviewMutation] = useMutation(RESPOND_TO_REVIEW, {
+    onCompleted: () => { if (!propReviews) refetchProfile(); },
+    onError: (error) => setError(`Failed to respond to review: ${error.message}`)
+  });
+
   useEffect(() => {
-    // If reviews are passed as props, use those
     if (Array.isArray(propReviews)) {
       setReviews(propReviews);
       setLoading(false);
       setError(null);
-    }
-    // Otherwise try to get reviews from the query result
-    else if (profileData && profileData.businessProfileByOwner) {
-      const businessReviews = profileData.businessProfileByOwner.reviews || [];
-      setReviews(businessReviews);
+    } else if (profileData && profileData.businessProfileByOwner) {
+      setReviews(profileData.businessProfileByOwner.reviews || []);
       setLoading(false);
       setError(null);
-    } 
-    // Set loading state based on query loading
-    else if (profileLoading) {
+    } else if (profileLoading) {
       setLoading(true);
-    }
-    // Set error state if query error
-    else if (profileError) {
+    } else if (profileError) {
       setError(profileError.message);
       setLoading(false);
     }
   }, [propReviews, profileData, profileLoading, profileError]);
 
-  // Function to handle responding to a review
+  useEffect(() => {
+    if (reviews && reviews.length > 0) {
+      // Extract review content for sentiment analysis
+      const reviewContents = reviews.map(review => review.content);
+      analyzeSentiment({ variables: { reviews: reviewContents } });
+    }
+  }, [reviews, analyzeSentiment]);
+
   const handleRespondToReview = async (reviewId, response) => {
     try {
-      // If a function was passed as a prop, use that
       if (propOnRespondToReview) {
         await propOnRespondToReview(reviewId, response);
-      } 
-      // Otherwise use the mutation
-      else {
-        await respondToReviewMutation({
-          variables: {
-            reviewId,
-            response
-          }
-        });
+      } else {
+        await respondToReviewMutation({ variables: { reviewId, response } });
       }
-      
-      // Update the local state with the new response
-      setReviews(reviews.map(review => {
-        if (review.id === reviewId) {
-          const updatedResponses = [...(review.responses || []), response];
-          return { ...review, responses: updatedResponses };
-        }
-        return review;
-      }));
+      setReviews(reviews.map(review => review.id === reviewId ? {
+        ...review,
+        responses: [...(review.responses || []), response]
+      } : review));
     } catch (error) {
       console.error("Error responding to review:", error);
       throw error;
     }
   };
 
-  // Handle loading state
   if (loading) {
     return <div className="text-center p-5">Loading reviews...</div>;
   }
 
-  // Handle error state
   if (error) {
-    return (
-      <Alert variant="danger" className="m-3">
-        Error loading reviews: {error}
-      </Alert>
-    );
+    return <Alert variant="danger" className="m-3">Error loading reviews: {error}</Alert>;
   }
 
-  // Handle empty reviews
   if (!reviews || reviews.length === 0) {
     return (
       <div className="text-center p-5">
         <p className="mb-4">You haven't received any reviews yet.</p>
         <p>Reviews from customers will appear here when they are submitted.</p>
+        <Button variant="primary" onClick={() => navigate('/businessdashboard')}>Back to Dashboard</Button>
       </div>
     );
   }
 
   return (
-    <div>
-      <ReviewStats reviews={reviews} />
-      
+    <Container className="mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3>Customer Reviews</h3>
+        <Button variant="outline-dark" onClick={() => navigate('/businessdashboard')}>Back to Dashboard</Button>
+      </div>
+
+      <ReviewStats reviews={reviews} sentimentSummary={sentimentSummary} />
+
       {reviews.map(review => (
         <ReviewItem 
           key={review.id} 
@@ -317,7 +267,7 @@ const ReviewsList = ({ reviews: propReviews, onRespondToReview: propOnRespondToR
           onRespondToReview={handleRespondToReview} 
         />
       ))}
-    </div>
+    </Container>
   );
 };
 

@@ -5,6 +5,7 @@ import Home from './components/home/Home';
 
 // Import remote components using Module Federation
 const BusinessDashboard = lazy(() => import('businessApp/BusinessDashboard'));
+const BusinessProfile = lazy(() => import('businessApp/BusinessProfile'));
 const CreateOffer = lazy(() => import('businessApp/CreateOffer'));
 const OffersList = lazy(() => import('businessApp/OffersList'));
 const ReviewsList = lazy(() => import('businessApp/ReviewsList'));
@@ -20,6 +21,7 @@ function App() {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/businessdashboard' element={<BusinessDashboard />} />
+            <Route path='/business/profile' element={<BusinessProfile />} />
             <Route path='/business/create-offer' element={<CreateOffer />} />
             <Route path='/business/offers' element={<OffersList />} />
             <Route path='/business/reviews' element={<ReviewsList />} />

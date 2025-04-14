@@ -1,15 +1,19 @@
-.signupcard {
-    background-color:rgb(207, 207, 207);
+ .card {
+    /* background-color:rgb(207, 207, 207); */
     width: 450px;
-    height: 500px;
+    /* height: 500px; */
     border-radius: 10px;
-    border: 3px solid rgb(255, 255, 255);
+    border: 3px solid rgb(177, 177, 177);
 }
-.title {
+.card-header{
+    background-color: white !important;
+}
+/*.title {
     color: black;
     margin-top: 0px;
+    background-color: white;
 }
-.select{
+ .select{
     padding: 4px 0 4px 0;
     border-radius: 5px;
     background-color: rgb(107, 107, 107);
@@ -36,3 +40,6 @@ td{
 .signupBtn {
     margin-top: 2rem;
 }
+.errorMsg{
+    color: red
+} */

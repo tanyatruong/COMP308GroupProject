@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Card, Col, Container, Form} from 'react-bootstrap'
+import { Card, Col, Container, Form, Button} from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
 import {gql, useMutation} from '@apollo/client'
@@ -104,10 +104,12 @@ const SignUp = () => {
     }
   return (
     <Container>
-        <div className='signupcard'>
+        <div className='card'>
         <Form onSubmit={handleSubmit}>
             <Card.Header as="h2" className="title">Sign Up</Card.Header>
-
+            <div className="errorMsg mt-3" role="alert">
+                {error}
+            </div>
             <table className="table borderless" style={{ width: 'auto' }}>
                 <tbody>
                 <tr>
@@ -226,9 +228,9 @@ const SignUp = () => {
                 </tr>
                 </tbody>
             </table>
-            
-            <div className="text-end mt-3">
-                <button type="submit" className="btn btn-primary signupBtn">Sign Up</button>
+            <p><a href='/login'>Already Have an account? Log in</a></p>
+            <div className="mt-3 mb-3">
+                <Button type="submit" className="btn btn-primary">Sign Up</Button>
             </div>
             </Form>
         </div>    
