@@ -60,6 +60,7 @@ const resolversHelpRequestComment = {
     //   return createdComment;
     // },
     createAndAddHelpRequestCommentToHelpRequestPost: async (_, { input }) => {
+      // This version appends id to posts' comments Array
       const { authorid, postid, text } = input;
       const helpRequestComment = new HelpRequestCommentModel({
         authorid,
@@ -74,8 +75,24 @@ const resolversHelpRequestComment = {
         { $push: { comments: helpRequestComment._id } },
         { new: true }
       );
+
       return helpRequestComment;
     },
+    // createAndAddHelpRequestCommentToHelpRequestPost: async (_, { input }) => {
+    //   const { authorid, postid, text } = input;
+    //   const helpRequestComment = new HelpRequestCommentModel({
+    //     authorid,
+    //     postid,
+    //     text,
+    //   });
+    //   // save comment object in mongo
+    //   await helpRequestComment.save();
+
+    //   const helpRequestPost = await HelpRequestPostModel.findById(postid);
+    //   await helpRequestPost.comments.push(helpRequestComment);
+
+    //   return helpRequestComment;
+    // },
     deleteHelpRequestComment: async (_, { id }) => {
       try {
         const deleteHelpRequestCommentResultObject =

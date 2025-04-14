@@ -1,7 +1,7 @@
 // vite.config.js
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import federation from '@originjs/vite-plugin-federation';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import federation from "@originjs/vite-plugin-federation";
 
 export default defineConfig({
   server: {
@@ -10,21 +10,28 @@ export default defineConfig({
   plugins: [
     react(),
     federation({
-      name: 'businessApp',
-      filename: 'remoteEntry.js',
+      name: "businessApp",
+      filename: "remoteEntry.js",
       exposes: {
-        './BusinessDashboard': './src/components/business/BusinessDashboard',
-        './BusinessProfile': './src/components/business/BusinessProfile',
-        './OffersList': './src/components/business/Offers/OffersList',
-        './CreateOffer': './src/components/business/Offers/CreateOffer',
-        './ReviewsList': './src/components/business/Reviews/ReviewsList'
+        "./BusinessDashboard": "./src/components/business/BusinessDashboard",
+        "./BusinessProfile": "./src/components/business/BusinessProfile",
+        "./OffersList": "./src/components/business/Offers/OffersList",
+        "./CreateOffer": "./src/components/business/Offers/CreateOffer",
+        "./ReviewsList": "./src/components/business/Reviews/ReviewsList",
       },
-      shared: ['react', 'react-dom', '@apollo/client', 'graphql', 'react-bootstrap', 'react-router-dom'],
+      shared: [
+        "react",
+        "react-dom",
+        "@apollo/client",
+        "graphql",
+        "react-bootstrap",
+        "react-router-dom",
+      ],
     }),
   ],
   build: {
     modulePreload: false,
-    target: 'esnext',
+    target: "esnext",
     minify: false,
     cssCodeSplit: false,
   },

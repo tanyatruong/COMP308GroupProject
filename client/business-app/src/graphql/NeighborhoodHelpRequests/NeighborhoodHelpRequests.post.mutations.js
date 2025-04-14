@@ -7,7 +7,13 @@ export const CREATE_HELP_REQUEST_POST = gql`
       authorid
       title
       content
-      comments
+      comments {
+        id
+        authorid
+        postid
+        text
+        createdAt
+      }
       createdAt
       updatedAt
     }

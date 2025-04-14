@@ -87,16 +87,16 @@ const server = new ApolloServer({
 
 // Start the server
 const startServer = async () => {
-  await server.start();
-  server.applyMiddleware({ app });
-
   // Connect to MongoDB
-  mongoose
+  await mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
       console.log("Connected to MongoDB");
     })
     .catch((err) => console.error("MongoDB connection error:", err));
+
+  await server.start();
+  server.applyMiddleware({ app });
 
   app.listen(port, () => {
     console.log(`Community service running on port ${port}`);

@@ -1,15 +1,21 @@
 import { gql } from "@apollo/client";
 
 export const GET_HELP_REQUEST_POSTS = gql`
-  query GetHelpRequestPosts {
+  query getHelpRequestPosts {
     getHelpRequestPosts {
       id
       authorid
       title
       content
-      comments
       createdAt
       updatedAt
+      comments {
+        id
+        authorid
+        postid
+        text
+        createdAt
+      }
     }
   }
 `;

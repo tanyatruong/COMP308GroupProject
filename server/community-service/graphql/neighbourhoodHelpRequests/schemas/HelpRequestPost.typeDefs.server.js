@@ -3,7 +3,8 @@ const { gql } = require("apollo-server-express");
 const typeDefsHelpRequestPost = gql`
   extend type Query {
     getHelpRequestPost(id: ID!): HelpRequestPost
-    getHelpRequestPosts: [HelpRequestPost!]!
+    getHelpRequestPosts: [HelpRequestPost]!
+    # getHelpRequestPosts: [HelpRequestPost] #aggregate version of getPosts
   }
 
   extend type Mutation {
@@ -18,11 +19,22 @@ const typeDefsHelpRequestPost = gql`
   type HelpRequestPost @key(fields: "id") {
     id: ID!
     authorid: ID!
+    # authorname: String!
     title: String!
     content: String!
-    comments: [ID!]
+    comments: [HelpRequestComment]
+    # comments: [ID]!
     createdAt: String!
     updatedAt: String!
+  }
+
+  type HelpRequestComment @key(fields: "id") {
+    id: ID!
+    authorid: ID!
+    # authorname: String!
+    postid: ID!
+    text: String!
+    createdAt: String!
   }
 
   input CreateHelpRequestPostInput {
