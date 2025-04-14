@@ -49,7 +49,9 @@ const resolvers = {
       const post = new Post({
         ...postData,
         author: authorId,
-        comments: []
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       });
       
       await post.save();
