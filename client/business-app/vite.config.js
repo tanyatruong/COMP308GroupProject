@@ -20,7 +20,9 @@ export default defineConfig({
         "./ReviewsList": "./src/components/business/Reviews/ReviewsList",
         "./ResidentDashboard": "./src/components/residentCommunity/residentDashboard/ResidentDashboard",
         "./BulletinBoard": "./src/components/residentCommunity/bulletinBoard/BulletinBoard",
-        "./IndividualDiscussion": "/src/components/residentCommunity/bulletinBoard/IndividualDiscussion"
+        "./IndividualDiscussion": "/src/components/residentCommunity/bulletinBoard/IndividualDiscussion",
+        "./NeighborhoodHelpRequests": "/src/components/residentCommunity/NeighborhoodHelpRequests/NeighborhoodHelpRequests",
+        "./Marketplace": "/src/components/residentCommunity/Marketplace/Marketplace"
       },
       shared: [
         "react",

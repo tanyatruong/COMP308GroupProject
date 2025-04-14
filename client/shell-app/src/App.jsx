@@ -17,7 +17,8 @@ const SignUp = lazy (() => import('authApp/SignUp'));
 const ResidentDashboard = lazy(() => import('businessApp/ResidentDashboard'));
 const BulletinBoard = lazy(() => import('businessApp/BulletinBoard'));
 const IndividualDiscussion = lazy(() => import('businessApp/IndividualDiscussion'));
-
+const NeighborhoodHelpRequests = lazy(() => import('businessApp/NeighborhoodHelpRequests'));
+const Marketplace = lazy(() => import('businessApp/Marketplace'));
 function App() {
   return (
     <Router>
@@ -35,6 +36,9 @@ function App() {
             <Route path='/residentdashboard' element={<ResidentDashboard />} />
             <Route path='/resident/bulletinboard' element={<BulletinBoard />} />
             <Route path='/individual-discussion' element={<IndividualDiscussion />} />
+            <Route path='/resident/neighborhoodhelprequests' element={<NeighborhoodHelpRequests />} />
+            <Route path='/resident/marketplace' element={<Marketplace />} />
+
           </Routes>
         </Suspense>
       </div>
