@@ -112,7 +112,6 @@ export const GET_ALL_POSTS = gql`
       createdAt
       author {
         id
-        username
       }
       comments {
         id
@@ -130,7 +129,6 @@ export const GET_POST_WITH_COMMENTS = gql`
       createdAt
       author {
         id
-        username
       }
       comments {
         id
@@ -138,7 +136,6 @@ export const GET_POST_WITH_COMMENTS = gql`
         createdAt
         author {
           id
-          username
         }
       }
     }
