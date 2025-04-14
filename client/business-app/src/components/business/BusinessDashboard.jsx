@@ -183,14 +183,14 @@ const BusinessDashboard = () => {
           {/* Recent Activity */}
           <Card className="border-0 shadow-sm">
             <Card.Header className="bg-white border-0">
-              <h5 className="mb-0">Recent Activity</h5>
+              <h5 className="mb-0">Welcome to your Business Dashboard</h5>
             </Card.Header>
             <Card.Body>
-              <p className="text-muted">Welcome to your business dashboard. Here are a few quick tips:</p>
+              <p className="text-muted">Here are a few introductions</p>
               <ul className="mb-0">
-                <li>✅ Keep your business profile up to date</li>
-                <li>✅ Run promotions to attract more customers</li>
-                <li>✅ Respond promptly to customer feedback</li>
+                <li>✅ COMP308 - Emerging Technologies | Winter 2025 </li>
+                <li>✅ Representing from Group 1</li>
+                <li>✅ Tanya Truong is in charge of the Business Owner feature.</li>
               </ul>
             </Card.Body>
           </Card>

@@ -15,6 +15,7 @@ const profileSchema = yup.object().shape({
   address: yup.string().required('Address is required')
 });
 
+// Create a business profile
 const CreateBusinessProfile = ({ onSuccess }) => {
   const [createBusinessProfile, { loading, error }] = useMutation(CREATE_BUSINESS_PROFILE, {
     onCompleted: (data) => {

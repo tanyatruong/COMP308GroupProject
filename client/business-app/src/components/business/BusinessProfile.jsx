@@ -7,15 +7,18 @@ import { useMutation, useQuery } from '@apollo/client';
 import { GET_BUSINESS_PROFILE } from '../../graphql/queries';
 import { UPDATE_BUSINESS_PROFILE } from '../../graphql/mutations';
 
+// Validation schema for business profile form
 const profileSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
   description: yup.string().required('Description is required'),
   businessTags: yup.string(),
   city: yup.string().required('City is required'),
   postalCode: yup.string().required('Postal code is required'),
-  address: yup.string().required('Address is required')
+  address: yup.string().required('Address is required'),
+  images: yup.string()
 });
 
+// BusinessProfile component to display and edit business profile
 const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = false }) => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
@@ -24,6 +27,7 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
   const [error, setError] = useState(null);
   const userId = localStorage.getItem('userId');
 
+  // Fetch business profile data
   const { 
     loading: profileLoading, 
     error: profileError, 
@@ -35,8 +39,10 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     skip: !!propProfile
   });
 
+  // Update business profile
   const [updateProfile, { loading: updateLoading }] = useMutation(UPDATE_BUSINESS_PROFILE, {
     onCompleted: () => {
+      // Handle successful update
       setIsEditing(false);
       if (!propProfile) {
         refetch();
@@ -57,6 +63,7 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     }, 5000);
   };
 
+  // Effect to set profile data based on query result
   useEffect(() => {
     if (propProfile) {
       setProfile(propProfile);
@@ -80,7 +87,8 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     const formattedValues = {
       businessName: values.businessName,
       description: values.description,
-      businessTags: values.businessTags ? values.businessTags.split(',').map(tag => tag.trim()) : []
+      businessTags: values.businessTags ? values.businessTags.split(',').map(tag => tag.trim()) : [],
+      images: values.images ? values.images.split(',').map(url => url.trim()) : []
     };
 
     if (onUpdateProfile) {
@@ -98,10 +106,8 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
 
   const handleCancel = () => {
     if (isStandalone) {
-      // Refetch the profile data to refresh the component
       refetch();
     }
-    // Set editing state to false to return to display mode
     setIsEditing(false);
   };
 
@@ -171,6 +177,23 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
                 </p>
               </div>
             )}
+
+            {profile.images && profile.images.length > 0 && (
+              <div className="mt-4">
+                <h5>Images</h5>
+                <Row>
+                  {profile.images.map((url, index) => (
+                    <Col key={index} xs={6} md={4} lg={3} className="mb-3">
+                      <img
+                        src={url}
+                        alt={`business-img-${index}`}
+                        className="img-fluid rounded shadow-sm"
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              </div>
+            )}
           </Card.Body>
         </Card>
       </div>
@@ -183,14 +206,16 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     businessTags: profile.businessTags.join(', '),
     city: profile.location?.city || '',
     postalCode: profile.location?.postalCode || '',
-    address: profile.location?.address || ''
+    address: profile.location?.address || '',
+    images: profile.images?.join(', ') || ''
   } : {
     businessName: '',
     description: '',
     businessTags: '',
     city: '',
     postalCode: '',
-    address: ''
+    address: '',
+    images: ''
   };
 
   return (
@@ -238,7 +263,7 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
 
                   <Col md={6}>
                     <Form.Group controlId="businessTags">
-                      <Form.Label>Business Tags</Form.Label>
+                      <Form.Label>Business Tags (comma-separated)</Form.Label>
                       <Form.Control
                         type="text"
                         name="businessTags"
@@ -263,6 +288,17 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
                   <Form.Control.Feedback type="invalid">
                     {errors.description}
                   </Form.Control.Feedback>
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="images">
+                  <Form.Label>Image URLs (comma-separated)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="images"
+                    value={values.images}
+                    onChange={handleChange}
+                    placeholder="https://image1.jpg, https://image2.jpg"
+                  />
                 </Form.Group>
 
                 <h5 className="mt-4">Location (read-only)</h5>

@@ -6,6 +6,7 @@ import { GET_BUSINESS_PROFILE } from '../../../graphql/queries';
 import { useNavigate } from 'react-router-dom';
 import { Formik } from 'formik';
 
+// Define states and functions
 const OffersList = ({ offers: propOffers }) => {
   const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -17,6 +18,7 @@ const OffersList = ({ offers: propOffers }) => {
 
   const userId = localStorage.getItem('userId');
 
+  // Fetch business profile to get the ID
   const {
     loading: profileLoading,
     error: profileError,
@@ -28,6 +30,7 @@ const OffersList = ({ offers: propOffers }) => {
     skip: Array.isArray(propOffers),
   });
 
+  // Effect to set offers based on businessprofile data
   useEffect(() => {
     if (Array.isArray(propOffers)) {
       setOffers(propOffers);
@@ -67,6 +70,7 @@ const OffersList = ({ offers: propOffers }) => {
     },
   });
 
+  // Format date function
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(Number(dateString));
