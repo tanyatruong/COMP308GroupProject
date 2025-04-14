@@ -14,6 +14,10 @@ const ReviewsList = lazy(() => import('businessApp/ReviewsList'));
 const LogIn = lazy (() => import('authApp/LogIn'));
 const SignUp = lazy (() => import('authApp/SignUp'));
 
+const ResidentDashboard = lazy(() => import('businessApp/ResidentDashboard'));
+const BulletinBoard = lazy(() => import('businessApp/BulletinBoard'));
+const IndividualDiscussion = lazy(() => import('businessApp/IndividualDiscussion'));
+
 function App() {
   return (
     <Router>
@@ -28,6 +32,9 @@ function App() {
             <Route path='/business/reviews' element={<ReviewsList />} />
             <Route path='/login' element={<LogIn />} />
             <Route path='/signup' element={<SignUp />} />
+            <Route path='/residentdashboard' element={<ResidentDashboard />} />
+            <Route path='/resident/bulletinboard' element={<BulletinBoard />} />
+            <Route path='/individual-discussion' element={<IndividualDiscussion />} />
           </Routes>
         </Suspense>
       </div>
