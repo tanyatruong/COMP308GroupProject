@@ -57,7 +57,7 @@ const OffersList = ({ offers: propOffers }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    const date = new Date(dateString);
+      const date = new Date(Number(dateString)); // convert to number
     return isNaN(date.getTime())
       ? 'N/A'
       : `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Badge, Button, Form, Alert, Row, Col, Container } from 'react-bootstrap';
-import { format } from 'date-fns';
 import { Star, StarFill } from 'react-bootstrap-icons';
 import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import { GET_BUSINESS_PROFILE } from '../../../graphql/queries';
@@ -8,6 +7,16 @@ import { RESPOND_TO_REVIEW } from '../../../graphql/mutations';
 import { ANALYZE_SENTIMENT } from '../../../graphql/queries';
 import { useNavigate } from 'react-router-dom';
 
+// Format date from timestamp
+const formatDate = (timestamp) => {
+  if (!timestamp) return 'N/A';
+  const date = new Date(Number(timestamp));
+  return isNaN(date.getTime())
+    ? 'N/A'
+    : `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+};
+
+// Display stars based on the review rating
 const StarRating = ({ rating }) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
@@ -20,11 +29,13 @@ const StarRating = ({ rating }) => {
   return <div className="d-flex">{stars}</div>;
 };
 
+// ReviewItem component to display individual reviews
 const ReviewItem = ({ review, onRespondToReview }) => {
   const [showResponseForm, setShowResponseForm] = useState(false);
   const [response, setResponse] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Handle reponse to review
   const handleSubmitResponse = async (e) => {
     e.preventDefault();
     if (response.trim()) {
@@ -41,6 +52,9 @@ const ReviewItem = ({ review, onRespondToReview }) => {
     }
   };
 
+  const latestResponse = review.responses?.[review.responses.length - 1];
+  const latestResponseDate = review.responseDates?.[review.responseDates.length - 1];
+
   return (
     <Card className="mb-4 shadow-sm">
       <Card.Body>
@@ -52,11 +66,12 @@ const ReviewItem = ({ review, onRespondToReview }) => {
         </div>
 
         <Card.Text>{review.content}</Card.Text>
+        <div className="text-muted mb-2">Reviewed on: {formatDate(review.createdAt)}</div>
 
-        {review.responses && review.responses.length > 0 && (
+        {latestResponse && (
           <div className="bg-light p-3 rounded mt-3 mb-3">
             <h6 className="mb-2">Your Response:</h6>
-            <p className="mb-1">{review.responses[review.responses.length - 1]}</p>
+            <p className="mb-1">{latestResponse}</p>
           </div>
         )}
 
