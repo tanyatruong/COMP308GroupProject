@@ -58,7 +58,7 @@ const BulletinBoard = () => {
   const [deletePost, { loading: deleteLoading }] = useMutation(DELETE_POST, {
     onCompleted: () => {
       setSuccessMessage("Post deleted successfully!");
-      refetch(); // Refresh the posts list after deletion
+      refetch();
       
       setTimeout(() => setSuccessMessage(""), 3000);
     },
