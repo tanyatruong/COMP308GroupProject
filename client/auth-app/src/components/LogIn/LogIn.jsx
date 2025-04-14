@@ -57,7 +57,9 @@ const LogIn = () => {
                 if(user.role === "BusinessOwner"){
                     navigate('/businessdashboard');
                 }
-                // Add other roles once they are created
+                if(user.role === "Resident"){
+                    navigate('/residentdashboard');
+                }
             }
         }catch(err){
             setError(err.message);
