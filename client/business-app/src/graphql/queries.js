@@ -144,3 +144,9 @@ export const GET_POST_WITH_COMMENTS = gql`
     }
   }
 `;
+
+export const ANALYZE_SENTIMENT = gql`
+  query AnalyzeSentiment($reviews: [String]!) {
+    analyzeSentiment(reviews: $reviews)
+  }
+`;
