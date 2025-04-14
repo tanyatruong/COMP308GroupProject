@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST = gql`
-  mutation createAndAddHelpRequestCommentToHelpRequestPost(
+  mutation CreateAndAddHelpRequestCommentToHelpRequestPost(
     $input: CreateHelpRequestCommentInput!
   ) {
     createAndAddHelpRequestCommentToHelpRequestPost(input: $input) {
@@ -15,7 +15,7 @@ export const CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST = gql`
 `;
 
 export const DELETE_HELP_REQUEST_COMMENT = gql`
-  mutation deleteHelpRequestComment($deleteHelpRequestCommentId: ID!) {
+  mutation DeleteHelpRequestComment($deleteHelpRequestCommentId: ID!) {
     deleteHelpRequestComment(id: $deleteHelpRequestCommentId) {
       message
       success

@@ -7,33 +7,27 @@ export const GET_HELP_REQUEST_POSTS = gql`
       authorid
       title
       content
-      comments {
-        id
-        text
-        authorid
-        postId
-        createdAt
-      }
       createdAt
       updatedAt
+      comments {
+        id
+        authorid
+        postid
+        text
+        createdAt
+      }
     }
   }
 `;
 
 export const GET_HELP_REQUEST_POST = gql`
-  query getHelpRequestPost($getHelpRequestPostId: ID!) {
+  query Query($getHelpRequestPostId: ID!) {
     getHelpRequestPost(id: $getHelpRequestPostId) {
       id
       authorid
       title
       content
-      comments {
-        id
-        text
-        authorid
-        postId
-        createdAt
-      }
+      comments
       createdAt
       updatedAt
     }

@@ -5,11 +5,11 @@ import { Card, Form, Button, ListGroup } from "react-bootstrap";
 
 // import queries
 import { GET_HELP_REQUEST_POSTS } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.queries.js";
-import {} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.queries.js";
+import { GET_HELP_REQUEST_COMMENTS_OF_SPECIFIC_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.queries.js";
 // import mutations
 import {} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.mutations.js";
-import {} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.mutations.js";
-import { useQuery } from "@apollo/client";
+import { CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.mutations.js";
+import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 
 const postFilterEnum = {
   AllPosts: "AllPosts",
@@ -18,31 +18,45 @@ const postFilterEnum = {
 
 const NeighborhoodHelpRequests = () => {
   const [postFilter, setPostFilter] = useState(postFilterEnum.AllPosts);
+  const [loggedInUserID, setLoggedInUserID] = useState(
+    localStorage.getItem("userId")
+  );
   const [neighborhoodHelpRequestsPosts, setNeighborhoodHelpRequestsPosts] =
     useState(undefined);
+  const [posts, setPosts] = useState(undefined);
 
-  const dummy_data_AllHelpRequestPosts = [
-    {
-      authorid: "0",
-      title: "t0",
-      content: "c0",
-      comments: ["comm0", "comm1", "comm2"],
-    },
-    {
-      authorid: "1",
-      title: "t1",
-      content: "c1",
-      comments: ["comm0", "comm1", "comm2"],
-    },
-    {
-      authorid: "2",
-      title: "t2",
-      content: "c2",
-      comments: ["comm0", "comm1", "comm2"],
-    },
-  ];
+  // const dummy_data_AllHelpRequestPosts = [
+  //   {
+  //     authorid: "0",
+  //     title: "t0",
+  //     content: "c0",
+  //     comments: ["comm0", "comm1", "comm2"],
+  //   },
+  //   {
+  //     authorid: "1",
+  //     title: "t1",
+  //     content: "c1",
+  //     comments: ["comm0", "comm1", "comm2"],
+  //   },
+  //   {
+  //     authorid: "2",
+  //     title: "t2",
+  //     content: "c2",
+  //     comments: ["comm0", "comm1", "comm2"],
+  //   },
+  // ];
 
-  // const { data: data_AllHelpRequestPosts } = useQuery(GET_HELP_REQUEST_POSTS);
+  const { data: data_AllHelpRequestPosts } = useQuery(GET_HELP_REQUEST_POSTS);
+  const [createHelpRequestComment] = useMutation(
+    CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST
+  );
+  // useEffect(() => {
+  //   data_AllHelpRequestPosts?.getHelpRequestPosts.forEach((post) => {});
+  // }, [data_AllHelpRequestPosts]);
+
+  const [getCommentForPost, { data: data_GetCommentForPost }] = useLazyQuery(
+    GET_HELP_REQUEST_COMMENTS_OF_SPECIFIC_HELP_REQUEST_POST
+  );
 
   const handleAllPostsFilterClick = () => {
     setPostFilter(postFilterEnum.AllPosts);
@@ -82,10 +96,10 @@ const NeighborhoodHelpRequests = () => {
           </Row>
         </Container>
         <Container id="postsList">
-          {dummy_data_AllHelpRequestPosts?.length > 0 ? (
-            dummy_data_AllHelpRequestPosts.map((post, index) => {
+          {data_AllHelpRequestPosts?.getHelpRequestPosts?.length > 0 ? (
+            data_AllHelpRequestPosts?.getHelpRequestPosts.map((post, index) => {
               return (
-                <Row>
+                <Row key={post.id}>
                   <Col>
                     {/* <Card style={{ width: "18rem" }}>
                   <Card.Body>
@@ -110,19 +124,51 @@ const NeighborhoodHelpRequests = () => {
                         <ListGroup className="mt-3">
                           {post.comments.map((comment, index) => (
                             <ListGroup.Item key={index}>
-                              {comment}
+                              <strong>
+                                {comment.authorid || "Anonymous"}:
+                              </strong>{" "}
+                              {comment.text}
                             </ListGroup.Item>
                           ))}
                         </ListGroup>
                         <Form
-                        // onSubmit={handleCommentSubmit}
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            const createCommentInputVariables =
+                              commentInputs[post.id];
+                            if (!createCommentInputVariables.text?.trim())
+                              return;
+
+                            createHelpRequestComment({
+                              variables: {
+                                postid: post.id,
+                                text: createCommentInputVariables.text,
+                                authorid: createCommentInputVariables.authorid,
+                              },
+                            }).then(() => {
+                              // Clear input
+                              setCommentInputs((prev) => ({
+                                ...prev,
+                                [post.id]: "",
+                              }));
+                            });
+                          }}
                         >
                           <Form.Group className="mt-3 mb-1">
                             <Form.Control
                               type="text"
                               placeholder="Write a comment..."
-                              // value={commentInput}
-                              // onChange={(e) => setCommentInput(e.target.value)}
+                              onChange={
+                                (e) =>
+                                  setCommentInputs((prev) => ({
+                                    ...prev,
+                                    [post.id]: {
+                                      text: e.target.value,
+                                      authorid: loggedInUserID, //TODO POSSIBLY BAD
+                                    },
+                                  }))
+                                // authorid, postid, text
+                              }
                             />
                           </Form.Group>
                           <div className="d-flex justify-content-end">
@@ -142,7 +188,14 @@ const NeighborhoodHelpRequests = () => {
           )}
         </Container>
       </Card>
-      <Container id="filterBarContainer">
+      <Button
+        onClick={() => {
+          // getPosts();
+        }}
+      >
+        Get Posts
+      </Button>
+      {/* <Container id="filterBarContainer">
         <Row>
           <Col id="filterButtonAllPosts">
             <Button variant="primary">Primary</Button>
@@ -152,7 +205,7 @@ const NeighborhoodHelpRequests = () => {
           </Col>
         </Row>
       </Container>
-      <h1>NeighborhoodHelpRequests</h1>;
+      <h1>NeighborhoodHelpRequests</h1>; */}
     </>
   );
 };
