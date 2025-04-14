@@ -13,7 +13,7 @@ const OffersList = ({ offers: propOffers }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const userId = localStorage.getItem('userId') || '67fbccd0b088a381cdcef65c';
+  const userId = localStorage.getItem('userId');
 
   const {
     loading: profileLoading,
@@ -111,7 +111,6 @@ const OffersList = ({ offers: propOffers }) => {
       <div className="d-flex justify-content-between align-items-center flex-wrap mb-4">
         <div className="mb-2">
           <h3 className="mb-0">Business Promotions</h3>
-          <p className="text-muted">Manage your offers and keep them up to date</p>
         </div>
         <div className="d-flex gap-2">
           <Button variant="primary" onClick={handleCreateOffer}>

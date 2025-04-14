@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Row, Col, Card, Badge, Alert } from 'react-bootstrap';
+import { Form, Button, Row, Col, Card, Badge, Alert, Spinner } from 'react-bootstrap';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,6 @@ import { useMutation, useQuery } from '@apollo/client';
 import { GET_BUSINESS_PROFILE } from '../../graphql/queries';
 import { UPDATE_BUSINESS_PROFILE } from '../../graphql/mutations';
 
-// Validation schema for business profile form
 const profileSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
   description: yup.string().required('Description is required'),
@@ -23,11 +22,8 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-  // Get user ID from localStorage for standalone mode
-  const userId = localStorage.getItem('userId') || '67fbccd0b088a381cdcef65c';
-  
-  // Query business profile if not passed as props (standalone mode)
+  const userId = localStorage.getItem('userId');
+
   const { 
     loading: profileLoading, 
     error: profileError, 
@@ -36,15 +32,13 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
   } = useQuery(GET_BUSINESS_PROFILE, {
     variables: { ownerId: userId },
     fetchPolicy: 'network-only',
-    skip: !!propProfile // Skip if profile was passed as props
+    skip: !!propProfile
   });
-  
-  // Setup mutation for updating profile
+
   const [updateProfile, { loading: updateLoading }] = useMutation(UPDATE_BUSINESS_PROFILE, {
     onCompleted: () => {
       setIsEditing(false);
       if (!propProfile) {
-        // Refetch profile data to get updated values
         refetch();
         showSuccessMessage();
       }
@@ -55,7 +49,6 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     }
   });
 
-  // Show success message
   const [successMessage, setSuccessMessage] = useState('');
   const showSuccessMessage = () => {
     setSuccessMessage('Profile updated successfully!');
@@ -64,7 +57,6 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     }, 5000);
   };
 
-  // Effect to set the profile from props or query
   useEffect(() => {
     if (propProfile) {
       setProfile(propProfile);
@@ -82,12 +74,9 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     }
   }, [propProfile, profileData, profileLoading, profileError]);
 
-  // Check if we're in standalone mode (direct URL access)
   const isStandalone = !propProfile;
 
-  // Handle form submission
   const handleSubmit = (values) => {
-    // Format values for the update mutation
     const formattedValues = {
       businessName: values.businessName,
       description: values.description,
@@ -95,16 +84,9 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     };
 
     if (onUpdateProfile) {
-      // If in dashboard mode, use the callback
       onUpdateProfile(profile.id, formattedValues);
       setIsEditing(false);
     } else {
-      // If in standalone mode, use the mutation
-      console.log("Updating with:", {
-        id: profile.id,
-        input: formattedValues
-      });
-      
       updateProfile({
         variables: {
           id: profile.id,
@@ -114,21 +96,19 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     }
   };
 
-  // Handle cancel button in standalone mode
   const handleCancel = () => {
     if (isStandalone) {
-      navigate('/businessdashboard');
-    } else {
-      setIsEditing(false);
+      // Refetch the profile data to refresh the component
+      refetch();
     }
+    // Set editing state to false to return to display mode
+    setIsEditing(false);
   };
 
-  // Loading state
   if (loading) {
-    return <div className="text-center p-5">Loading business profile...</div>;
+    return <div className="text-center p-5"><Spinner animation="border" /></div>;
   }
 
-  // Error state
   if (error && !profile) {
     return (
       <Alert variant="danger" className="m-3">
@@ -137,12 +117,10 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     );
   }
 
-  // No profile data available
   if (!profile && onlyDisplay) {
     return <div>No profile data available</div>;
   }
 
-  // If we're not editing and we have a profile, display it
   if (!isEditing && profile) {
     return (
       <div>
@@ -152,39 +130,30 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
           </Alert>
         )}
 
-        {isStandalone && (
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="mb-0">Business Profile</h3>
-            <div>
-              <Button 
-                variant="outline-secondary" 
-                className="me-2" 
-                onClick={() => navigate('/businessdashboard')}
-              >
-                Back to Dashboard
-              </Button>
-              <Button variant="outline-primary" onClick={() => setIsEditing(true)}>
+        <div className="d-flex gap-2 justify-content-between align-items-center mb-4">
+          <h3 className="mb-0">Business Profile</h3>
+          {(!onlyDisplay || isStandalone) && (
+            <div className="d-flex gap-2">
+              <Button variant="primary" onClick={() => setIsEditing(true)}>
                 Edit Profile
               </Button>
+              {isStandalone && (
+                <Button variant="outline-secondary" className="me-2" onClick={() => navigate('/businessdashboard')}>
+                  Dashboard
+                </Button>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {!onlyDisplay && !isStandalone && (
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3 className="mb-0">Business Profile</h3>
-            <Button variant="outline-primary" onClick={() => setIsEditing(true)}>
-              Edit Profile
-            </Button>
-          </div>
-        )}
-
-        <Card className="mb-4">
+        <Card className="shadow-sm">
           <Card.Body>
-            <h2>{profile.businessName}</h2>
+            <h4>{profile.businessName}</h4>
             <div className="mb-3">
               {profile.businessTags.map((tag, index) => (
-                <Badge key={index} bg="secondary" className="me-2 mb-2">{tag}</Badge>
+                <Badge key={index} bg="info" className="me-2 mb-2 text-uppercase">
+                  {tag}
+                </Badge>
               ))}
             </div>
             <p className="text-muted">
@@ -192,7 +161,7 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
             </p>
             <h5>Description</h5>
             <p>{profile.description}</p>
-            
+
             {profile.location && (
               <div>
                 <h5>Location</h5>
@@ -208,7 +177,6 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
     );
   }
 
-  // If we don't have a profile or we're editing, show the form
   const initialValues = profile ? {
     businessName: profile.businessName,
     description: profile.description,
@@ -236,143 +204,120 @@ const BusinessProfile = ({ profile: propProfile, onUpdateProfile, onlyDisplay = 
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h3 className="mb-0">Edit Business Profile</h3>
         {isStandalone && (
-          <Button 
-            variant="outline-secondary" 
-            onClick={() => navigate('/businessdashboard')}
-          >
+          <Button variant="outline-secondary" onClick={() => navigate('/businessdashboard')}>
             Back to Dashboard
           </Button>
         )}
       </div>
-      
-      <Formik
-        initialValues={initialValues}
-        validationSchema={profileSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ handleSubmit, handleChange, values, touched, errors }) => (
-          <Form onSubmit={handleSubmit}>
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Business Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="businessName"
-                    value={values.businessName}
-                    onChange={handleChange}
-                    isInvalid={touched.businessName && !!errors.businessName}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.businessName}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Business Tags (comma separated)</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="businessTags"
-                    value={values.businessTags}
-                    onChange={handleChange}
-                    placeholder="e.g. restaurant, italian, family-friendly"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={4}
-                name="description"
-                value={values.description}
-                onChange={handleChange}
-                isInvalid={touched.description && !!errors.description}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.description}
-              </Form.Control.Feedback>
-            </Form.Group>
+      <Card className="shadow-sm">
+        <Card.Body>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={profileSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ handleSubmit, handleChange, values, touched, errors }) => (
+              <Form onSubmit={handleSubmit}>
+                <Row className="mb-3">
+                  <Col md={6}>
+                    <Form.Group controlId="businessName">
+                      <Form.Label>Business Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="businessName"
+                        value={values.businessName}
+                        onChange={handleChange}
+                        isInvalid={touched.businessName && !!errors.businessName}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.businessName}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
 
-            <h5 className="mt-4">Business Location</h5>
-            <p className="text-muted mb-3">Note: Location information cannot be changed at this time.</p>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Street Address</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="address"
-                    value={values.address}
-                    onChange={handleChange}
-                    isInvalid={touched.address && !!errors.address}
-                    disabled={true}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.address}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              
-              <Col md={3}>
-                <Form.Group className="mb-3">
-                  <Form.Label>City</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="city"
-                    value={values.city}
-                    onChange={handleChange}
-                    isInvalid={touched.city && !!errors.city}
-                    disabled={true}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.city}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              
-              <Col md={3}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Postal Code</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="postalCode"
-                    value={values.postalCode}
-                    onChange={handleChange}
-                    isInvalid={touched.postalCode && !!errors.postalCode}
-                    disabled={true}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.postalCode}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
+                  <Col md={6}>
+                    <Form.Group controlId="businessTags">
+                      <Form.Label>Business Tags</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="businessTags"
+                        placeholder="e.g. restaurant, bakery"
+                        value={values.businessTags}
+                        onChange={handleChange}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
 
-            <div className="mt-4 d-flex justify-content-end">
-              <Button 
-                variant="outline-secondary" 
-                className="me-2" 
-                onClick={handleCancel}
-                type="button"
-              >
-                Cancel
-              </Button>
-              <Button 
-                variant="primary" 
-                type="submit"
-                disabled={updateLoading}
-              >
-                {updateLoading ? 'Updating...' : 'Update Profile'}
-              </Button>
-            </div>
-          </Form>
-        )}
-      </Formik>
+                <Form.Group className="mb-3" controlId="description">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    name="description"
+                    value={values.description}
+                    onChange={handleChange}
+                    isInvalid={touched.description && !!errors.description}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.description}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <h5 className="mt-4">Location (read-only)</h5>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3" controlId="address">
+                      <Form.Label>Street Address</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="address"
+                        value={values.address}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group className="mb-3" controlId="city">
+                      <Form.Label>City</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="city"
+                        value={values.city}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group className="mb-3" controlId="postalCode">
+                      <Form.Label>Postal Code</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="postalCode"
+                        value={values.postalCode}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <div className="d-flex justify-content-end mt-4">
+                  <Button variant="outline-secondary" className="me-2" onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                  <Button variant="primary" type="submit" disabled={updateLoading}>
+                    {updateLoading ? 'Updating...' : 'Update Profile'}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </Card.Body>
+      </Card>
     </div>
   );
 };
