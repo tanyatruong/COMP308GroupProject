@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Container, Card, Button, Form, ListGroup, Spinner, Alert } from "react-bootstrap";
 import { useQuery, useMutation } from "@apollo/client";
@@ -10,8 +10,23 @@ const IndividualDiscussion = () => {
   const { postId } = useParams();
   const [comment, setComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [currentUserId, setCurrentUserId] = useState("");
   
-  const currentUserId = "507f1f77bcf86cd799439011"; // test
+  // Get user ID from localStorage
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    
+    console.log("LocalStorage userId:", userId);
+    
+    if (userId) {
+      console.log("Using stored user ID:", userId);
+      setCurrentUserId(userId);
+    } else {
+      // Fall back to test ID for testing
+      console.log("No userId in localStorage, using test ID");
+      setCurrentUserId("507f1f77bcf86cd799439011");
+    }
+  }, []);  
   
   // Function for date formatting
   const formatDate = (dateValue) => {
