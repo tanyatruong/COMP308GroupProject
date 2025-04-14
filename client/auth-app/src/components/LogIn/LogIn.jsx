@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Card, Container, Form} from 'react-bootstrap'
+import { Card, Container, Form, Button} from 'react-bootstrap'
 import './login.css';
 import {gql, useMutation} from '@apollo/client'
 import { useNavigate } from 'react-router-dom';
@@ -50,7 +50,6 @@ const LogIn = () => {
             if(response.data.Login){
                 const user = response.data.Login;
                 // Save user data to localStorage
-                console.log("Login successful:", user);
                 localStorage.setItem('userId', user.id);
                 localStorage.setItem('username', username);
                 localStorage.setItem('role', user.role);
@@ -130,9 +129,9 @@ const LogIn = () => {
                 </tr>
                 </tbody>
             </table>
-            
-            <div className="text-end mt-3">
-                <button type="submit" className="btn btn-primary">Log In</button>
+            <p><a href='/signup'>No account? Sign up</a></p>
+            <div className=" mt-3">
+                <Button variant="primary" type="submit" className="btn btn-primary">Log In</Button>
             </div>
             </Form>
         </Card>    
