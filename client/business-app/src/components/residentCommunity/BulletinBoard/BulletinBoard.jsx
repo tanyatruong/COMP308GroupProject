@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Card, Button, Form, ListGroup, Spinner, Alert, Modal } from "react-bootstrap";
 import { useQuery, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
@@ -12,8 +12,23 @@ const BulletinBoard = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [postToDelete, setPostToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState("");
   
-  const currentUserId = "507f1f77bcf86cd799439011"; // test
+  // Get user ID from localStorage
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    
+    console.log("LocalStorage userId:", userId);
+    
+    if (userId) {
+      console.log("Using stored user ID:", userId);
+      setCurrentUserId(userId);
+    } else {
+      // Fall back to test ID for testing
+      console.log("No userId in localStorage, using test ID");
+      setCurrentUserId("507f1f77bcf86cd799439011");
+    }
+  }, []);
   
   // Query to fetch all posts
   const { loading, error, data, refetch } = useQuery(GET_ALL_POSTS, {
