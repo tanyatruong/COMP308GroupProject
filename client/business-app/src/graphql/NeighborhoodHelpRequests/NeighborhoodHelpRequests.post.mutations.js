@@ -1,12 +1,13 @@
 import { gql } from "@apollo/client";
 
 export const CREATE_HELP_REQUEST_POST = gql`
-  mutation createHelpRequestPost($input: CreateHelpRequestPostInput!) {
+  mutation CreateHelpRequestPost($input: CreateHelpRequestPostInput!) {
     createHelpRequestPost(input: $input) {
       id
       authorid
       title
       content
+      comments
       createdAt
       updatedAt
     }
@@ -14,7 +15,7 @@ export const CREATE_HELP_REQUEST_POST = gql`
 `;
 
 export const UPDATE_HELP_REQUEST_POST = gql`
-  mutation updateHelpRequestPost(
+  mutation UpdateHelpRequestPost(
     $updateHelpRequestPostId: ID!
     $input: UpdateHelpRequestPostInput!
   ) {
@@ -23,6 +24,7 @@ export const UPDATE_HELP_REQUEST_POST = gql`
       authorid
       title
       content
+      comments
       createdAt
       updatedAt
     }

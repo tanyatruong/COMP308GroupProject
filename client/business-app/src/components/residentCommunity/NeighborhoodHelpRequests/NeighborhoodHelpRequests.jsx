@@ -9,7 +9,7 @@ import {} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpReques
 // import mutations
 import {} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.mutations.js";
 import {} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.mutations.js";
-import { useQuery } from "@apollo/client";
+import { useQuery, useLazyQuery } from "@apollo/client";
 
 const postFilterEnum = {
   AllPosts: "AllPosts",
@@ -20,29 +20,33 @@ const NeighborhoodHelpRequests = () => {
   const [postFilter, setPostFilter] = useState(postFilterEnum.AllPosts);
   const [neighborhoodHelpRequestsPosts, setNeighborhoodHelpRequestsPosts] =
     useState(undefined);
+  const [posts, setPosts] = useState(undefined);
 
-  const dummy_data_AllHelpRequestPosts = [
-    {
-      authorid: "0",
-      title: "t0",
-      content: "c0",
-      comments: ["comm0", "comm1", "comm2"],
-    },
-    {
-      authorid: "1",
-      title: "t1",
-      content: "c1",
-      comments: ["comm0", "comm1", "comm2"],
-    },
-    {
-      authorid: "2",
-      title: "t2",
-      content: "c2",
-      comments: ["comm0", "comm1", "comm2"],
-    },
-  ];
+  // const dummy_data_AllHelpRequestPosts = [
+  //   {
+  //     authorid: "0",
+  //     title: "t0",
+  //     content: "c0",
+  //     comments: ["comm0", "comm1", "comm2"],
+  //   },
+  //   {
+  //     authorid: "1",
+  //     title: "t1",
+  //     content: "c1",
+  //     comments: ["comm0", "comm1", "comm2"],
+  //   },
+  //   {
+  //     authorid: "2",
+  //     title: "t2",
+  //     content: "c2",
+  //     comments: ["comm0", "comm1", "comm2"],
+  //   },
+  // ];
 
   // const { data: data_AllHelpRequestPosts } = useQuery(GET_HELP_REQUEST_POSTS);
+  const [getPosts, { data: data_AllHelpRequestPosts }] = useLazyQuery(
+    GET_HELP_REQUEST_POSTS
+  );
 
   const handleAllPostsFilterClick = () => {
     setPostFilter(postFilterEnum.AllPosts);
@@ -82,8 +86,8 @@ const NeighborhoodHelpRequests = () => {
           </Row>
         </Container>
         <Container id="postsList">
-          {dummy_data_AllHelpRequestPosts?.length > 0 ? (
-            dummy_data_AllHelpRequestPosts.map((post, index) => {
+          {posts?.length > 0 ? (
+            posts.map((post, index) => {
               return (
                 <Row>
                   <Col>
@@ -142,7 +146,14 @@ const NeighborhoodHelpRequests = () => {
           )}
         </Container>
       </Card>
-      <Container id="filterBarContainer">
+      <Button
+        onClick={() => {
+          getPosts();
+        }}
+      >
+        Get Posts
+      </Button>
+      {/* <Container id="filterBarContainer">
         <Row>
           <Col id="filterButtonAllPosts">
             <Button variant="primary">Primary</Button>
@@ -152,7 +163,7 @@ const NeighborhoodHelpRequests = () => {
           </Col>
         </Row>
       </Container>
-      <h1>NeighborhoodHelpRequests</h1>;
+      <h1>NeighborhoodHelpRequests</h1>; */}
     </>
   );
 };

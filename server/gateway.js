@@ -12,7 +12,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://studio.apollographql.com"],
+    origin: [
+      "http://localhost:3003",
+      "http://localhost:5173",
+      "https://studio.apollographql.com",
+    ],
     credentials: true,
     exposedHeaders: ["Set-Cookie"],
   })
@@ -24,7 +28,7 @@ const gateway = new ApolloGateway({
       { name: "community", url: "http://localhost:4004/graphql" },
       { name: "auth", url: "http://localhost:4001/graphql" },
       { name: "business", url: "http://localhost:4002/graphql" },
-      { name: "ai", url: "http://localhost:4003/graphql" },
+      // { name: "ai", url: "http://localhost:4003/graphql" },
     ],
   }),
   buildService({ name, url }) {
