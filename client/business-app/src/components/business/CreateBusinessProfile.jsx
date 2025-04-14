@@ -12,7 +12,8 @@ const profileSchema = yup.object().shape({
   businessTags: yup.string(),
   city: yup.string().required('City is required'),
   postalCode: yup.string().required('Postal code is required'),
-  address: yup.string().required('Address is required')
+  address: yup.string().required('Address is required'),
+  images: yup.string() // Added images field to the schema
 });
 
 // Create a business profile
@@ -30,7 +31,8 @@ const CreateBusinessProfile = ({ onSuccess }) => {
     businessTags: '',
     city: '',
     postalCode: '',
-    address: ''
+    address: '',
+    images: '' // Added images field to initial values
   };
 
   const handleSubmit = (values) => {
@@ -41,6 +43,7 @@ const CreateBusinessProfile = ({ onSuccess }) => {
       businessName: values.businessName,
       description: values.description,
       businessTags: values.businessTags ? values.businessTags.split(',').map(tag => tag.trim()) : [],
+      images: values.images ? values.images.split(',').map(url => url.trim()) : [], // Parse image URLs
       businessOwnerId: userId,
       locationInput: {
         city: values.city,
@@ -113,6 +116,18 @@ const CreateBusinessProfile = ({ onSuccess }) => {
                   <Form.Control.Feedback type="invalid">
                     {errors.description}
                   </Form.Control.Feedback>
+                </Form.Group>
+
+                {/* Added Image URLs field */}
+                <Form.Group className="mb-3">
+                  <Form.Label>Image URLs (comma-separated)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="images"
+                    value={values.images}
+                    onChange={handleChange}
+                    placeholder="https://image1.jpg, https://image2.jpg"
+                  />
                 </Form.Group>
 
                 <h5 className="mt-4">Business Location</h5>

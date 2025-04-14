@@ -246,6 +246,7 @@ const ReviewsList = ({ reviews: propReviews, onRespondToReview: propOnRespondToR
       <div className="text-center p-5">
         <p className="mb-4">You haven't received any reviews yet.</p>
         <p>Reviews from customers will appear here when they are submitted.</p>
+        <Button variant="primary" onClick={() => navigate('/businessdashboard')}>Back to Dashboard</Button>
       </div>
     );
   }
