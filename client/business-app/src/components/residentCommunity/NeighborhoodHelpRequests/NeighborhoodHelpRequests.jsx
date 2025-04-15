@@ -9,7 +9,10 @@ import "./NeighborhoodHelpRequests.css";
 import { GET_HELP_REQUEST_POSTS } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.queries.js";
 import { GET_HELP_REQUEST_COMMENTS_OF_SPECIFIC_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.queries.js";
 // import mutations
-import { CREATE_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.mutations.js";
+import {
+  CREATE_HELP_REQUEST_POST,
+  DELETE_HELP_REQUEST_POST,
+} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.mutations.js";
 import { CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.mutations.js";
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 
@@ -24,6 +27,8 @@ const NeighborhoodHelpRequests = () => {
   const [postToBeCreatedTitle, setPostToBeCreatedTitle] = useState();
   const [postToBeCreatedContent, setPostToBeCreatedContent] = useState();
   const [isDeletePostDialogOpen, setIsDeletePostDialogOpen] = useState(false);
+  const [postToBeDeletedId, setPostToBeDeletedId] = useState(null);
+
   const [postFilter, setPostFilter] = useState(postFilterEnum.AllPosts);
   const [loggedInUserID, setLoggedInUserID] = useState(
     localStorage.getItem("userId")
@@ -34,12 +39,12 @@ const NeighborhoodHelpRequests = () => {
 
   const { data: data_AllHelpRequestPosts } = useQuery(GET_HELP_REQUEST_POSTS);
   const [createHelpRequestPost] = useMutation(CREATE_HELP_REQUEST_POST);
+  const [deleteHelpRequestPost] = useMutation(DELETE_HELP_REQUEST_POST);
   const [createHelpRequestComment] = useMutation(
     CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST
   );
   const [commentInputs, setCommentInputs] = useState({});
   // useEffect(() => {
-  //   data_AllHelpRequestPosts?.getHelpRequestPosts.forEach((post) => {});
   // }, [data_AllHelpRequestPosts]);
 
   const [getCommentForPost, { data: data_GetCommentForPost }] = useLazyQuery(
@@ -99,14 +104,27 @@ const NeighborhoodHelpRequests = () => {
               return (
                 <Row key={post.id}>
                   <Col>
-                    {/* <Card style={{ width: "18rem" }}>
-                  <Card.Body>
-                  <Card.Title>Post Title</Card.Title>
-                  <Card.Text>Post Content</Card.Text>
-                  <Button variant="primary">View Individual Post</Button>
-                  </Card.Body>
-                  </Card> */}
                     <Card className="my-4 shadow">
+                      <Card.Header>
+                        <Container>
+                          <Row>
+                            <Col
+                              id="deletePostButtonCol"
+                              className="d-flex justify-content-end"
+                            >
+                              <Button
+                                variant="danger"
+                                onClick={() => {
+                                  setPostToBeDeletedId(post.id);
+                                  setIsDeletePostDialogOpen(true);
+                                }}
+                              >
+                                🗑️ Delete Post
+                              </Button>
+                            </Col>
+                          </Row>
+                        </Container>
+                      </Card.Header>
                       <Card.Body>
                         <Card.Title className="d-flex justify-content-between">
                           <div>Title: {post.title}</div>
@@ -121,7 +139,7 @@ const NeighborhoodHelpRequests = () => {
 
                         <ListGroup className="mt-3">
                           {post.comments.map((comment, index) => (
-                            <ListGroup.Item key={index}>
+                            <ListGroup.Item key={comment.createdAt}>
                               <strong>
                                 {comment.authorid || "Anonymous"}:
                               </strong>{" "}
@@ -130,19 +148,25 @@ const NeighborhoodHelpRequests = () => {
                           ))}
                         </ListGroup>
                         <Form
-                          onSubmit={(e) => {
+                          onSubmit={async (e) => {
                             e.preventDefault();
                             const createCommentInputVariables =
                               commentInputs[post.id];
                             if (!createCommentInputVariables.text?.trim())
                               return;
 
-                            createHelpRequestComment({
+                            await createHelpRequestComment({
                               variables: {
-                                postid: post.id,
-                                text: createCommentInputVariables.text,
-                                authorid: createCommentInputVariables.authorid,
+                                input: {
+                                  postid: post.id,
+                                  text: createCommentInputVariables.text,
+                                  authorid:
+                                    createCommentInputVariables.authorid,
+                                },
                               },
+                              refetchQueries: [
+                                { query: GET_HELP_REQUEST_POSTS },
+                              ],
                             }).then(() => {
                               // Clear input
                               setCommentInputs((prev) => ({
@@ -162,7 +186,7 @@ const NeighborhoodHelpRequests = () => {
                                     ...prev,
                                     [post.id]: {
                                       text: e.target.value,
-                                      authorid: loggedInUserID, //TODO POSSIBLY BAD
+                                      authorid: loggedInUserID,
                                     },
                                   }))
                                 // authorid, postid, text
@@ -286,6 +310,44 @@ const NeighborhoodHelpRequests = () => {
       {isDeletePostDialogOpen && (
         <div>
           <h1>Delete Post Dialog</h1>
+          <div className="modal">
+            <div className="modal-content">
+              <span
+                className="close-btn"
+                onClick={() => {
+                  setIsDeletePostDialogOpen(false);
+                }}
+              >
+                &times;
+              </span>
+              <h2>Delete Post</h2>
+              <br />
+              <strong>postToBeDeletedId:</strong>
+              {postToBeDeletedId}
+              <>
+                <button
+                  className="delete-btn"
+                  style={{ marginTop: "1rem" }}
+                  onClick={async () => {
+                    console.log("complete post create Click");
+                    // DeleteMutation
+                    await deleteHelpRequestPost({
+                      variables: {
+                        id: postToBeDeletedId,
+                      },
+                    }).then(() => {
+                      // Clear input
+                      setPostToBeDeletedId(null);
+                      console.log("Post Deletion Success");
+                    });
+                    setIsDeletePostDialogOpen(false);
+                  }}
+                >
+                  🗑️ Complete Delete Post
+                </button>
+              </>
+            </div>
+          </div>
         </div>
       )}
     </>

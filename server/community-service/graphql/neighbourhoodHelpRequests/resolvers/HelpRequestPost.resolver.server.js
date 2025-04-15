@@ -10,9 +10,137 @@ const resolversHelpRequestPost = {
 
   Query: {
     // getHelpRequestPost(id: ID!): HelpRequestPost
+
     getHelpRequestPost: async (_, { id }) => {
       return await HelpRequestPostModel.findById(id);
     },
+    // Works sorts both posts (oldest to newest) and comments (newest to oldest)
+    getHelpRequestPosts: async () => {
+      const postsWithComments = await HelpRequestPostModel.aggregate([
+        // First, sort the posts by createdAt (oldest first)
+        {
+          $sort: {
+            createdAt: 1, // 1 for ascending (oldest first)
+          },
+        },
+        {
+          $lookup: {
+            from: "helprequestcomments", // the name of the collection you're joining with
+            let: { commentIds: "$comments" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $in: ["$_id", "$$commentIds"] },
+                },
+              },
+              {
+                $sort: { createdAt: 1 }, // Sort comments by createdAt (oldest first)
+              },
+            ],
+            as: "comments", // replace 'comments' field with the full documents
+          },
+        },
+      ]);
+
+      console.log("postsWithComments");
+      console.log(postsWithComments);
+
+      const formattedPostsWithComments = postsWithComments.map((post) => ({
+        id: post._id.toString(),
+        authorid: post.authorid.toString(),
+        title: post.title,
+        content: post.content,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        comments: post.comments.map((comment) => ({
+          id: comment._id.toString(),
+          authorid: comment.authorid.toString(),
+          postid: comment.postid.toString(),
+          text: comment.text,
+          createdAt: comment.createdAt,
+          updatedAt: comment.updatedAt,
+        })),
+        __v: post.__v,
+      }));
+
+      return formattedPostsWithComments;
+    },
+    // Works sort comments old to new
+    // getHelpRequestPosts: async () => {
+    //   const postsWithComments = await HelpRequestPostModel.aggregate([
+    //     {
+    //       $lookup: {
+    //         from: "helprequestcomments",
+    //         let: { commentIds: "$comments" },
+    //         pipeline: [
+    //           {
+    //             $match: {
+    //               $expr: { $in: ["$_id", "$$commentIds"] },
+    //             },
+    //           },
+    //           {
+    //             $sort: { createdAt: 1 }, // Sort comments by createdAt, Acending (oldest to newest, meaning oldest renders at higher on page)
+    //           },
+    //         ],
+    //         as: "comments",
+    //       },
+    //     },
+    //   ]);
+
+    //   const formattedPostsWithComments = postsWithComments.map((post) => ({
+    //     id: post._id.toString(),
+    //     authorid: post.authorid.toString(),
+    //     title: post.title,
+    //     content: post.content,
+    //     createdAt: post.createdAt,
+    //     updatedAt: post.updatedAt,
+    //     comments: post.comments.map((comment) => ({
+    //       id: comment._id.toString(),
+    //       authorid: comment.authorid.toString(),
+    //       postid: comment.postid.toString(),
+    //       text: comment.text,
+    //       createdAt: comment.createdAt,
+    //       updatedAt: comment.updatedAt,
+    //     })),
+    //     __v: post.__v,
+    //   }));
+
+    //   return formattedPostsWithComments;
+    // },
+
+    // WORKS but no sort
+    // getHelpRequestPosts: async () => {
+    //   const postsWithComments = await HelpRequestPostModel.aggregate([
+    //     {
+    //       $lookup: {
+    //         from: "helprequestcomments", // the name of the collection you're joining with
+    //         localField: "comments", // field in Post
+    //         foreignField: "_id", // field in Comment
+    //         as: "comments", // replace the 'comments' field with the full documents
+    //       },
+    //     },
+    //   ]);
+    //   console.log("postsWithComments");
+    //   console.log(postsWithComments);
+    //   const formattedPostsWithComments = postsWithComments.map((post) => ({
+    //     id: post._id.toString(),
+    //     authorid: post.authorid.toString(),
+    //     title: post.title,
+    //     content: post.content,
+    //     createdAt: post.createdAt,
+    //     updatedAt: post.updatedAt,
+    //     comments: post.comments.map((comment) => ({
+    //       id: comment._id.toString(),
+    //       authorid: comment.authorid.toString(),
+    //       postid: comment.postid.toString(),
+    //       text: comment.text,
+    //       createdAt: comment.createdAt,
+    //       updatedAt: comment.updatedAt,
+    //     })),
+    //     __v: post.__v,
+    //   }));
+    //   return formattedPostsWithComments;
+    // },
     // getHelpRequestPosts: [HelpRequestPost!]!
     // getHelpRequestPosts: async (_, {}) => {
     //   return await HelpRequestPostModel.find();
@@ -45,38 +173,7 @@ const resolversHelpRequestPost = {
     //   );
     //   return formattedPostsWithComments;
     // },
-    getHelpRequestPosts: async () => {
-      const postsWithComments = await HelpRequestPostModel.aggregate([
-        {
-          $lookup: {
-            from: "helprequestcomments", // the name of the collection you're joining with
-            localField: "comments", // field in Post
-            foreignField: "_id", // field in Comment
-            as: "comments", // replace the 'comments' field with the full documents
-          },
-        },
-      ]);
-      console.log("postsWithComments");
-      console.log(postsWithComments);
-      const formattedPostsWithComments = postsWithComments.map((post) => ({
-        id: post._id.toString(),
-        authorid: post.authorid.toString(),
-        title: post.title,
-        content: post.content,
-        createdAt: post.createdAt,
-        updatedAt: post.updatedAt,
-        comments: post.comments.map((comment) => ({
-          id: comment._id.toString(),
-          authorid: comment.authorid.toString(),
-          postid: comment.postid.toString(),
-          text: comment.text,
-          createdAt: comment.createdAt,
-          updatedAt: comment.updatedAt,
-        })),
-        __v: post.__v,
-      }));
-      return formattedPostsWithComments;
-    },
+
     // getHelpRequestPosts: async () => {
     //   const postsWithComments = await HelpRequestPostModel.aggregate([
     //     {
