@@ -103,6 +103,7 @@ export const GET_UPCOMING_EVENTS = gql`
   }
 `;
 
+// bulletinboard
 export const GET_ALL_POSTS = gql`
   query GetAllPosts {
     posts {
@@ -112,7 +113,6 @@ export const GET_ALL_POSTS = gql`
       createdAt
       author {
         id
-        username
       }
       comments {
         id
@@ -130,7 +130,6 @@ export const GET_POST_WITH_COMMENTS = gql`
       createdAt
       author {
         id
-        username
       }
       comments {
         id
@@ -138,10 +137,15 @@ export const GET_POST_WITH_COMMENTS = gql`
         createdAt
         author {
           id
-          username
         }
       }
     }
+  }
+`;
+
+export const SUMMARIZE_DISCUSSION = gql`
+  query SummarizeDiscussion($posts: [String]!) {
+    summarizeDiscussion(posts: $posts)
   }
 `;
 
