@@ -16,25 +16,71 @@ const typeDefsHelpRequestPost = gql`
     deleteHelpRequestPost(id: ID!): deletedHelpRequestPostReturnObject
   }
 
+  # before late night work
+  # type HelpRequestPost @key(fields: "id") {
+  #   id: ID!
+  #   authorid: ID!
+  #   # authorname: String!
+  #   title: String!
+  #   content: String!
+  #   comments: [HelpRequestComment]
+  #   # comments: [ID]!
+  #   createdAt: String!
+  #   updatedAt: String!
+  # }
+
+  # before late night work
+  # type HelpRequestComment @key(fields: "id") {
+  #   id: ID!
+  #   authorid: ID!
+  #   # authorname: String!
+  #   postid: ID!
+  #   text: String!
+  #   createdAt: String!
+  # }
+
+  # late night work, getPosts includes comment authors
+  # type Resident {
+  #   id: ID!
+  #   username: String!
+  #   role: String!
+  #   # add more fields if needed
+  # }
+
+  # type HelpRequestComment @key(fields: "id") {
+  #   id: ID!
+  #   authorid: ID!
+  #   postid: ID!
+  #   text: String!
+  #   createdAt: String!
+  #   resident: Resident
+  # }
+
+  # late night work get posts includes comment authors and post authors
   type HelpRequestPost @key(fields: "id") {
     id: ID!
     authorid: ID!
-    # authorname: String!
     title: String!
     content: String!
     comments: [HelpRequestComment]
-    # comments: [ID]!
     createdAt: String!
     updatedAt: String!
+    author: Resident!
   }
 
   type HelpRequestComment @key(fields: "id") {
     id: ID!
     authorid: ID!
-    # authorname: String!
     postid: ID!
     text: String!
     createdAt: String!
+    resident: Resident
+  }
+  type Resident {
+    id: ID!
+    username: String!
+    role: String!
+    # add more fields if needed
   }
 
   input CreateHelpRequestPostInput {

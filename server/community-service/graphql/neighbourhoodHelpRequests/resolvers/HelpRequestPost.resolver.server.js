@@ -14,6 +14,159 @@ const resolversHelpRequestPost = {
     getHelpRequestPost: async (_, { id }) => {
       return await HelpRequestPostModel.findById(id);
     },
+    // TODO latenight work, WORKS posts(with authors) and comments(with authors)
+    getHelpRequestPosts: async () => {
+      const postsWithComments = await HelpRequestPostModel.aggregate([
+        {
+          $sort: {
+            createdAt: 1,
+          },
+        },
+        // Join author of the post (resident)
+        {
+          $lookup: {
+            from: "residents",
+            localField: "authorid",
+            foreignField: "_id",
+            as: "author",
+          },
+        },
+        {
+          $unwind: {
+            path: "$author",
+            preserveNullAndEmptyArrays: false, // Filter out posts without a valid author
+          },
+        },
+        // Join comments + comment author
+        {
+          $lookup: {
+            from: "helprequestcomments",
+            let: { commentIds: "$comments" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $in: ["$_id", "$$commentIds"] },
+                },
+              },
+              {
+                $sort: { createdAt: 1 },
+              },
+              {
+                $lookup: {
+                  from: "residents",
+                  localField: "authorid",
+                  foreignField: "_id",
+                  as: "resident",
+                },
+              },
+              {
+                $unwind: {
+                  path: "$resident",
+                  preserveNullAndEmptyArrays: false,
+                },
+              },
+            ],
+            as: "comments",
+          },
+        },
+      ]);
+
+      const formattedPostsWithComments = postsWithComments.map((post) => ({
+        id: post._id.toString(),
+        authorid: post.authorid.toString(),
+        title: post.title,
+        content: post.content,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        author: {
+          id: post.author._id.toString(),
+          username: post.author.username,
+          role: post.author.role,
+        },
+        comments: post.comments.map((comment) => ({
+          id: comment._id.toString(),
+          authorid: comment.authorid.toString(),
+          postid: comment.postid.toString(),
+          text: comment.text,
+          createdAt: comment.createdAt,
+          updatedAt: comment.updatedAt,
+          resident: {
+            id: comment.resident._id.toString(),
+            username: comment.resident.username,
+            role: comment.resident.role,
+          },
+        })),
+        __v: post.__v,
+      }));
+
+      return formattedPostsWithComments;
+    },
+    // TODO latenight work, works posts and comments(with authors)
+    // getHelpRequestPosts: async () => {
+    //   const postsWithComments = await HelpRequestPostModel.aggregate([
+    //     {
+    //       $sort: {
+    //         createdAt: 1,
+    //       },
+    //     },
+    //     {
+    //       $lookup: {
+    //         from: "helprequestcomments",
+    //         let: { commentIds: "$comments" },
+    //         pipeline: [
+    //           {
+    //             $match: {
+    //               $expr: { $in: ["$_id", "$$commentIds"] },
+    //             },
+    //           },
+    //           {
+    //             $sort: { createdAt: 1 },
+    //           },
+    //           {
+    //             $lookup: {
+    //               from: "residents",
+    //               localField: "authorid",
+    //               foreignField: "_id",
+    //               as: "resident",
+    //             },
+    //           },
+    //           {
+    //             $unwind: {
+    //               path: "$resident",
+    //               preserveNullAndEmptyArrays: false, // Filter out comments with no resident
+    //             },
+    //           },
+    //         ],
+    //         as: "comments",
+    //       },
+    //     },
+    //   ]);
+
+    //   const formattedPostsWithComments = postsWithComments.map((post) => ({
+    //     id: post._id.toString(),
+    //     authorid: post.authorid.toString(),
+    //     title: post.title,
+    //     content: post.content,
+    //     createdAt: post.createdAt,
+    //     updatedAt: post.updatedAt,
+    //     comments: post.comments.map((comment) => ({
+    //       id: comment._id.toString(),
+    //       authorid: comment.authorid.toString(),
+    //       postid: comment.postid.toString(),
+    //       text: comment.text,
+    //       createdAt: comment.createdAt,
+    //       updatedAt: comment.updatedAt,
+    //       resident: {
+    //         id: comment.resident._id.toString(),
+    //         username: comment.resident.username,
+    //         role: comment.resident.role,
+    //       },
+    //     })),
+    //     __v: post.__v,
+    //   }));
+
+    //   return formattedPostsWithComments;
+    // },
     // TODO VERISON in testing refer to notepad for gpt prompt
     // sorts both posts (oldest to newest) and comments (newest to oldest), Adds resident object to comment
     // getHelpRequestPosts: async () => {
