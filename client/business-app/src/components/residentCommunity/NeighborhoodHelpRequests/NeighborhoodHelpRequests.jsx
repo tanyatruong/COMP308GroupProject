@@ -155,9 +155,13 @@ const NeighborhoodHelpRequests = () => {
                                       id="commentAuthorName"
                                       // className="flex-shrink-1"
                                     >
-                                      <strong>
-                                        {comment.authorid || "Anonymous"}:
-                                      </strong>
+                                      {comment.authorid == loggedInUserID ? (
+                                        <strong>You</strong>
+                                      ) : (
+                                        <strong>
+                                          {comment.authorid || "Anonymous"}:
+                                        </strong>
+                                      )}
                                     </div>
                                   </Row>
                                   <Row>
