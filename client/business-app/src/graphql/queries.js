@@ -150,3 +150,49 @@ export const ANALYZE_SENTIMENT = gql`
     analyzeSentiment(reviews: $reviews)
   }
 `;
+
+
+// Marketplace queries
+export const GET_ALL_OFFERS = gql`
+  query GetAllOffers {
+    offers {
+      id
+      title
+      content
+      isActive
+      expiresAt
+      createdAt
+      business {
+        id
+      }
+    }
+  }
+`;
+
+export const GET_BUSINESS_PROFILE_BY_ID = gql`
+query GetBusinessProfileById($businessId: ID!) {
+  businessProfile(id: $businessId) {
+    id
+    businessName
+    description
+    images
+    averageRating
+    businessTags
+    location {
+      id
+      city
+      postalCode
+      address
+    }
+    reviews {
+      id
+      title
+      content
+      rating
+      sentimentAnalysis
+      responses
+      createdAt
+    }
+    }
+  }
+`;
