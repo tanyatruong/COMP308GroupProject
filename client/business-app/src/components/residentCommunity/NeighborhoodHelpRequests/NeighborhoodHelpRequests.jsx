@@ -290,6 +290,7 @@ const NeighborhoodHelpRequests = () => {
                             authorid: loggedInUserID,
                           },
                         },
+                        refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
                       }).then(() => {
                         // Clear input
                         setPostToBeCreatedTitle(null);
@@ -333,13 +334,14 @@ const NeighborhoodHelpRequests = () => {
                     // DeleteMutation
                     await deleteHelpRequestPost({
                       variables: {
-                        id: postToBeDeletedId,
+                        deleteHelpRequestPostId: postToBeDeletedId,
                       },
-                    }).then(() => {
-                      // Clear input
-                      setPostToBeDeletedId(null);
-                      console.log("Post Deletion Success");
+                      refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
                     });
+                    // Clear input
+                    setPostToBeDeletedId(null);
+                    console.log("Post Deletion Success");
+
                     setIsDeletePostDialogOpen(false);
                   }}
                 >
