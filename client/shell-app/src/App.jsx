@@ -35,7 +35,7 @@ function App() {
             <Route path='/signup' element={<SignUp />} />
             <Route path='/residentdashboard' element={<ResidentDashboard />} />
             <Route path='/resident/bulletinboard' element={<BulletinBoard />} />
-            <Route path='/individual-discussion' element={<IndividualDiscussion />} />
+            <Route path='/resident/bulletinboard/:postId' element={<IndividualDiscussion />} />
             <Route path='/resident/neighborhoodhelprequests' element={<NeighborhoodHelpRequests />} />
             <Route path='/resident/marketplace' element={<Marketplace />} />
 
