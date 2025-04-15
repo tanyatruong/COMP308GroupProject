@@ -6,6 +6,13 @@ import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 import { GET_POST_WITH_COMMENTS, SUMMARIZE_DISCUSSION } from "../../../graphql/queries";
 import { ADD_COMMENT, DELETE_POST } from "../../../graphql/mutations";
 
+// Layout
+const styles = {
+  fullWidth: {
+    width: '100%'
+  }
+};
+
 const IndividualDiscussion = () => {
   const { postId } = useParams();
   const [comment, setComment] = useState("");
@@ -154,19 +161,19 @@ const IndividualDiscussion = () => {
   
   if (loading) {
     return (
-      <Container>
+      <div className="container">
         <ResidentNavBar />
         <div className="text-center my-5">
           <Spinner animation="border" />
           <p className="mt-3">Loading discussion...</p>
         </div>
-      </Container>
+      </div>
     );
   }
   
   if (error) {
     return (
-      <Container>
+      <div className="container">
         <ResidentNavBar />
         <div className="my-5">
           <Alert variant="danger">
@@ -176,7 +183,7 @@ const IndividualDiscussion = () => {
             <Button variant="primary">Back to Bulletin Board</Button>
           </Link>
         </div>
-      </Container>
+      </div>
     );
   }
   
@@ -184,7 +191,7 @@ const IndividualDiscussion = () => {
   
   if (!post) {
     return (
-      <Container>
+      <div className="container">
         <ResidentNavBar />
         <div className="my-5">
           <Alert variant="warning">
@@ -194,149 +201,153 @@ const IndividualDiscussion = () => {
             <Button variant="primary">Back to Bulletin Board</Button>
           </Link>
         </div>
-      </Container>
+      </div>
     );
   }
   
   return (
-    <Container>
+    <div className="container">
       <ResidentNavBar />
-      
-      <div className="d-flex justify-content-between align-items-center my-3">
-        <Link to="/resident/bulletinboard">
-          <Button variant="outline-secondary" size="sm">
-            <i className="bi bi-arrow-left"></i> Back to Bulletin Board
-          </Button>
-        </Link>
-        
-        {isAuthor(post) && (
-          <Button 
-            variant="outline-danger" 
-            size="sm" 
-            onClick={handleDeletePost}
-            disabled={deleteLoading}
-          >
-            {deleteLoading ? 'Deleting...' : 'Delete Post'}
-          </Button>
-        )}
-      </div>
-      
-      {successMessage && (
-        <Alert variant="success" dismissible onClose={() => setSuccessMessage("")}>
-          {successMessage}
-        </Alert>
-      )}
-      
-      {errorMessage && (
-        <Alert variant="danger" dismissible onClose={() => setErrorMessage("")}>
-          {errorMessage}
-        </Alert>
-      )}
-      
-      <Card className="mb-4">
-        <Card.Header>
-          <h4>{post.title}</h4>
-          <div className="d-flex justify-content-between align-items-center">
-            {post.author && (
-              <small className="text-muted">
-                Posted by User-{post.author.id?.substring(0, 6) || 'Unknown'}
-              </small>
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center my-3">
+            <Link to="/resident/bulletinboard">
+              <Button variant="outline-secondary" size="sm">
+                <i className="bi bi-arrow-left"></i> Back to Bulletin Board
+              </Button>
+            </Link>
+            
+            {isAuthor(post) && (
+              <Button 
+                variant="outline-danger" 
+                size="sm" 
+                onClick={handleDeletePost}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete Post'}
+              </Button>
             )}
-            <small className="text-muted">{formatDate(post.createdAt)}</small>
           </div>
-        </Card.Header>
-        <Card.Body>
-          <Card.Text>{post.content}</Card.Text>
-        </Card.Body>
-      </Card>
-      
-      {/* AI Summary */}
-      <div className="mb-4">
-        <Button 
-          variant="outline-info" 
-          onClick={handleSummarizeDiscussion}
-          disabled={summaryLoading}
-          className="mb-3"
-        >
-          {summaryLoading ? (
-            <>
-              <Spinner animation="border" size="sm" className="me-2" />
-              Generating AI Summary...
-            </>
-          ) : (
-            <>
-              <i className="bi bi-robot me-2"></i>
-              Summarize Discussion with AI
-            </>
+          
+          {successMessage && (
+            <Alert variant="success" dismissible onClose={() => setSuccessMessage("")}>
+              {successMessage}
+            </Alert>
           )}
-        </Button>
-        
-        {summaryData?.summarizeDiscussion && (
-          <Card className="border-info mb-4">
-            <Card.Header className="bg-info bg-opacity-10">
-              <div className="d-flex align-items-center">
-                <i className="bi bi-robot me-2"></i>
-                <span>AI Discussion Summary</span>
+          
+          {errorMessage && (
+            <Alert variant="danger" dismissible onClose={() => setErrorMessage("")}>
+              {errorMessage}
+            </Alert>
+          )}
+          
+          <Card className="mb-4" style={styles.fullWidth}>
+            <Card.Header>
+              <h4>{post.title}</h4>
+              <div className="d-flex justify-content-between align-items-center">
+                {post.author && (
+                  <small className="text-muted">
+                    Posted by User-{post.author.id?.substring(0, 6) || 'Unknown'}
+                  </small>
+                )}
+                <small className="text-muted">{formatDate(post.createdAt)}</small>
               </div>
             </Card.Header>
             <Card.Body>
-              <Card.Text>{summaryData.summarizeDiscussion}</Card.Text>
+              <Card.Text>{post.content}</Card.Text>
             </Card.Body>
-            <Card.Footer className="bg-light text-muted small">
-              <i className="bi bi-info-circle me-2"></i>
-              This summary was generated by AI and may not be completely accurate.
-            </Card.Footer>
           </Card>
-        )}
+          
+          {/* AI Summary */}
+          <div className="mb-4">
+            <Button 
+              variant="outline-info" 
+              onClick={handleSummarizeDiscussion}
+              disabled={summaryLoading}
+              className="mb-3"
+            >
+              {summaryLoading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Generating AI Summary...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-robot me-2"></i>
+                  Summarize Discussion with AI
+                </>
+              )}
+            </Button>
+            
+            {summaryData?.summarizeDiscussion && (
+              <Card className="border-info mb-4" style={styles.fullWidth}>
+                <Card.Header className="bg-info bg-opacity-10">
+                  <div className="d-flex align-items-center">
+                    <i className="bi bi-robot me-2"></i>
+                    <span>AI Discussion Summary</span>
+                  </div>
+                </Card.Header>
+                <Card.Body>
+                  <Card.Text>{summaryData.summarizeDiscussion}</Card.Text>
+                </Card.Body>
+                <Card.Footer className="bg-light text-muted small">
+                  <i className="bi bi-info-circle me-2"></i>
+                  This summary was generated by AI and may not be completely accurate.
+                </Card.Footer>
+              </Card>
+            )}
+          </div>
+          
+          <h4>Comments ({post.comments?.length || 0})</h4>
+          
+          <Form onSubmit={handleAddComment} className="mb-4" style={styles.fullWidth}>
+            <Form.Group className="mb-3">
+              <Form.Label>Add a Comment</Form.Label>
+              <Form.Control 
+                as="textarea" 
+                rows={2} 
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Share your thoughts..."
+                style={styles.fullWidth}
+              />
+            </Form.Group>
+            <Button 
+              variant="primary" 
+              type="submit" 
+              disabled={commentLoading}
+            >
+              {commentLoading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Posting...
+                </>
+              ) : 'Post Comment'}
+            </Button>
+          </Form>
+          
+          <ListGroup className="mb-4" style={styles.fullWidth}>
+            {post.comments?.length > 0 ? (
+              post.comments.map(comment => (
+                <ListGroup.Item key={comment.id}>
+                  <div className="d-flex justify-content-between">
+                    {comment.author && (
+                      <strong>User-{comment.author.id?.substring(0, 6) || 'Unknown'}</strong>
+                    )}
+                    <small className="text-muted">
+                      {formatDate(comment.createdAt)}
+                    </small>
+                  </div>
+                  <p className="mb-0 mt-2">{comment.text}</p>
+                </ListGroup.Item>
+              ))
+            ) : (
+              <Alert variant="light">No comments yet. Be the first to comment!</Alert>
+            )}
+          </ListGroup>
+        </div>
       </div>
-      
-      <h4>Comments ({post.comments?.length || 0})</h4>
-      
-      <Form onSubmit={handleAddComment} className="mb-4">
-        <Form.Group className="mb-3">
-          <Form.Label>Add a Comment</Form.Label>
-          <Form.Control 
-            as="textarea" 
-            rows={2} 
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Share your thoughts..."
-          />
-        </Form.Group>
-        <Button 
-          variant="primary" 
-          type="submit" 
-          disabled={commentLoading}
-        >
-          {commentLoading ? (
-            <>
-              <Spinner animation="border" size="sm" className="me-2" />
-              Posting...
-            </>
-          ) : 'Post Comment'}
-        </Button>
-      </Form>
-      
-      <ListGroup className="mb-4">
-        {post.comments?.length > 0 ? (
-          post.comments.map(comment => (
-            <ListGroup.Item key={comment.id}>
-              <div className="d-flex justify-content-between">
-                {comment.author && (
-                  <strong>User-{comment.author.id?.substring(0, 6) || 'Unknown'}</strong>
-                )}
-                <small className="text-muted">
-                  {formatDate(comment.createdAt)}
-                </small>
-              </div>
-              <p className="mb-0 mt-2">{comment.text}</p>
-            </ListGroup.Item>
-          ))
-        ) : (
-          <Alert variant="light">No comments yet. Be the first to comment!</Alert>
-        )}
-      </ListGroup>
-    </Container>
+    </div>
   );
 };
 
