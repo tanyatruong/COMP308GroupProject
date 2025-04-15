@@ -1,0 +1,249 @@
+.delete-btn {
+  background-color: #ff4d4d; /* Red background */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
+}
+
+.delete-btn:hover {
+  background-color: #e60000; /* Darker red */
+  transform: scale(1.05); /* Slightly larger on hover */
+}
+
+.delete-btn:focus {
+  outline: none;
+}
+
+/* update button styles */
+.update-btn {
+  /* blue background */
+  background-color: #4b72f1;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
+}
+
+.update-btn:hover {
+  /* Darker blue on hover */
+  background-color: #0b40ec;
+  transform: scale(1.05);
+}
+
+.update-btn:focus {
+  outline: none;
+}
+
+.update-btn:active {
+  /* Even darker blue on click */
+  background-color: #022bb3;
+}
+/* Add button styles */
+.add-btn {
+  background-color: #4caf50; /* Green background */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 15px; /* Space between button and list */
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.add-btn:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.05);
+}
+
+.add-btn:focus {
+  outline: none;
+}
+
+.add-btn:active {
+  background-color: #388e3c; /* Even darker green on click */
+}
+
+/* Modal (Dialog) Styles */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+h2 {
+  text-align: center;
+}
+
+form label {
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+form input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #45a049;
+}
+
+form button:active {
+  background-color: #388e3c;
+}
+
+/* Basic styles for the dropdown */
+.dropdown {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+label {
+  font-size: 16px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.dropdown-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  margin-top: 8px;
+  cursor: pointer;
+  background-color: white;
+  transition: border-color 0.3s;
+}
+
+.dropdown-select:hover {
+  border-color: #4caf50; /* Green border on hover */
+}
+
+.dropdown-select:focus {
+  outline: none;
+  border-color: #4caf50; /* Green border when focused */
+}
+
+p {
+  font-size: 18px;
+  /* margin-top: 10px; */
+  font-weight: bold;
+}
+
+/* Input container */
+.input-container {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  height: 100vh; /* Makes the container take up the full height of the viewport */
+}
+
+.my-label {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.form-group {
+  /* margin: 0.8rem; */
+  margin-top: 1.5;
+  margin-bottom: 1.5;
+  margin-left: 0.7;
+  margin-right: 0.7;
+}
+
+/* #root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+  }
+   */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}

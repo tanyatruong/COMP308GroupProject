@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 import { Container, Row, Col } from "react-bootstrap";
 import { Card, Form, Button, ListGroup } from "react-bootstrap";
+import "./NeighborhoodHelpRequests.css";
+// import "../NeighborhoodHelpRequests/NeighborhoodHelpRequests.css";
 
 // import queries
 import { GET_HELP_REQUEST_POSTS } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.queries.js";
 import { GET_HELP_REQUEST_COMMENTS_OF_SPECIFIC_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.queries.js";
 // import mutations
-import {} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.mutations.js";
+import { CREATE_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.mutations.js";
 import { CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.mutations.js";
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 
@@ -17,6 +19,11 @@ const postFilterEnum = {
 };
 
 const NeighborhoodHelpRequests = () => {
+  localStorage.setItem("userId", "67ed8708e7277aa2145891aa");
+  const [isAddPostDialogOpen, setIsAddPostDialogOpen] = useState(false);
+  const [postToBeCreatedTitle, setPostToBeCreatedTitle] = useState();
+  const [postToBeCreatedContent, setPostToBeCreatedContent] = useState();
+  const [isDeletePostDialogOpen, setIsDeletePostDialogOpen] = useState(false);
   const [postFilter, setPostFilter] = useState(postFilterEnum.AllPosts);
   const [loggedInUserID, setLoggedInUserID] = useState(
     localStorage.getItem("userId")
@@ -25,31 +32,12 @@ const NeighborhoodHelpRequests = () => {
     useState(undefined);
   const [posts, setPosts] = useState(undefined);
 
-  // const dummy_data_AllHelpRequestPosts = [
-  //   {
-  //     authorid: "0",
-  //     title: "t0",
-  //     content: "c0",
-  //     comments: ["comm0", "comm1", "comm2"],
-  //   },
-  //   {
-  //     authorid: "1",
-  //     title: "t1",
-  //     content: "c1",
-  //     comments: ["comm0", "comm1", "comm2"],
-  //   },
-  //   {
-  //     authorid: "2",
-  //     title: "t2",
-  //     content: "c2",
-  //     comments: ["comm0", "comm1", "comm2"],
-  //   },
-  // ];
-
   const { data: data_AllHelpRequestPosts } = useQuery(GET_HELP_REQUEST_POSTS);
+  const [createHelpRequestPost] = useMutation(CREATE_HELP_REQUEST_POST);
   const [createHelpRequestComment] = useMutation(
     CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST
   );
+  const [commentInputs, setCommentInputs] = useState({});
   // useEffect(() => {
   //   data_AllHelpRequestPosts?.getHelpRequestPosts.forEach((post) => {});
   // }, [data_AllHelpRequestPosts]);
@@ -91,6 +79,16 @@ const NeighborhoodHelpRequests = () => {
             >
               <Button variant="primary" onClick={handleMyPostsFilterClick}>
                 My Posts
+              </Button>
+            </Col>
+            <Col id="addPostButton" className="d-flex justify-content-center">
+              <Button
+                variant="success"
+                onClick={() => {
+                  setIsAddPostDialogOpen(true);
+                }}
+              >
+                Add Post
               </Button>
             </Col>
           </Row>
@@ -206,6 +204,90 @@ const NeighborhoodHelpRequests = () => {
         </Row>
       </Container>
       <h1>NeighborhoodHelpRequests</h1>; */}
+      {/* Add Post Dialog */}
+      {isAddPostDialogOpen && (
+        <div>
+          <h1>Add Post Dialog</h1>
+          <div className="modal">
+            <div className="modal-content">
+              <span
+                className="close-btn"
+                onClick={() => {
+                  setIsAddPostDialogOpen(false);
+                }}
+              >
+                &times;
+              </span>
+              <h2>Add Post</h2>
+              <br />
+              <>
+                <Form>
+                  <Form.Group>
+                    <Form.Label>title</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="title"
+                      onChange={(e) => {
+                        setPostToBeCreatedTitle(e.target.value);
+                      }}
+                    />
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>content</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      aria-label="With textarea"
+                      placeholder="content"
+                      onChange={(e) => {
+                        setPostToBeCreatedContent(e.target.value);
+                      }}
+                    />
+                  </Form.Group>
+                  {/* <Form.Group>
+                    <Form.Label>content2</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="content"
+                      onChange={(e) => {
+                        setPostToBeCreatedContent(e.target.value);
+                      }}
+                    />
+                  </Form.Group> */}
+                  <button
+                    className="add-btn"
+                    style={{ marginTop: "1rem" }}
+                    onClick={async () => {
+                      console.log("complete post create Click");
+                      await createHelpRequestPost({
+                        variables: {
+                          input: {
+                            title: postToBeCreatedTitle,
+                            content: postToBeCreatedContent,
+                            authorid: loggedInUserID,
+                          },
+                        },
+                      }).then(() => {
+                        // Clear input
+                        setPostToBeCreatedTitle(null);
+                        setPostToBeCreatedContent(null);
+                        console.log("Post Creation Success");
+                      });
+                      setIsAddPostDialogOpen(false);
+                    }}
+                  >
+                    ✏️ Complete Create Post
+                  </button>
+                </Form>
+              </>
+            </div>
+          </div>
+        </div>
+      )}
+      {isDeletePostDialogOpen && (
+        <div>
+          <h1>Delete Post Dialog</h1>
+        </div>
+      )}
     </>
   );
 };
