@@ -8,7 +8,9 @@ const typeDefsHelpRequestPost = gql`
   }
 
   extend type Mutation {
-    createHelpRequestPost(input: CreateHelpRequestPostInput!): HelpRequestPost!
+    createHelpRequestPost(
+      input: CreateHelpRequestPostInput!
+    ): createHelpRequestPostReturnObject!
     updateHelpRequestPost(
       id: ID!
       input: UpdateHelpRequestPostInput!
@@ -92,6 +94,13 @@ const typeDefsHelpRequestPost = gql`
   input UpdateHelpRequestPostInput {
     title: String
     content: String
+  }
+
+  type createHelpRequestPostReturnObject {
+    message: String!
+    success: Boolean!
+    error: String!
+    createObjectId: ID!
   }
 
   type deletedHelpRequestPostReturnObject {

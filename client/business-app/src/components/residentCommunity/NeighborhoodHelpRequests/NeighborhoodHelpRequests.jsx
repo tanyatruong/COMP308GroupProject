@@ -48,8 +48,6 @@ const NeighborhoodHelpRequests = () => {
   );
   const [deleteHelpRequestComment] = useMutation(DELETE_HELP_REQUEST_COMMENT);
   const [commentInputs, setCommentInputs] = useState({});
-  // useEffect(() => {
-  // }, [data_AllHelpRequestPosts]);
 
   const [getCommentForPost, { data: data_GetCommentForPost }] = useLazyQuery(
     GET_HELP_REQUEST_COMMENTS_OF_SPECIFIC_HELP_REQUEST_POST
@@ -78,17 +76,17 @@ const NeighborhoodHelpRequests = () => {
               id="filterButtonAllPosts"
               className="d-flex justify-content-center"
             >
-              <Button variant="primary" onClick={handleAllPostsFilterClick}>
+              {/* <Button variant="primary" onClick={handleAllPostsFilterClick}>
                 All Posts
-              </Button>
+              </Button> */}
             </Col>
             <Col
               id="filterButtonMyPosts"
               className="d-flex justify-content-center"
             >
-              <Button variant="primary" onClick={handleMyPostsFilterClick}>
+              {/* <Button variant="primary" onClick={handleMyPostsFilterClick}>
                 My Posts
-              </Button>
+              </Button> */}
             </Col>
             <Col id="addPostButton" className="d-flex justify-content-center">
               <Button
@@ -110,26 +108,28 @@ const NeighborhoodHelpRequests = () => {
                   <Col>
                     <Card className="my-4 shadow">
                       {/* TODO Render if loggedin User is author of post */}
-                      <Card.Header>
-                        <Container>
-                          <Row>
-                            <Col
-                              id="deletePostButtonCol"
-                              className="d-flex justify-content-end"
-                            >
-                              <Button
-                                variant="danger"
-                                onClick={() => {
-                                  setPostToBeDeletedId(post.id);
-                                  setIsDeletePostDialogOpen(true);
-                                }}
+                      {post.author.id == loggedInUserID && (
+                        <Card.Header>
+                          <Container>
+                            <Row>
+                              <Col
+                                id="deletePostButtonCol"
+                                className="d-flex justify-content-end"
                               >
-                                🗑️ Delete Post
-                              </Button>
-                            </Col>
-                          </Row>
-                        </Container>
-                      </Card.Header>
+                                <Button
+                                  variant="danger"
+                                  onClick={() => {
+                                    setPostToBeDeletedId(post.id);
+                                    setIsDeletePostDialogOpen(true);
+                                  }}
+                                >
+                                  🗑️ Delete Post
+                                </Button>
+                              </Col>
+                            </Row>
+                          </Container>
+                        </Card.Header>
+                      )}
                       <Card.Body>
                         <Card.Title className="d-flex justify-content-between">
                           <div>Title: {post.title}</div>
@@ -292,13 +292,6 @@ const NeighborhoodHelpRequests = () => {
           )}
         </Container>
       </Card>
-      <Button
-        onClick={() => {
-          // getPosts();
-        }}
-      >
-        Get Posts
-      </Button>
       {/* <Container id="filterBarContainer">
         <Row>
           <Col id="filterButtonAllPosts">

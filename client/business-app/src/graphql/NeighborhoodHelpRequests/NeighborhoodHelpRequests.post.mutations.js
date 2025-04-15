@@ -3,19 +3,10 @@ import { gql } from "@apollo/client";
 export const CREATE_HELP_REQUEST_POST = gql`
   mutation CreateHelpRequestPost($input: CreateHelpRequestPostInput!) {
     createHelpRequestPost(input: $input) {
-      id
-      authorid
-      title
-      content
-      comments {
-        id
-        authorid
-        postid
-        text
-        createdAt
-      }
-      createdAt
-      updatedAt
+      message
+      success
+      error
+      createObjectId
     }
   }
 `;

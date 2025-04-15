@@ -19,7 +19,7 @@ const resolversHelpRequestPost = {
       const postsWithComments = await HelpRequestPostModel.aggregate([
         {
           $sort: {
-            createdAt: 1,
+            createdAt: -1, //posts newest first
           },
         },
         // Join author of the post (resident)
@@ -432,14 +432,6 @@ const resolversHelpRequestPost = {
   Mutation: {
     createHelpRequestPost: async (_, { input }) => {
       const { authorid, ...postData } = input;
-      const HelpRequestPost = new HelpRequestPostModel({
-        ...postData,
-        // author: new mongoose.Types.ObjectId(authorId),
-        authorid: authorid,
-        comments: [],
-      });
-
-      await HelpRequestPost.save();
 
       // const returnValue = {
       //   id: HelpRequestPost._id.toString(),
@@ -455,7 +447,29 @@ const resolversHelpRequestPost = {
       //   ...HelpRequestPost._doc,
       //   id: HelpRequestPost._id.toString(),
       // };
-      return HelpRequestPost;
+      try {
+        const HelpRequestPost = new HelpRequestPostModel({
+          ...postData,
+          // author: new mongoose.Types.ObjectId(authorId),
+          authorid: authorid,
+          comments: [],
+        });
+
+        await HelpRequestPost.save();
+        return {
+          message: `Creation Successful of Post object id: ${id}`,
+          success: true,
+          error: "No error",
+          createObjectId: id,
+        };
+      } catch (error) {
+        return {
+          message: `Creation Failed of Post object`,
+          success: false,
+          error: error,
+          createObjectId: id,
+        };
+      }
     },
     updateHelpRequestPost: async (_, { id, input }) => {
       const { title, content } = input;
