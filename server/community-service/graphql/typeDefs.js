@@ -4,12 +4,6 @@ const typeDefs = gql`
   extend type Query {
     posts: [Post!]!
     post(id: ID!): Post
-    
-    summarizeDiscussion(posts: [String]!): String!
-    analyzeSentiment(reviews: [String]!): String!
-    suggestEventVolunteers(tags: [String]!, city: String!): [Resident]!
-    suggestHelpRequestVolunteers(tags: [String]!, city: String!): [Resident]!
-    suggestEventTime(title: String!, tags: [String]!): String!
   }
 
   extend type Mutation {
