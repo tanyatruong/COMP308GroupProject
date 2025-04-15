@@ -13,7 +13,10 @@ import {
   CREATE_HELP_REQUEST_POST,
   DELETE_HELP_REQUEST_POST,
 } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.post.mutations.js";
-import { CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST } from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.mutations.js";
+import {
+  CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST,
+  DELETE_HELP_REQUEST_COMMENT,
+} from "../../../graphql/NeighborhoodHelpRequests/NeighborhoodHelpRequests.comment.mutations.js";
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 
 const postFilterEnum = {
@@ -43,6 +46,7 @@ const NeighborhoodHelpRequests = () => {
   const [createHelpRequestComment] = useMutation(
     CREATE_AND_ADD_HELP_REQUEST_COMMENT_TO_HELP_REQUEST_POST
   );
+  const [deleteHelpRequestComment] = useMutation(DELETE_HELP_REQUEST_COMMENT);
   const [commentInputs, setCommentInputs] = useState({});
   // useEffect(() => {
   // }, [data_AllHelpRequestPosts]);
@@ -105,6 +109,7 @@ const NeighborhoodHelpRequests = () => {
                 <Row key={post.id}>
                   <Col>
                     <Card className="my-4 shadow">
+                      {/* TODO Render if loggedin User is author of post */}
                       <Card.Header>
                         <Container>
                           <Row>
@@ -128,10 +133,19 @@ const NeighborhoodHelpRequests = () => {
                       <Card.Body>
                         <Card.Title className="d-flex justify-content-between">
                           <div>Title: {post.title}</div>
-                          <div>authorid: {post.authorid}</div>
+                          <div>
+                            author:{" "}
+                            {post?.author?.username ||
+                              `Anonymous ${post?.author?.role}`}
+                          </div>
                         </Card.Title>
-                        <hr />
-                        <Card.Text>Content{post.content}</Card.Text>
+                        {/* <hr /> */}
+                        {/* <Card.Text>Content{post.content}</Card.Text> */}
+                        <Card>
+                          <Card.Text style={{ whiteSpace: "pre-wrap" }}>
+                            {post.content}
+                          </Card.Text>
+                        </Card>
 
                         <hr />
 
@@ -139,7 +153,7 @@ const NeighborhoodHelpRequests = () => {
 
                         <ListGroup className="mt-3">
                           {post.comments.map((comment, index) => (
-                            <ListGroup.Item key={comment.createdAt}>
+                            <ListGroup.Item key={comment.id}>
                               <Container>
                                 {/* <Card
                                 id="individualCommentContainer"
@@ -155,13 +169,18 @@ const NeighborhoodHelpRequests = () => {
                                       id="commentAuthorName"
                                       // className="flex-shrink-1"
                                     >
-                                      {comment.authorid == loggedInUserID ? (
-                                        <strong>You</strong>
-                                      ) : (
-                                        <strong>
-                                          {comment.authorid || "Anonymous"}:
-                                        </strong>
-                                      )}
+                                      <strong>
+                                        {/* {comment?.resident?.username
+                                        ? comment.resident.username
+                                        : `Anonymous ${
+                                          comment?.resident?.role || ""
+                                          }`} */}
+                                        {/* Sleeker version of above */}
+                                        {comment?.resident?.username ??
+                                          `Anonymous ${
+                                            comment?.resident?.role ?? ""
+                                          }`}
+                                      </strong>
                                     </div>
                                   </Row>
                                   <Row>
@@ -179,6 +198,20 @@ const NeighborhoodHelpRequests = () => {
                                           <Button
                                             variant="danger"
                                             style={{ fontSize: "small" }}
+                                            onClick={async () => {
+                                              await deleteHelpRequestComment({
+                                                variables: {
+                                                  deleteHelpRequestCommentId:
+                                                    comment.id,
+                                                },
+                                                refetchQueries: [
+                                                  {
+                                                    query:
+                                                      GET_HELP_REQUEST_POSTS,
+                                                  },
+                                                ],
+                                              });
+                                            }}
                                           >
                                             🗑️
                                           </Button>
@@ -216,7 +249,10 @@ const NeighborhoodHelpRequests = () => {
                               // Clear input
                               setCommentInputs((prev) => ({
                                 ...prev,
-                                [post.id]: "",
+                                [post.id]: {
+                                  text: "",
+                                  authorid: loggedInUserID,
+                                },
                               }));
                             });
                           }}
@@ -225,6 +261,7 @@ const NeighborhoodHelpRequests = () => {
                             <Form.Control
                               type="text"
                               placeholder="Write a comment..."
+                              value={commentInputs[post.id]?.text || ""}
                               onChange={
                                 (e) =>
                                   setCommentInputs((prev) => ({

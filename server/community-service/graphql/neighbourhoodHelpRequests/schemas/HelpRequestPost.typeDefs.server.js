@@ -76,10 +76,10 @@ const typeDefsHelpRequestPost = gql`
     createdAt: String!
     resident: Resident
   }
-  type Resident {
-    id: ID!
-    username: String!
-    role: String!
+  extend type Resident @key(fields: "id") {
+    id: ID! @external
+    username: String! @external
+    role: String! @external
     # add more fields if needed
   }
 
