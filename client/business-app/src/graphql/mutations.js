@@ -106,6 +106,7 @@ export const SUGGEST_VOLUNTEERS = gql`
   }
 `;
 
+// bulletinboard
 export const CREATE_POST = gql`
   mutation CreatePost($input: PostInput!) {
     createPost(input: $input) {
@@ -115,7 +116,6 @@ export const CREATE_POST = gql`
       createdAt
       author {
         id
-        username
       }
     }
   }
@@ -129,8 +129,14 @@ export const ADD_COMMENT = gql`
       createdAt
       author {
         id
-        username
       }
+      postId
     }
+  }
+`;
+
+export const DELETE_POST = gql`
+  mutation DeletePost($id: ID!) {
+    deletePost(id: $id)
   }
 `;
