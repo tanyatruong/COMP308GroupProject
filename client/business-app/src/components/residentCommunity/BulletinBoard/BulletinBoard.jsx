@@ -13,6 +13,7 @@ const BulletinBoard = () => {
   const [postToDelete, setPostToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
+  const [componentReady, setComponentReady] = useState(false);
   
   // Get user ID from localStorage
   useEffect(() => {
@@ -28,6 +29,11 @@ const BulletinBoard = () => {
       console.log("No userId in localStorage, using test ID");
       setCurrentUserId("507f1f77bcf86cd799439011");
     }
+    
+    // Loading layout
+    setTimeout(() => {
+      setComponentReady(true);
+    }, 100);
   }, []);
   
   // Query to fetch all posts
@@ -137,8 +143,21 @@ const BulletinBoard = () => {
     return post.author && post.author.id === currentUserId;
   };
   
+  // Show loading state until component is ready
+  if (!componentReady) {
+    return (
+      <Container>
+        <ResidentNavBar />
+        <div className="text-center my-5">
+          <Spinner animation="border" />
+          <p className="mt-2">Loading bulletin board...</p>
+        </div>
+      </Container>
+    );
+  }
+  
   return (
-    <Container>
+    <Container className="bulletin-board-container pb-5">
       <ResidentNavBar />
       <h2 className="my-4">Community Bulletin Board</h2>
       <p>Stay updated with local news and join discussions with your neighbors</p>
@@ -155,7 +174,7 @@ const BulletinBoard = () => {
         </Alert>
       )}
       
-      <Card className="mb-4">
+      <Card className="mb-4 w-100">
         <Card.Header as="h5">Create a New Post</Card.Header>
         <Card.Body>
           <Form onSubmit={handleSubmit}>
@@ -200,7 +219,7 @@ const BulletinBoard = () => {
       ) : error ? (
         <Alert variant="danger">Error loading posts: {error.message}</Alert>
       ) : (
-        <ListGroup className="mb-4">
+        <ListGroup className="mb-4 w-100">
           {data?.posts?.map(post => (
             <ListGroup.Item key={post.id} className="mb-2">
               <div className="d-flex justify-content-between align-items-center">
