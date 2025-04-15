@@ -140,10 +140,51 @@ const NeighborhoodHelpRequests = () => {
                         <ListGroup className="mt-3">
                           {post.comments.map((comment, index) => (
                             <ListGroup.Item key={comment.createdAt}>
-                              <strong>
-                                {comment.authorid || "Anonymous"}:
-                              </strong>{" "}
-                              {comment.text}
+                              <Container>
+                                {/* <Card
+                                id="individualCommentContainer"
+                                className="d-flex"
+                                > */}
+
+                                <div
+                                  id="individualCommentContainer"
+                                  // className="d-flex"
+                                >
+                                  <Row>
+                                    <div
+                                      id="commentAuthorName"
+                                      // className="flex-shrink-1"
+                                    >
+                                      <strong>
+                                        {comment.authorid || "Anonymous"}:
+                                      </strong>
+                                    </div>
+                                  </Row>
+                                  <Row>
+                                    <Col
+                                    // className="flex-grow-1"
+                                    >
+                                      <div id="commentText">{comment.text}</div>
+                                    </Col>
+                                    {comment.authorid == loggedInUserID && (
+                                      <Col xs="auto">
+                                        <div
+                                          id="commentDeleteButtonContainer"
+                                          // className="flex-shrink-1"
+                                        >
+                                          <Button
+                                            variant="danger"
+                                            style={{ fontSize: "small" }}
+                                          >
+                                            🗑️
+                                          </Button>
+                                        </div>
+                                      </Col>
+                                    )}
+                                  </Row>
+                                  {/* </Card> */}
+                                </div>
+                              </Container>
                             </ListGroup.Item>
                           ))}
                         </ListGroup>
