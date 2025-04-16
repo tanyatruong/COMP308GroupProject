@@ -23,6 +23,7 @@ import CreateBusinessProfile from "./components/business/CreateBusinessProfile";
 import ResidentDashboard from "./components/residentCommunity/residentDashboard/ResidentDashboard";
 import BulletinBoard from "./components/residentCommunity/BulletinBoard/BulletinBoard";
 import Marketplace from "./components/residentCommunity/Marketplace/Marketplace";
+import BusinessDetails from "./components/residentCommunity/Marketplace/BusinessDetails";
 import NeighborhoodHelpRequests from "./components/residentCommunity/NeighborhoodHelpRequests/NeighborhoodHelpRequests";
 import IndividualDiscussion from "./components/residentCommunity/BulletinBoard/IndividualDiscussion";
 
@@ -113,6 +114,10 @@ function App() {
             <Route path="/resident" element={<ResidentDashboard />} />
             <Route path="/resident/bulletinboard" element={<BulletinBoard />} />
             <Route path="/resident/marketplace" element={<Marketplace />} />
+            <Route
+              path="/resident/marketplace/businessdetails/:businessId"
+              element={<BusinessDetails />}
+            />
             <Route
               path="/resident/neighborhoodhelprequests"
               element={<NeighborhoodHelpRequests />}

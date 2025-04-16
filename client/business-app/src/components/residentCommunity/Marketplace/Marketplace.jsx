@@ -133,6 +133,10 @@ const PublicMarketplace = () => {
   };
 
   const getBusinessProfile = (offer) => businessProfiles[offer.business?.id];
+  
+  const navigateToBusinessDetails = (businessId) => {
+    navigate(`/resident/marketplace/businessdetails/${businessId}`);
+  };
 
   if (offersLoading || profilesLoading) {
     return (
@@ -244,7 +248,11 @@ const PublicMarketplace = () => {
                   )}
                   <Card.Body>
                     <Card.Title className="fs-5">{offer.title || "Untitled Offer"}</Card.Title>
-                    <div className="mb-3 p-2 bg-light rounded">
+                    <div 
+                      className="mb-3 p-2 bg-light rounded" 
+                      style={{ cursor: 'pointer' }} 
+                      onClick={() => profile && navigateToBusinessDetails(profile.id)}
+                    >
                       <div className="d-flex justify-content-between align-items-center mb-2">
                         <h6 className="mb-0">{profile?.businessName || "Unknown Business"}</h6>
                         {profile?.averageRating > 0 && (
@@ -263,7 +271,10 @@ const PublicMarketplace = () => {
                       )}
                       <div className="mt-2">
                         {profile?.businessTags?.map((tag) => (
-                          <Badge key={tag} bg="secondary" className="me-1 mb-1" onClick={() => handleTagSelect(tag)} style={{ cursor: "pointer" }}>
+                          <Badge key={tag} bg="secondary" className="me-1 mb-1" onClick={(e) => {
+                            e.stopPropagation(); // Prevent business profile navigation
+                            handleTagSelect(tag);
+                          }} style={{ cursor: "pointer" }}>
                             {tag}
                           </Badge>
                         ))}
