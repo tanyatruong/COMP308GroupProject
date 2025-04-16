@@ -4,33 +4,19 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import {gql, useMutation} from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import "./ResidentNavBar.css";
 
 
-const LOGOUT_MUTATION = gql`
-  mutation Logout {
-    logout
-  }
-`;
-
 const ResidentNavBar = () => {
   const navigate = useNavigate();
-  const [logout] = useMutation(LOGOUT_MUTATION, {
-    fetchPolicy: "no-cache",
-  });
+
 
   const handleLogout = async () => {
-  localStorage.removeItem("role");
-  localStorage.removeItem("username");
-  localStorage.removeItem("userId");
-  try{
-    await logout();
-    navigate("/");
-  } catch(err){
-    console.error("Error logging out:", err);
-  }
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userId");
+    navigate('/');
   }
   return (
     <>
