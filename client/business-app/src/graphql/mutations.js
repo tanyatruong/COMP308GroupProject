@@ -140,3 +140,36 @@ export const DELETE_POST = gql`
     deletePost(id: $id)
   }
 `;
+
+// Marketplace
+export const CREATE_REVIEW = gql`
+  mutation CreateReview($input: ReviewInput!) {
+    createReview(input: $input) {
+      id
+      title
+      content
+      rating
+      createdAt
+      author {
+        id
+      }
+      responses
+    }
+  }
+`;
+
+export const UPDATE_REVIEW = gql`
+  mutation UpdateReview($reviewId: ID!, $input: ReviewUpdateInput!) {
+    updateReview(id: $reviewId, input: $input) {
+      id
+      title
+      content
+      rating
+      createdAt
+      author {
+        id
+      }
+      responses
+    }
+  }
+`;

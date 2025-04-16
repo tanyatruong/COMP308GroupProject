@@ -22,7 +22,8 @@ export default defineConfig({
         "./BulletinBoard": "./src/components/residentCommunity/bulletinBoard/BulletinBoard",
         "./IndividualDiscussion": "/src/components/residentCommunity/bulletinBoard/IndividualDiscussion",
         "./NeighborhoodHelpRequests": "/src/components/residentCommunity/NeighborhoodHelpRequests/NeighborhoodHelpRequests",
-        "./Marketplace": "/src/components/residentCommunity/Marketplace/Marketplace"
+        "./Marketplace": "/src/components/residentCommunity/Marketplace/Marketplace",
+        "./BusinessDetails": "/src/components/residentCommunity/Marketplace/BusinessDetails"
       },
       shared: [
         "react",

@@ -19,6 +19,7 @@ const BulletinBoard = lazy(() => import('businessApp/BulletinBoard'));
 const IndividualDiscussion = lazy(() => import('businessApp/IndividualDiscussion'));
 const NeighborhoodHelpRequests = lazy(() => import('businessApp/NeighborhoodHelpRequests'));
 const Marketplace = lazy(() => import('businessApp/Marketplace'));
+const BusinessDetails = lazy(() => import('businessApp/BusinessDetails'));
 function App() {
   return (
     <Router>
@@ -38,6 +39,7 @@ function App() {
             <Route path='/resident/bulletinboard/:postId' element={<IndividualDiscussion />} />
             <Route path='/resident/neighborhoodhelprequests' element={<NeighborhoodHelpRequests />} />
             <Route path='/resident/marketplace' element={<Marketplace />} />
+            <Route path='/resident/marketplace/businessdetails/:businessId' element={<BusinessDetails />} />
 
           </Routes>
         </Suspense>
