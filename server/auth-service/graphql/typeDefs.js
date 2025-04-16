@@ -66,6 +66,7 @@ const typeDefs = gql`
         boSignup(role: String!, username: String!, password: String!): BusinessOwner
         coSignup(role: String!, username: String!, password: String!): CommunityOrganizer
         Login(role: String!, username: String!, password: String!): LoginResult
+        logout: Boolean
     }
 `
 module.exports = {typeDefs}

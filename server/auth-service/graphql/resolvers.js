@@ -186,6 +186,10 @@ const resolvers = {
                 default:
                     throw new Error("Invalid Role");
             }
+        },
+        logout: async(_, __, {res}) => {
+            res.clearCookie("token", {httpOnly: true, secure: false, samesite: 'lax'});
+            return true;
         }
     }
 }
