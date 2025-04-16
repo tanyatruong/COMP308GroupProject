@@ -100,14 +100,14 @@ const typeDefsHelpRequestPost = gql`
     message: String!
     success: Boolean!
     error: String!
-    createObjectId: ID!
+    createObjectId: ID
   }
 
   type deletedHelpRequestPostReturnObject {
     message: String!
     success: Boolean!
     error: String!
-    deleteObjectId: ID!
+    deleteObjectId: ID
   }
 
   # Reference external types

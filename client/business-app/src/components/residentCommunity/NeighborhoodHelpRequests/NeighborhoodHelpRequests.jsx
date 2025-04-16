@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 import { Container, Row, Col } from "react-bootstrap";
-import { Card, Form, Button, ListGroup } from "react-bootstrap";
+import { Card, Form, Button, ListGroup, Modal } from "react-bootstrap";
 import "./NeighborhoodHelpRequests.css";
 // import "../NeighborhoodHelpRequests/NeighborhoodHelpRequests.css";
 
@@ -25,16 +25,22 @@ const postFilterEnum = {
 };
 
 const NeighborhoodHelpRequests = () => {
-  localStorage.setItem("userId", "67ed8708e7277aa2145891aa");
   const [isAddPostDialogOpen, setIsAddPostDialogOpen] = useState(false);
   const [postToBeCreatedTitle, setPostToBeCreatedTitle] = useState();
   const [postToBeCreatedContent, setPostToBeCreatedContent] = useState();
   const [isDeletePostDialogOpen, setIsDeletePostDialogOpen] = useState(false);
   const [postToBeDeletedId, setPostToBeDeletedId] = useState(null);
+  const [postToBeDeletedTitle, setPostToBeDeletedTitle] = useState(null);
 
   const [postFilter, setPostFilter] = useState(postFilterEnum.AllPosts);
   const [loggedInUserID, setLoggedInUserID] = useState(
     localStorage.getItem("userId")
+  );
+  const [loggedInUserRole, setLoggedInUserRole] = useState(
+    localStorage.getItem("role")
+  );
+  const [loggedInUserUsername, setLoggedInUserUsername] = useState(
+    localStorage.getItem("username")
   );
   const [neighborhoodHelpRequestsPosts, setNeighborhoodHelpRequestsPosts] =
     useState(undefined);
@@ -120,6 +126,7 @@ const NeighborhoodHelpRequests = () => {
                                   variant="danger"
                                   onClick={() => {
                                     setPostToBeDeletedId(post.id);
+                                    setPostToBeDeletedTitle(post.title);
                                     setIsDeletePostDialogOpen(true);
                                   }}
                                 >
@@ -146,6 +153,21 @@ const NeighborhoodHelpRequests = () => {
                             {post.content}
                           </Card.Text>
                         </Card>
+                        <div className="d-flex justify-content-end">
+                          <span>
+                            Created at:{" "}
+                            {new Date(Number(post.createdAt)).toLocaleString(
+                              undefined,
+                              {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </span>
+                        </div>
 
                         <hr />
 
@@ -304,7 +326,64 @@ const NeighborhoodHelpRequests = () => {
       </Container>
       <h1>NeighborhoodHelpRequests</h1>; */}
       {/* Add Post Dialog */}
-      {isAddPostDialogOpen && (
+      {/* New AddPostDialog */}
+      <Modal
+        show={isAddPostDialogOpen}
+        onHide={() => setIsAddPostDialogOpen(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Add Post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Title"
+                onChange={(e) => setPostToBeCreatedTitle(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Content</Form.Label>
+              <Form.Control
+                as="textarea"
+                placeholder="Content"
+                onChange={(e) => setPostToBeCreatedContent(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setIsAddPostDialogOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="success"
+            onClick={async () => {
+              await createHelpRequestPost({
+                variables: {
+                  input: {
+                    title: postToBeCreatedTitle,
+                    content: postToBeCreatedContent,
+                    authorid: loggedInUserID,
+                  },
+                },
+                refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
+              });
+              setIsAddPostDialogOpen(false);
+            }}
+          >
+            ✏️ Create Post
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* OLD AddPostDialog */}
+      {/* {isAddPostDialogOpen && (
         <div>
           <h1>Add Post Dialog</h1>
           <div className="modal">
@@ -342,16 +421,6 @@ const NeighborhoodHelpRequests = () => {
                       }}
                     />
                   </Form.Group>
-                  {/* <Form.Group>
-                    <Form.Label>content2</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="content"
-                      onChange={(e) => {
-                        setPostToBeCreatedContent(e.target.value);
-                      }}
-                    />
-                  </Form.Group> */}
                   <button
                     className="add-btn"
                     style={{ marginTop: "1rem" }}
@@ -382,8 +451,54 @@ const NeighborhoodHelpRequests = () => {
             </div>
           </div>
         </div>
-      )}
-      {isDeletePostDialogOpen && (
+      )} */}
+      {/* Delete Post Dialog */}
+      {/* New Delete Post Dialog */}
+      <Modal
+        show={isDeletePostDialogOpen}
+        onHide={() => setIsDeletePostDialogOpen(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to delete this post?
+            <br />
+            <strong>Post Title:</strong> {postToBeDeletedTitle}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setIsDeletePostDialogOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={async () => {
+              console.log("Complete delete post click");
+
+              await deleteHelpRequestPost({
+                variables: {
+                  deleteHelpRequestPostId: postToBeDeletedId,
+                },
+                refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
+              });
+
+              setPostToBeDeletedId(null);
+              console.log("Post Deletion Success");
+              setIsDeletePostDialogOpen(false);
+            }}
+          >
+            🗑️ Delete Post
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Old Delete Post Dialog */}
+      {/* {isDeletePostDialogOpen && (
         <div>
           <h1>Delete Post Dialog</h1>
           <div className="modal">
@@ -426,7 +541,7 @@ const NeighborhoodHelpRequests = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 };

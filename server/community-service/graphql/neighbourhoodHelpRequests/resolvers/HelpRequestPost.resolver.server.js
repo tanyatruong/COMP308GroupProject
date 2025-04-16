@@ -457,17 +457,16 @@ const resolversHelpRequestPost = {
 
         await HelpRequestPost.save();
         return {
-          message: `Creation Successful of Post object id: ${id}`,
+          message: `Creation Successful of Post object id: ${HelpRequestPost.id}`,
           success: true,
           error: "No error",
-          createObjectId: id,
+          createObjectId: HelpRequestPost.id,
         };
       } catch (error) {
         return {
           message: `Creation Failed of Post object`,
           success: false,
           error: error,
-          createObjectId: id,
         };
       }
     },
