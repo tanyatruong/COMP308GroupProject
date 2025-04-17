@@ -2,16 +2,27 @@ import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import Button from "react-bootstrap/Button";
 import NavDropdown from "react-bootstrap/NavDropdown";
-
+import { useNavigate } from "react-router-dom";
 import "./ResidentNavBar.css";
 
+
 const ResidentNavBar = () => {
+  const navigate = useNavigate();
+
+
+  const handleLogout = async () => {
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userId");
+    navigate('/');
+  }
   return (
     <>
       <Navbar expand="lg" className="bg-body-tertiary mb-2">
         <Container>
-          <Navbar.Brand href="">Resident Dashboard</Navbar.Brand>
+          <Navbar.Brand href="/residentdashboard">Resident Dashboard</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
@@ -33,6 +44,11 @@ const ResidentNavBar = () => {
                   Separated link
                 </NavDropdown.Item>
               </NavDropdown> */}
+            </Nav>
+            <Nav className="ms-auto">
+              <Button variant="outline-danger" onClick={handleLogout}>
+                Logout
+              </Button>
             </Nav>
           </Navbar.Collapse>
         </Container>
