@@ -25,6 +25,7 @@ const postFilterEnum = {
 };
 
 const NeighborhoodHelpRequests = () => {
+  const [validated, setValidated] = useState(false);
   const [isAddPostDialogOpen, setIsAddPostDialogOpen] = useState(false);
   const [postToBeCreatedTitle, setPostToBeCreatedTitle] = useState();
   const [postToBeCreatedContent, setPostToBeCreatedContent] = useState();
@@ -329,6 +330,91 @@ const NeighborhoodHelpRequests = () => {
       {/* New AddPostDialog */}
       <Modal
         show={isAddPostDialogOpen}
+        onHide={() => {
+          setIsAddPostDialogOpen(false);
+          setValidated(false); // reset validation on close
+        }}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Add Post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            noValidate
+            validated={validated}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              if (form.checkValidity() === false) {
+                e.stopPropagation();
+                setValidated(true);
+                return;
+              }
+
+              await createHelpRequestPost({
+                variables: {
+                  input: {
+                    title: postToBeCreatedTitle,
+                    content: postToBeCreatedContent,
+                    authorid: loggedInUserID,
+                  },
+                },
+                refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
+              });
+
+              setValidated(false);
+              setIsAddPostDialogOpen(false);
+            }}
+          >
+            <Form.Group>
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                required
+                type="text"
+                placeholder="Title"
+                value={postToBeCreatedTitle}
+                onChange={(e) => setPostToBeCreatedTitle(e.target.value)}
+              />
+              <Form.Control.Feedback type="invalid">
+                Please provide a post title.
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Content</Form.Label>
+              <Form.Control
+                required
+                as="textarea"
+                placeholder="Content"
+                value={postToBeCreatedContent}
+                onChange={(e) => setPostToBeCreatedContent(e.target.value)}
+              />
+              <Form.Control.Feedback type="invalid">
+                Please provide post content.
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Modal.Footer className="mt-3">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setIsAddPostDialogOpen(false);
+                  setValidated(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button variant="success" type="submit">
+                ✏️ Create Post
+              </Button>
+            </Modal.Footer>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      {/* hot modal change b4 presentation */}
+      {/* <Modal
+        show={isAddPostDialogOpen}
         onHide={() => setIsAddPostDialogOpen(false)}
         centered
       >
@@ -340,18 +426,26 @@ const NeighborhoodHelpRequests = () => {
             <Form.Group>
               <Form.Label>Title</Form.Label>
               <Form.Control
+                required
                 type="text"
                 placeholder="Title"
                 onChange={(e) => setPostToBeCreatedTitle(e.target.value)}
               />
+              <Form.Control.Feedback type="invalid">
+                Please provide a post title.
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group>
               <Form.Label>Content</Form.Label>
               <Form.Control
+                required
                 as="textarea"
                 placeholder="Content"
                 onChange={(e) => setPostToBeCreatedContent(e.target.value)}
               />
+              <Form.Control.Feedback type="invalid">
+                Please provide post content.
+              </Form.Control.Feedback>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -381,7 +475,7 @@ const NeighborhoodHelpRequests = () => {
             ✏️ Create Post
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
       {/* OLD AddPostDialog */}
       {/* {isAddPostDialogOpen && (
         <div>

@@ -1,5 +1,40 @@
 import { gql } from "@apollo/client";
 
+// attempt at volunteer suggestion
+// export const GET_HELP_REQUEST_POSTS = gql`
+// query GetHelpRequestPosts {
+//   getHelpRequestPosts {
+//     id
+//     authorid
+//     title
+//     content
+//     author {
+//       id
+//       role
+//       username
+//       interests
+//       location {
+//         id
+//         city
+//         postalCode
+//         address
+//       }
+//     }
+//     comments {
+//       id
+//       postid
+//       authorid
+//       text
+//       createdAt
+//       resident {
+//         id
+//         role
+//         username
+//       }
+//     }
+//   }
+// }
+// `;
 export const GET_HELP_REQUEST_POSTS = gql`
   query GetHelpRequestPosts {
     getHelpRequestPosts {

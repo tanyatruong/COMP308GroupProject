@@ -14,6 +14,130 @@ const resolversHelpRequestPost = {
     getHelpRequestPost: async (_, { id }) => {
       return await HelpRequestPostModel.findById(id);
     },
+    // Doesnt work: also gets post's author's location and interest for ai volunteer suggestion
+    // getHelpRequestPosts: async () => {
+    //   const postsWithComments = await HelpRequestPostModel.aggregate([
+    //     {
+    //       $sort: {
+    //         createdAt: -1,
+    //       },
+    //     },
+    //     // Join author of the post (resident)
+    //     {
+    //       $lookup: {
+    //         from: "residents",
+    //         localField: "authorid",
+    //         foreignField: "_id",
+    //         as: "author",
+    //       },
+    //     },
+    //     {
+    //       $unwind: {
+    //         path: "$author",
+    //         preserveNullAndEmptyArrays: false,
+    //       },
+    //     },
+    //     // Join author's location
+    //     {
+    //       $lookup: {
+    //         from: "locations",
+    //         localField: "author.location", // assuming author has a `location` field that is an ObjectId
+    //         foreignField: "_id",
+    //         as: "authorLocation",
+    //       },
+    //     },
+    //     {
+    //       $unwind: {
+    //         path: "$authorLocation",
+    //         preserveNullAndEmptyArrays: true, // allow null if no location is found
+    //       },
+    //     },
+    //     // Join comments + comment author
+    //     {
+    //       $lookup: {
+    //         from: "helprequestcomments",
+    //         let: { commentIds: "$comments" },
+    //         pipeline: [
+    //           {
+    //             $match: {
+    //               $expr: { $in: ["$_id", "$$commentIds"] },
+    //             },
+    //           },
+    //           {
+    //             $sort: { createdAt: 1 },
+    //           },
+    //           {
+    //             $lookup: {
+    //               from: "residents",
+    //               localField: "authorid",
+    //               foreignField: "_id",
+    //               as: "resident",
+    //             },
+    //           },
+    //           {
+    //             $unwind: {
+    //               path: "$resident",
+    //               preserveNullAndEmptyArrays: false,
+    //             },
+    //           },
+    //         ],
+    //         as: "comments",
+    //       },
+    //     },
+    //   ]);
+
+    //   const formattedPostsWithComments = postsWithComments.map((post) => ({
+    //     id: post._id.toString(),
+    //     authorid: post.authorid.toString(),
+    //     title: post.title,
+    //     content: post.content,
+    //     createdAt: post.createdAt,
+    //     updatedAt: post.updatedAt,
+    //     author: {
+    //       id: post.author._id.toString(),
+    //       username: post.author.username,
+    //       role: post.author.role,
+    //       interests: post.author.interests || [],
+    //       // location: {
+    //       //   id: post.authorLocation._id.toString(),
+    //       //   city: post.authorLocation.city,
+    //       //   postalCode: post.authorLocation.postalCode,
+    //       //   address: post.authorLocation.address,
+    //       // },
+    //       location: post.authorLocation
+    //         ? {
+    //             id: post.authorLocation._id.toString(),
+    //             city: post.authorLocation.city,
+    //             postalCode: post.authorLocation.postalCode,
+    //             address: post.authorLocation.address,
+    //           }
+    //         : {
+    //             id: "unknown-location-id",
+    //             city: "noCity",
+    //             postalCode: "noPostalCode",
+    //             address: "noAddress",
+    //           },
+    //     },
+    //     comments: post.comments.map((comment) => ({
+    //       id: comment._id.toString(),
+    //       authorid: comment.authorid.toString(),
+    //       postid: comment.postid.toString(),
+    //       text: comment.text,
+    //       createdAt: comment.createdAt,
+    //       updatedAt: comment.updatedAt,
+    //       resident: {
+    //         id: comment.resident._id.toString(),
+    //         username: comment.resident.username,
+    //         role: comment.resident.role,
+    //       },
+    //     })),
+    //     __v: post.__v,
+    //   }));
+
+    //   console.log("data_AllHelpRequestPosts", formattedPostsWithComments);
+
+    //   return formattedPostsWithComments;
+    // },
     // TODO latenight work, WORKS posts(with authors) and comments(with authors)
     getHelpRequestPosts: async () => {
       const postsWithComments = await HelpRequestPostModel.aggregate([

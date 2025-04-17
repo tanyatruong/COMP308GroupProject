@@ -21,7 +21,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-
+const jwt = require("jsonwebtoken");
 dotenv.config();
 
 const app = express();

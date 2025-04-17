@@ -78,11 +78,20 @@ const typeDefsHelpRequestPost = gql`
     createdAt: String!
     resident: Resident
   }
+
+  extend type Location @key(fields: "id") {
+    id: ID! @external
+    city: String! @external
+    postalCode: String! @external
+    address: String! @external
+  }
+
   extend type Resident @key(fields: "id") {
     id: ID! @external
     username: String! @external
     role: String! @external
-    # add more fields if needed
+    location: Location! @external
+    interests: [String!]! @external
   }
 
   input CreateHelpRequestPostInput {
