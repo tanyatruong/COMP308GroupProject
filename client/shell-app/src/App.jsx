@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css';
 import Home from './components/home/Home';
+import LogIn from './components/auth/LogIn';
+import SignUp from './components/auth/SignUp';
 
 // Import remote components using Module Federation
 const BusinessDashboard = lazy(() => import('businessApp/BusinessDashboard'));
@@ -10,9 +12,6 @@ const BusinessProfile = lazy(() => import('businessApp/BusinessProfile'));
 const CreateOffer = lazy(() => import('businessApp/CreateOffer'));
 const OffersList = lazy(() => import('businessApp/OffersList'));
 const ReviewsList = lazy(() => import('businessApp/ReviewsList'));
-
-const LogIn = lazy (() => import('authApp/LogIn'));
-const SignUp = lazy (() => import('authApp/SignUp'));
 
 const ResidentDashboard = lazy(() => import('businessApp/ResidentDashboard'));
 const BulletinBoard = lazy(() => import('businessApp/BulletinBoard'));
