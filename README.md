@@ -59,19 +59,28 @@ This is a full-stack community platform that connects residents, businesses, and
    ```
 
 4. **Set up environment variables**
-   Create `.env` files in each service directory with:
-   ```
-   MONGO_URI=your_mongodb_connection_string
-   SECRET_KEY=your_jwt_secret_key
-   GEMINI_API_KEY=your_gemini_api_key
+   ```bash
+   # Copy the environment template
+   cp env.example .env
+   
+   # Edit the .env file with your actual credentials
+   # MONGO_URI=your_mongodb_connection_string
+   # SECRET_KEY=your_jwt_secret_key
+   # GEMINI_API_KEY=your_gemini_api_key
    ```
 
 ### Running the Application
 
+**Option 1: Use the startup script (Recommended)**
+```bash
+./start-project.sh
+```
+
+**Option 2: Manual startup**
 1. **Start all server services**
    ```bash
    cd server
-   MONGO_URI="your_mongodb_uri" SECRET_KEY="your_secret_key" GEMINI_API_KEY="your_gemini_key" npm run start:all
+   npm run start:all
    ```
 
 2. **Start client applications** (in separate terminals)

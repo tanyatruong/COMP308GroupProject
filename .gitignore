@@ -1,7 +1,51 @@
-node_modules
-.env
+# Dependencies
+node_modules/
+package-lock.json
 
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+
+# IDE files
 COMP308GroupProject.code-workspace
 launch.json
+.vscode/
+.idea/
 
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Development files
 neighborhoodHelpRequestsGQLQueries_toBeDeleted.txt
+demo-data.js
+
+# AI Model files (large binary files)
+*.bin
+*.weights
