@@ -11,11 +11,13 @@ import "./ResidentNavBar.css";
 const ResidentNavBar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     // Check if user is logged in
     const role = localStorage.getItem("role");
     const username = localStorage.getItem("username");
+    setUserRole(role);
     setIsLoggedIn(!!(role && username));
   }, []);
 
@@ -30,7 +32,9 @@ const ResidentNavBar = () => {
     <>
       <Navbar expand="lg" className="bg-body-tertiary mb-2">
         <Container>
-          <Navbar.Brand href="/residentdashboard">Resident Dashboard</Navbar.Brand>
+          <Navbar.Brand href="/residentdashboard">
+            {userRole === 'CommunityOrganizer' ? 'Community Organizer Hub' : 'Resident Community Hub'}
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
@@ -54,14 +58,13 @@ const ResidentNavBar = () => {
               </NavDropdown> */}
             </Nav>
             <Nav className="ms-auto">
-              {isLoggedIn ? (
-                <Button variant="outline-danger" onClick={handleLogout}>
-                  Logout
-                </Button>
-              ) : (
-                <Button variant="primary" onClick={() => window.open('http://localhost:5173', '_blank')}>
-                  Login
-                </Button>
+              {!isLoggedIn && (
+                <div className="text-center">
+                  <p className="text-muted mb-2">Please log in to access community features</p>
+                  <Button variant="primary" onClick={() => window.open('http://localhost:5173', '_blank')}>
+                    Login
+                  </Button>
+                </div>
               )}
             </Nav>
           </Navbar.Collapse>

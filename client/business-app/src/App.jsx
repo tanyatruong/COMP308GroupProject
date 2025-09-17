@@ -28,26 +28,21 @@ import NeighborhoodHelpRequests from "./components/residentCommunity/Neighborhoo
 import IndividualDiscussion from "./components/residentCommunity/BulletinBoard/IndividualDiscussion";
 
 function App() {
-  const [userType, setUserType] = useState("business"); // Default to business view
+  const [userRole, setUserRole] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // For the View toggle buttons
-  const handleBusinessView = () => {
-    setUserType("business");
-    localStorage.setItem("userType", "business");
-    window.location.href = "/business";
-  };
-
-  const handleResidentView = () => {
-    setUserType("resident");
-    localStorage.setItem("userType", "resident");
-    window.location.href = "/resident";
-  };
-
-  // Initialize userType from localStorage if available
+  // Check user role from localStorage
   useEffect(() => {
-    const savedUserType = localStorage.getItem("userType");
-    if (savedUserType) {
-      setUserType(savedUserType);
+    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+    
+    if (userId && username && role) {
+      setUserRole(role);
+      setIsLoggedIn(true);
+    } else {
+      setUserRole(null);
+      setIsLoggedIn(false);
     }
   }, []);
 
@@ -57,43 +52,73 @@ function App() {
         <Navbar bg="dark" variant="dark" expand="lg">
           <Container>
             <Navbar.Brand as={Link} to="/">
-              Business & Resident Center
+              {userRole === 'BusinessOwner' ? 'Business Dashboard' : 
+               userRole === 'Resident' ? 'Resident Community Hub' : 
+               userRole === 'CommunityOrganizer' ? 'Community Organizer Hub' :
+               'Community Platform'}
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                {/* Removed the Dashboard links as requested */}
+                {isLoggedIn && userRole === 'BusinessOwner' && (
+                  <>
+                    <Nav.Link as={Link} to="/business/profile">Profile</Nav.Link>
+                    <Nav.Link as={Link} to="/business/offers">Promotions</Nav.Link>
+                    <Nav.Link as={Link} to="/business/reviews">Reviews</Nav.Link>
+                  </>
+                )}
+                {isLoggedIn && (userRole === 'Resident' || userRole === 'CommunityOrganizer') && (
+                  <>
+                    <Nav.Link as={Link} to="/resident/bulletinboard">Bulletin Board</Nav.Link>
+                    <Nav.Link as={Link} to="/resident/marketplace">Marketplace</Nav.Link>
+                    <Nav.Link as={Link} to="/resident/neighborhoodhelprequests">Help Requests</Nav.Link>
+                  </>
+                )}
               </Nav>
-              <div className="d-flex">
-                <Button
-                  variant={
-                    userType === "business" ? "primary" : "outline-primary"
-                  }
-                  onClick={handleBusinessView}
-                  className="me-2"
-                >
-                  Business View
-                </Button>
-                <Button
-                  variant={
-                    userType === "resident" ? "primary" : "outline-primary"
-                  }
-                  onClick={handleResidentView}
-                >
-                  Resident View
-                </Button>
-              </div>
+              <Nav className="ms-auto">
+                {isLoggedIn ? (
+                  <Button 
+                    variant="outline-light" 
+                    onClick={() => {
+                      localStorage.removeItem('userId');
+                      localStorage.removeItem('username');
+                      localStorage.removeItem('role');
+                      window.location.reload();
+                    }}
+                  >
+                    Logout
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="primary" 
+                    onClick={() => window.open('http://localhost:5173', '_blank')}
+                  >
+                    Login
+                  </Button>
+                )}
+              </Nav>
             </Navbar.Collapse>
           </Container>
         </Navbar>
 
         <Container fluid className="mt-3">
           <Routes>
-            {/* Default route */}
+            {/* Default route - role-based */}
             <Route
               path="/"
               element={
-                userType === "business" ? (
+                !isLoggedIn ? (
+                  <div className="text-center p-5">
+                    <h2>Welcome to the Community Platform</h2>
+                    <p>Please log in to access your dashboard</p>
+                    <Button 
+                      variant="primary" 
+                      onClick={() => window.open('http://localhost:5173', '_blank')}
+                    >
+                      Login
+                    </Button>
+                  </div>
+                ) : userRole === 'BusinessOwner' ? (
                   <BusinessDashboard />
                 ) : (
                   <ResidentDashboard />
@@ -101,34 +126,59 @@ function App() {
               }
             />
 
-            {/* Business routes */}
-            <Route path="/business" element={<BusinessDashboard />} />
-            <Route path="/business/profile" element={<BusinessProfile onlyDisplay={true} />}/>
-            <Route path="/business/create-profile" element={<CreateBusinessProfile />} />
-            
-            <Route path="/business/offers" element={<OffersList />} />
-            <Route path="/business/create-offer" element={<CreateOffer />} />
-            <Route path="/business/reviews" element={<ReviewsList />} />
+            {/* Business routes - only accessible to BusinessOwner */}
+            {isLoggedIn && userRole === 'BusinessOwner' && (
+              <>
+                <Route path="/business" element={<BusinessDashboard />} />
+                <Route path="/business/profile" element={<BusinessProfile onlyDisplay={true} />}/>
+                <Route path="/business/create-profile" element={<CreateBusinessProfile />} />
+                <Route path="/business/offers" element={<OffersList />} />
+                <Route path="/business/create-offer" element={<CreateOffer />} />
+                <Route path="/business/reviews" element={<ReviewsList />} />
+              </>
+            )}
+
+            {/* Resident routes - accessible to Resident and CommunityOrganizer */}
+            {isLoggedIn && (userRole === 'Resident' || userRole === 'CommunityOrganizer') && (
+              <>
+                <Route path="/resident" element={<ResidentDashboard />} />
+                <Route path="/resident/bulletinboard" element={<BulletinBoard />} />
+                <Route path="/resident/marketplace" element={<Marketplace />} />
+                <Route
+                  path="/resident/marketplace/businessdetails/:businessId"
+                  element={<BusinessDetails />}
+                />
+                <Route
+                  path="/resident/neighborhoodhelprequests"
+                  element={<NeighborhoodHelpRequests />}
+                />
+                <Route
+                  path="/resident/bulletinboard/:postId"
+                  element={<IndividualDiscussion />}
+                />
+              </>
+            )}
 
             {/* Authentication routes */}
-            <Route path="/login" element={<div className="text-center p-5"><h2>Please use the Auth App at <a href="http://localhost:3001" target="_blank" rel="noopener noreferrer">http://localhost:3001</a></h2></div>} />
+            <Route path="/login" element={
+              <div className="text-center p-5">
+                <h2>Please use the Auth App at <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer">http://localhost:5173</a></h2>
+              </div>
+            } />
             
-            {/* Resident routes */}
-            <Route path="/resident" element={<ResidentDashboard />} />
-            <Route path="/resident/bulletinboard" element={<BulletinBoard />} />
-            <Route path="/resident/marketplace" element={<Marketplace />} />
-            <Route
-              path="/resident/marketplace/businessdetails/:businessId"
-              element={<BusinessDetails />}
-            />
-            <Route
-              path="/resident/neighborhoodhelprequests"
-              element={<NeighborhoodHelpRequests />}
-            />
-            <Route
-              path="/resident/bulletinboard/:postId"
-              element={<IndividualDiscussion />}
-            />
+            {/* Fallback for unauthorized access */}
+            <Route path="*" element={
+              <div className="text-center p-5">
+                <h2>Access Denied</h2>
+                <p>You don't have permission to access this page.</p>
+                <Button 
+                  variant="primary" 
+                  onClick={() => window.location.href = '/'}
+                >
+                  Go Home
+                </Button>
+              </div>
+            } />
           </Routes>
         </Container>
       </div>

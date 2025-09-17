@@ -115,6 +115,22 @@ const BusinessDashboard = () => {
   const navigateToReviews = () => navigate('/business/reviews');
   const navigateToCreateOffer = () => navigate('/business/create-offer');
 
+  // Check if user has correct role
+  if (isLoggedIn && user?.role !== 'BusinessOwner') {
+    return (
+      <div className="text-center p-5">
+        <h2>Access Denied</h2>
+        <p>This dashboard is only available for Business Owners.</p>
+        <Button 
+          variant="primary" 
+          onClick={() => window.location.href = '/'}
+        >
+          Go Home
+        </Button>
+      </div>
+    );
+  }
+
   if (loading) return <div className="text-center p-5">Loading...</div>;
   
   const hasBusinessProfile = !error && data && data.businessProfileByOwner;
@@ -135,14 +151,13 @@ const BusinessDashboard = () => {
                 <h1 className="mb-2 fw-bold">🏢 Business Owner Dashboard</h1>
                 <p className="mb-0 opacity-75">Manage your business profile, promotions, and customer reviews</p>
               </div>
-              {isLoggedIn ? (
-                <Button variant="light" onClick={handleLogout} className="px-4 py-2">
-                  <i className="bi bi-box-arrow-right me-2"></i>Logout
-                </Button>
-              ) : (
-                <Button variant="primary" onClick={handleLogin} className="px-4 py-2">
-                  <i className="bi bi-box-arrow-in-right me-2"></i>Login
-                </Button>
+              {!isLoggedIn && (
+                <div className="text-center">
+                  <p className="text-muted mb-3">Please log in to access your business dashboard</p>
+                  <Button variant="primary" onClick={handleLogin} className="px-4 py-2">
+                    <i className="bi bi-box-arrow-in-right me-2"></i>Login
+                  </Button>
+                </div>
               )}
             </Col>
           </Row>

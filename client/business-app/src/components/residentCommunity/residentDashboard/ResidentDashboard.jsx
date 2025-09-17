@@ -15,6 +15,38 @@ import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 import "./ResidentDashboard.css";
 
 const ResidentDashboard = () => {
+  const [userRole, setUserRole] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+    
+    if (userId && username && role) {
+      setUserRole(role);
+      setIsLoggedIn(true);
+    } else {
+      setUserRole(null);
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  // Check if user has correct role
+  if (isLoggedIn && userRole !== 'Resident' && userRole !== 'CommunityOrganizer') {
+    return (
+      <div className="text-center p-5">
+        <h2>Access Denied</h2>
+        <p>This dashboard is only available for Residents and Community Organizers.</p>
+        <Button 
+          variant="primary" 
+          onClick={() => window.location.href = '/'}
+        >
+          Go Home
+        </Button>
+      </div>
+    );
+  }
   return (
     <div className="resident-dashboard">
       <ResidentNavBar />
