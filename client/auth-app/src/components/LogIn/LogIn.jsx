@@ -39,6 +39,11 @@ const LogIn = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        console.log('🔐 Login attempt:', { role, username, password });
+        
+        // Show loading state
+        setError('Logging in...');
+        
         try{
             const response = await login({
                 variables: {
@@ -47,18 +52,27 @@ const LogIn = () => {
                     password
                 }
             });
-            if(response.data.Login){
+            console.log('🔐 Login response:', response);
+            
+            if(response.data && response.data.Login){
                 const user = response.data.Login;
+                console.log('🔐 Login successful, user:', user);
+                
                 // Clear any stale session values first
                 try{
                   localStorage.removeItem('userId');
                   localStorage.removeItem('username');
                   localStorage.removeItem('role');
                 }catch{}
+                
                 // Save (for this origin only)
                 localStorage.setItem('userId', user.id);
                 localStorage.setItem('username', username);
                 localStorage.setItem('role', user.role);
+                console.log('🔐 Saved to localStorage:', { userId: user.id, username, role: user.role });
+
+                // Show success message
+                setError('Login successful! Redirecting...');
 
                 // Redirect to business app with session parameters so it can sync localStorage
                 const targetBase = 'http://127.0.0.1:3003';
@@ -68,10 +82,20 @@ const LogIn = () => {
                     username,
                     role: user.role,
                 }).toString();
-                window.location.href = `${targetBase}${path}?${params}`;
+                const redirectUrl = `${targetBase}${path}?${params}`;
+                console.log('🔐 Redirecting to:', redirectUrl);
+                
+                // Add a small delay to show the success message
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 1000);
+            } else {
+                console.log('🔐 Login failed - no user data');
+                setError('Login failed - no user data returned');
             }
         }catch(err){
-            setError(err.message);
+            console.error('🔐 Login error:', err);
+            setError(`Login error: ${err.message}`);
         }
     }
     

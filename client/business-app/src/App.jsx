@@ -37,17 +37,21 @@ function App() {
       const uid = url.searchParams.get('uid') || url.searchParams.get('userId');
       const uname = url.searchParams.get('username');
       const r = url.searchParams.get('role');
+      console.log('🔄 Business App - URL params detected:', { uid, uname, r });
       if (uid && uname && r) {
         localStorage.setItem('userId', uid);
         localStorage.setItem('username', uname);
         localStorage.setItem('role', r);
+        console.log('✅ Business App - URL params synced to localStorage');
         url.searchParams.delete('uid');
         url.searchParams.delete('userId');
         url.searchParams.delete('username');
         url.searchParams.delete('role');
         window.history.replaceState({}, document.title, url.pathname);
       }
-    } catch {}
+    } catch (error) {
+      console.error('Error syncing URL params:', error);
+    }
     window.__sessionSyncDone = true;
   }
 
@@ -66,14 +70,18 @@ function App() {
     const username = localStorage.getItem('username');
     const role = localStorage.getItem('role');
     
+    console.log('🔍 Business App - checkUserRole called:', { userId, username, role });
+    
     if (userId && username && role) {
       setUserRole(role);
       setIsLoggedIn(true);
       setUsername(username);
+      console.log('✅ Business App - User logged in with role:', role);
     } else {
       setUserRole(null);
       setIsLoggedIn(false);
       setUsername(null);
+      console.log('❌ Business App - User not logged in');
     }
   };
 

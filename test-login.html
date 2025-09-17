@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Test</title>
+</head>
+<body>
+    <h1>Login Test</h1>
+    <form id="loginForm">
+        <div>
+            <label>Role:</label>
+            <select id="role">
+                <option value="">Select Role</option>
+                <option value="BusinessOwner">Business Owner</option>
+                <option value="Resident">Resident</option>
+                <option value="CommunityOrganizer">Community Organizer</option>
+            </select>
+        </div>
+        <div>
+            <label>Username:</label>
+            <input type="text" id="username" value="tony_restaurant">
+        </div>
+        <div>
+            <label>Password:</label>
+            <input type="password" id="password" value="password123">
+        </div>
+        <button type="submit">Test Login</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const role = document.getElementById('role').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('Testing login:', { role, username, password });
+            
+            try {
+                const response = await fetch('http://127.0.0.1:4000/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `
+                            mutation Login($role: String!, $username: String!, $password: String!) {
+                                Login(role: $role, username: $username, password: $password) {
+                                    ... on BusinessOwner {
+                                        id
+                                        role
+                                        username
+                                    }
+                                    ... on Resident {
+                                        id
+                                        role
+                                        username
+                                    }
+                                    ... on CommunityOrganizer {
+                                        id
+                                        role
+                                        username
+                                    }
+                                }
+                            }
+                        `,
+                        variables: { role, username, password }
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', data);
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>Result:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+                if (data.data && data.data.Login) {
+                    const user = data.data.Login;
+                    console.log('Login successful:', user);
+                    
+                    // Test redirect
+                    const targetBase = 'http://127.0.0.1:3003';
+                    const path = user.role === 'Resident' || user.role === 'CommunityOrganizer' ? '/resident' : '/';
+                    const params = new URLSearchParams({
+                        uid: user.id,
+                        username,
+                        role: user.role,
+                    }).toString();
+                    const redirectUrl = `${targetBase}${path}?${params}`;
+                    
+                    document.getElementById('result').innerHTML += `
+                        <h3>Redirect URL:</h3>
+                        <p><a href="${redirectUrl}" target="_blank">${redirectUrl}</a></p>
+                        <button onclick="window.open('${redirectUrl}', '_blank')">Test Redirect</button>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3>Error:</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
