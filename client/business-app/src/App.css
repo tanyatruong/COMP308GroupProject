@@ -1,6 +1,17 @@
 /* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
 #root {
-  max-width: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
   text-align: left;
@@ -10,9 +21,17 @@
   width: 100%;
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  margin: 0;
+  padding: 0;
 }
 
 /* Custom Bootstrap Overrides */
+.navbar {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .navbar-brand {
   font-weight: 700;
   font-size: 1.5rem;

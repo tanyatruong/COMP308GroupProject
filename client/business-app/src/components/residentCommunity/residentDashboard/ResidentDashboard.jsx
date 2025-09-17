@@ -20,13 +20,13 @@ const ResidentDashboard = () => {
       <ResidentNavBar />
       
       <div className="dashboard-header">
-        <Container>
+        <div className="container">
           <h1>🏘️ Resident Community Hub</h1>
           <p>Connect with your neighbors, discover local businesses, and build a stronger community together</p>
-        </Container>
+        </div>
       </div>
 
-      <Container>
+      <div className="container">
         <Row className="g-4">
           <Col lg={4} md={6}>
             <Card className="resident-card">
@@ -88,7 +88,7 @@ const ResidentDashboard = () => {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </div>
     </div>
   );
 };

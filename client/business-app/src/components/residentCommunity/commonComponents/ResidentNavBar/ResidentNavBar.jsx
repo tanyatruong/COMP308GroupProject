@@ -10,12 +10,20 @@ import "./ResidentNavBar.css";
 
 const ResidentNavBar = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  useEffect(() => {
+    // Check if user is logged in
+    const role = localStorage.getItem("role");
+    const username = localStorage.getItem("username");
+    setIsLoggedIn(!!(role && username));
+  }, []);
 
   const handleLogout = async () => {
     localStorage.removeItem("role");
     localStorage.removeItem("username");
     localStorage.removeItem("userId");
+    setIsLoggedIn(false);
     navigate('/');
   }
   return (
@@ -46,9 +54,15 @@ const ResidentNavBar = () => {
               </NavDropdown> */}
             </Nav>
             <Nav className="ms-auto">
-              <Button variant="outline-danger" onClick={handleLogout}>
-                Logout
-              </Button>
+              {isLoggedIn ? (
+                <Button variant="outline-danger" onClick={handleLogout}>
+                  Logout
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={() => navigate('/login')}>
+                  Login
+                </Button>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>
