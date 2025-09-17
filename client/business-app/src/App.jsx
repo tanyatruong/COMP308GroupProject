@@ -66,8 +66,6 @@ function App() {
     const username = localStorage.getItem('username');
     const role = localStorage.getItem('role');
     
-    console.log('Checking user role:', { userId, username, role });
-    
     if (userId && username && role) {
       setUserRole(role);
       setIsLoggedIn(true);
