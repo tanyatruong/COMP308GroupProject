@@ -44,20 +44,31 @@ const LogIn = () => {
             });
             if(response.data.Login){
                 const user = response.data.Login;
+                console.log('Login successful:', user);
+                
                 // Save user data to localStorage
                 localStorage.setItem('userId', user.id);
                 localStorage.setItem('username', username);
                 localStorage.setItem('role', user.role);
                 
+                console.log('localStorage set:', {
+                    userId: localStorage.getItem('userId'),
+                    username: localStorage.getItem('username'),
+                    role: localStorage.getItem('role')
+                });
+                
                 if(user.role === "BusinessOwner"){
+                    console.log('Redirecting to business app...');
                     // Redirect to business app
                     window.location.href = 'http://localhost:3003';
                 }
                 if(user.role === "Resident"){
+                    console.log('Redirecting to resident view...');
                     // Redirect to business app resident view
                     window.location.href = 'http://localhost:3003/resident';
                 }
                 if(user.role === "CommunityOrganizer"){
+                    console.log('Redirecting to community organizer view...');
                     // Redirect to business app resident view
                     window.location.href = 'http://localhost:3003/resident';
                 }

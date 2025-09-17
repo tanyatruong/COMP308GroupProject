@@ -157,6 +157,36 @@ function App() {
                         Debug Info: User Role: {userRole || 'None'}, Logged In: {isLoggedIn ? 'Yes' : 'No'}<br/>
                         Check browser console for detailed localStorage values
                       </small>
+                      <div className="mt-2 d-flex gap-2">
+                        <Button 
+                          variant="outline-info" 
+                          size="sm"
+                          onClick={() => {
+                            console.log('Current localStorage:', {
+                              userId: localStorage.getItem('userId'),
+                              username: localStorage.getItem('username'),
+                              role: localStorage.getItem('role')
+                            });
+                            checkUserRole();
+                          }}
+                        >
+                          Debug localStorage
+                        </Button>
+                        <Button 
+                          variant="outline-warning" 
+                          size="sm"
+                          onClick={() => {
+                            // Test with demo business owner
+                            localStorage.setItem('userId', '67fbccd0b088a381cdcef65c');
+                            localStorage.setItem('username', 'tony_restaurant');
+                            localStorage.setItem('role', 'BusinessOwner');
+                            console.log('Set test localStorage for BusinessOwner');
+                            checkUserRole();
+                          }}
+                        >
+                          Test Business Login
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ) : userRole === 'BusinessOwner' ? (
