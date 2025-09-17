@@ -53,7 +53,7 @@ const resolvers = {
                     const communityOrganizer = await CommunityOrganizer.findById(user.id);
                     return communityOrganizer;
                 case "BusinessOwner":
-                    const businessOwner = BusinessOwner.findById(user.id);
+                    const businessOwner = await BusinessOwner.findById(user.id);
                     return businessOwner;
                 default:
                     throw new Error("Unable to process user.")
