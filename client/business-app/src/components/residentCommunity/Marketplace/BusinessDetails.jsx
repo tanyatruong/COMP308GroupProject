@@ -304,6 +304,7 @@ const BusinessDetails = () => {
     },
     onError: (error) => {
       console.error("Error analyzing sentiment:", error);
+      setSentimentSummary("Unable to analyze reviews at this time.");
     }
   });
 
@@ -673,12 +674,25 @@ const BusinessDetails = () => {
       )}
       
       {/* Sentiment Analysis Summary */}
-      {sentimentSummary && sortedReviews.length > 0 && (
+      {sortedReviews.length > 0 && (
         <Card className="shadow-sm mb-4 bg-light border-0">
           <Card.Body>
-            <h5 className="mb-3">AI Sentiment Analysis</h5>
-            <p className="mb-0">{sentimentSummary}</p>
-            {analyzingLoading && <div className="mt-2 text-muted">Updating analysis...</div>}
+            <h5 className="mb-3">
+              <i className="bi bi-robot me-2"></i>
+              AI Sentiment Analysis
+            </h5>
+            {analyzingLoading ? (
+              <div className="text-center py-3">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <p className="mt-2 text-muted">Analyzing customer reviews...</p>
+              </div>
+            ) : sentimentSummary ? (
+              <p className="mb-0">{sentimentSummary}</p>
+            ) : (
+              <p className="text-muted mb-0">Click to analyze customer sentiment</p>
+            )}
           </Card.Body>
         </Card>
       )}

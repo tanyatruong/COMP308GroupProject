@@ -11,7 +11,6 @@ import {
   Alert,
 } from "react-bootstrap";
 
-import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 import "./ResidentDashboard.css";
 
 const ResidentDashboard = () => {
@@ -49,7 +48,6 @@ const ResidentDashboard = () => {
   }
   return (
     <div className="resident-dashboard">
-      <ResidentNavBar />
       
       <div className="dashboard-header">
         <div className="container">

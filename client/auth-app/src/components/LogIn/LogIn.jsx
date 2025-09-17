@@ -49,17 +49,26 @@ const LogIn = () => {
             });
             if(response.data.Login){
                 const user = response.data.Login;
-                // Save user data to localStorage
+                // Clear any stale session values first
+                try{
+                  localStorage.removeItem('userId');
+                  localStorage.removeItem('username');
+                  localStorage.removeItem('role');
+                }catch{}
+                // Save (for this origin only)
                 localStorage.setItem('userId', user.id);
                 localStorage.setItem('username', username);
                 localStorage.setItem('role', user.role);
-                
-                if(user.role === "BusinessOwner"){
-                    navigate('/businessdashboard');
-                }
-                if(user.role === "Resident"){
-                    navigate('/residentdashboard');
-                }
+
+                // Redirect to business app with session parameters so it can sync localStorage
+                const targetBase = 'http://127.0.0.1:3003';
+                const path = user.role === 'Resident' || user.role === 'CommunityOrganizer' ? '/resident' : '/';
+                const params = new URLSearchParams({
+                    uid: user.id,
+                    username,
+                    role: user.role,
+                }).toString();
+                window.location.href = `${targetBase}${path}?${params}`;
             }
         }catch(err){
             setError(err.message);

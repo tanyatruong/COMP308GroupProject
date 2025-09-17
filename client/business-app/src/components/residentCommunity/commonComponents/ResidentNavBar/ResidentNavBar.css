@@ -1,4 +1,40 @@
+.account-dropdown .dropdown-toggle {
+  color: #fff !important;
+}
+
+.account-dropdown .dropdown-menu {
+  z-index: 1050;
+}
 Navbar {
   min-width: 3333px;
   margin-bottom: 2rem;
+}
+
+/* Ensure username is visible on dark navbar */
+.navbar .text-white,
+.navbar .dropdown-toggle,
+.navbar .nav-link {
+  color: #fff !important;
+}
+
+.dropdown-menu-dark {
+  background-color: #212529 !important;
+}
+
+/* Fix dropdown arrow visibility */
+.navbar .dropdown-toggle::after {
+  display: inline-block !important;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+  color: #fff !important;
+}
+
+.navbar .dropdown-toggle i {
+  color: #fff !important;
+  margin-left: 0.25rem;
 }

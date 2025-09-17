@@ -73,12 +73,36 @@ const Home = () => {
                   <Button 
                     variant="outline-primary" 
                     size="lg" 
-                    className="welcome-btn"
+                    className="welcome-btn me-3"
                     onClick={handleLogIn}
                   >
                     <i className="bi bi-box-arrow-in-right me-2"></i>
                     Sign In
                   </Button>
+                </div>
+
+                <div className="mt-4">
+                  <h5 className="mb-3">Or access directly:</h5>
+                  <div className="d-flex justify-content-center gap-3 flex-wrap">
+                    <Button 
+                      variant="success" 
+                      size="lg" 
+                      className="access-btn"
+                      onClick={() => window.open('http://127.0.0.1:3003/resident/marketplace', '_blank')}
+                    >
+                      <i className="bi bi-building me-2"></i>
+                      Business Dashboard
+                    </Button>
+                    <Button 
+                      variant="info" 
+                      size="lg" 
+                      className="access-btn"
+                      onClick={() => window.open('http://127.0.0.1:3003/resident', '_blank')}
+                    >
+                      <i className="bi bi-people me-2"></i>
+                      Resident Community Hub
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="demo-info mt-4">
@@ -89,7 +113,7 @@ const Home = () => {
                   <br />
                   <small className="text-muted">
                     <i className="bi bi-arrow-right me-1"></i>
-                    After login, you'll be redirected to the appropriate dashboard
+                    Use the buttons above to access Business Dashboard or Resident Community Hub
                   </small>
                 </div>
               </Card.Body>

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Container, Card, Button, Form, ListGroup, Spinner, Alert, Modal } from "react-bootstrap";
 import { useQuery, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
-import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 import { GET_ALL_POSTS } from "../../../graphql/queries";
 import { CREATE_POST, DELETE_POST } from "../../../graphql/mutations";
 
@@ -13,22 +12,14 @@ const BulletinBoard = () => {
   const [postToDelete, setPostToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [componentReady, setComponentReady] = useState(false);
   
   // Get user ID from localStorage
   useEffect(() => {
     const userId = localStorage.getItem('userId');
-    
-    console.log("LocalStorage userId:", userId);
-    
-    if (userId) {
-      console.log("Using stored user ID:", userId);
-      setCurrentUserId(userId);
-    } else {
-      // Fall back to test ID for testing
-      console.log("No userId in localStorage, using test ID");
-      setCurrentUserId("507f1f77bcf86cd799439011");
-    }
+    setIsLoggedIn(!!userId);
+    if (userId) setCurrentUserId(userId); else setCurrentUserId("");
     
     // Loading layout
     setTimeout(() => {
@@ -76,6 +67,10 @@ const BulletinBoard = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isLoggedIn) {
+      setErrorMessage("Please log in to create a post.");
+      return;
+    }
     if (!newPost.title.trim() || !newPost.content.trim()) {
       setErrorMessage("Please provide both title and content");
       return;
@@ -87,7 +82,7 @@ const BulletinBoard = () => {
           input: {
             title: newPost.title.trim(),
             content: newPost.content.trim(),
-            authorId: currentUserId 
+            authorId: currentUserId
           }
         }
       });
@@ -147,7 +142,6 @@ const BulletinBoard = () => {
   if (!componentReady) {
     return (
       <Container>
-        <ResidentNavBar />
         <div className="text-center my-5">
           <Spinner animation="border" />
           <p className="mt-2">Loading bulletin board...</p>
@@ -158,7 +152,6 @@ const BulletinBoard = () => {
   
   return (
     <Container className="bulletin-board-container pb-5">
-      <ResidentNavBar />
       <h2 className="my-4">Community Bulletin Board</h2>
       <p>Stay updated with local news and join discussions with your neighbors</p>
       
@@ -174,35 +167,53 @@ const BulletinBoard = () => {
         </Alert>
       )}
       
-      <Card className="mb-4 w-100">
-        <Card.Header as="h5">Create a New Post</Card.Header>
-        <Card.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Title</Form.Label>
-              <Form.Control 
-                type="text" 
-                placeholder="Enter post title" 
-                value={newPost.title}
-                onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Content</Form.Label>
-              <Form.Control 
-                as="textarea" 
-                rows={3} 
-                placeholder="What would you like to share with the community?"
-                value={newPost.content}
-                onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit" disabled={postLoading}>
-              {postLoading ? 'Posting...' : 'Post'}
+      {isLoggedIn ? (
+        <Card className="mb-4 shadow-sm">
+          <Card.Header as="h5" className="bg-primary text-white">
+            <i className="bi bi-pencil-square me-2"></i>Create a New Post
+          </Card.Header>
+          <Card.Body>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold">Title</Form.Label>
+                <Form.Control 
+                  type="text" 
+                  placeholder="Enter post title" 
+                  value={newPost.title}
+                  onChange={(e) => setNewPost({...newPost, title: e.target.value})}
+                  className="form-control-lg"
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold">Content</Form.Label>
+                <Form.Control 
+                  as="textarea" 
+                  rows={4} 
+                  placeholder="What would you like to share with the community?"
+                  value={newPost.content}
+                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
+                  className="form-control-lg"
+                />
+              </Form.Group>
+              <Button variant="primary" type="submit" disabled={postLoading} size="lg">
+                <i className="bi bi-send me-2"></i>
+                {postLoading ? 'Posting...' : 'Post to Community'}
+              </Button>
+            </Form>
+          </Card.Body>
+        </Card>
+      ) : (
+        <Card className="mb-4 border-warning">
+          <Card.Body className="text-center py-4">
+            <i className="bi bi-lock-fill text-warning" style={{fontSize: '2rem'}}></i>
+            <h5 className="mt-2">Login Required</h5>
+            <p className="text-muted">Please log in to create posts and participate in discussions.</p>
+            <Button variant="warning" onClick={() => { window.location.href = 'http://127.0.0.1:5173'; }}>
+              <i className="bi bi-box-arrow-in-right me-2"></i>Login
             </Button>
-          </Form>
-        </Card.Body>
-      </Card>
+          </Card.Body>
+        </Card>
+      )}
       
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>Recent Posts</h3>
@@ -219,49 +230,62 @@ const BulletinBoard = () => {
       ) : error ? (
         <Alert variant="danger">Error loading posts: {error.message}</Alert>
       ) : (
-        <ListGroup className="mb-4 w-100">
+        <div className="row">
           {data?.posts?.map(post => (
-            <ListGroup.Item key={post.id} className="mb-2">
-              <div className="d-flex justify-content-between align-items-center">
-                <h5>{post.title}</h5>
-                <small className="text-muted">{formatDate(post.createdAt)}</small>
-              </div>
-              <p>{post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content}</p>
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  {post.author && (
-                    <small className="text-muted me-3">
-                      By: User-{post.author.id?.substring(0, 6) || 'Unknown'}
-                    </small>
-                  )}
-                  <span>
-                    <i className="bi bi-chat-dots"></i> {post.comments?.length || 0} comments
-                  </span>
-                </div>
-                <div>
-                  <Link to={`/resident/bulletinboard/${post.id}`}>
-                    <Button variant="outline-primary" size="sm" className="me-2">View Discussion</Button>
-                  </Link>
-                  
-                  {/* Delete Button */}
-                  {isAuthor(post) && (
-                    <Button 
-                      variant="outline-danger" 
-                      size="sm"
-                      onClick={() => handleDeleteClick(post)}
-                    >
-                      Delete
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </ListGroup.Item>
+            <div key={post.id} className="col-12 mb-3">
+              <Card className="shadow-sm h-100">
+                <Card.Header className="d-flex justify-content-between align-items-center bg-light">
+                  <h5 className="mb-0 text-primary">{post.title}</h5>
+                  <small className="text-muted">
+                    <i className="bi bi-clock me-1"></i>{formatDate(post.createdAt)}
+                  </small>
+                </Card.Header>
+                <Card.Body>
+                  <p className="card-text">{post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content}</p>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <div>
+                      {post.author && (
+                        <small className="text-muted me-3">
+                          <i className="bi bi-person-circle me-1"></i>User-{post.author.id?.substring(0, 6) || 'Unknown'}
+                        </small>
+                      )}
+                      <span className="badge bg-secondary">
+                        <i className="bi bi-chat-dots me-1"></i>{post.comments?.length || 0} comments
+                      </span>
+                    </div>
+                    <div>
+                      <Link to={`/resident/bulletinboard/${post.id}`}>
+                        <Button variant="outline-primary" size="sm" className="me-2">
+                          <i className="bi bi-eye me-1"></i>View Discussion
+                        </Button>
+                      </Link>
+                      
+                      {/* Delete Button */}
+                      {isLoggedIn && isAuthor(post) && (
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm"
+                          onClick={() => handleDeleteClick(post)}
+                        >
+                          <i className="bi bi-trash me-1"></i>Delete
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </div>
           ))}
           
           {(!data?.posts || data.posts.length === 0) && (
-            <Alert variant="info">No posts yet. Be the first to share something!</Alert>
+            <div className="col-12">
+              <Alert variant="info" className="text-center py-4">
+                <i className="bi bi-info-circle me-2"></i>
+                No posts yet. Be the first to share something with your community!
+              </Alert>
+            </div>
           )}
-        </ListGroup>
+        </div>
       )}
       
       {/* Delete Confirmation */}
@@ -285,7 +309,7 @@ const BulletinBoard = () => {
           <Button 
             variant="danger" 
             onClick={confirmDelete}
-            disabled={deleteLoading}
+            disabled={deleteLoading || !isLoggedIn}
           >
             {deleteLoading ? 'Deleting...' : 'Delete Post'}
           </Button>

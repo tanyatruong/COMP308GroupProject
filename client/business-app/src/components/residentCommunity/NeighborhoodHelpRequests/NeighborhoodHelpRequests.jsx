@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ResidentNavBar from "../commonComponents/ResidentNavBar/ResidentNavBar";
 import { Container, Row, Col } from "react-bootstrap";
 import { Card, Form, Button, ListGroup, Modal } from "react-bootstrap";
 import "./NeighborhoodHelpRequests.css";
@@ -37,6 +36,7 @@ const NeighborhoodHelpRequests = () => {
   const [loggedInUserID, setLoggedInUserID] = useState(
     localStorage.getItem("userId")
   );
+  const isLoggedIn = Boolean(loggedInUserID);
   const [loggedInUserRole, setLoggedInUserRole] = useState(
     localStorage.getItem("role")
   );
@@ -71,205 +71,156 @@ const NeighborhoodHelpRequests = () => {
     // console.log("postFilter set to: " + postFilter);
   };
   return (
-    <>
-      <ResidentNavBar />
-      <Card className="p-3">
-        <Card className="px-3 py-1 mx-1 mb-3 shadow-sm">
-          <h1>NeighborhoodHelpRequests</h1>
-        </Card>
-        <Container id="filterBarContainer">
-          <Row>
-            <Col
-              id="filterButtonAllPosts"
-              className="d-flex justify-content-center"
+    <Container className="py-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 className="text-primary mb-2">
+            <i className="bi bi-heart-fill me-2"></i>Neighborhood Help Requests
+          </h1>
+          <p className="text-muted">Connect with neighbors who need assistance or offer help to your community</p>
+        </div>
+        <div>
+          {isLoggedIn ? (
+            <Button
+              variant="success"
+              size="lg"
+              onClick={() => setIsAddPostDialogOpen(true)}
+              className="shadow-sm"
             >
-              {/* <Button variant="primary" onClick={handleAllPostsFilterClick}>
-                All Posts
-              </Button> */}
-            </Col>
-            <Col
-              id="filterButtonMyPosts"
-              className="d-flex justify-content-center"
-            >
-              {/* <Button variant="primary" onClick={handleMyPostsFilterClick}>
-                My Posts
-              </Button> */}
-            </Col>
-            <Col id="addPostButton" className="d-flex justify-content-center">
+              <i className="bi bi-plus-circle me-2"></i>Add Help Request
+            </Button>
+          ) : (
+            <div className="text-center">
               <Button
-                variant="success"
-                onClick={() => {
-                  setIsAddPostDialogOpen(true);
-                }}
+                variant="outline-warning"
+                size="lg"
+                onClick={() => { window.location.href = 'http://127.0.0.1:5173'; }}
+                className="shadow-sm"
               >
-                Add Post
+                <i className="bi bi-box-arrow-in-right me-2"></i>Login to Post
               </Button>
-            </Col>
-          </Row>
-        </Container>
-        <Container id="postsList">
-          {data_AllHelpRequestPosts?.getHelpRequestPosts?.length > 0 ? (
-            data_AllHelpRequestPosts?.getHelpRequestPosts.map((post, index) => {
-              return (
-                <Row key={post.id}>
-                  <Col>
-                    <Card className="my-4 shadow">
-                      {/* TODO Render if loggedin User is author of post */}
-                      {post.author.id == loggedInUserID && (
-                        <Card.Header>
-                          <Container>
-                            <Row>
-                              <Col
-                                id="deletePostButtonCol"
-                                className="d-flex justify-content-end"
-                              >
-                                <Button
-                                  variant="danger"
-                                  onClick={() => {
-                                    setPostToBeDeletedId(post.id);
-                                    setPostToBeDeletedTitle(post.title);
-                                    setIsDeletePostDialogOpen(true);
-                                  }}
-                                >
-                                  🗑️ Delete Post
-                                </Button>
-                              </Col>
-                            </Row>
-                          </Container>
-                        </Card.Header>
-                      )}
+              <p className="text-muted small mt-2">Login required to create help requests</p>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="row">
+        {data_AllHelpRequestPosts?.getHelpRequestPosts?.length > 0 ? (
+          data_AllHelpRequestPosts?.getHelpRequestPosts.map((post, index) => {
+            return (
+              <div key={post.id} className="col-12 mb-4">
+                <Card className="shadow-sm h-100">
+                  {post.author.id == loggedInUserID && (
+                    <Card.Header className="bg-danger text-white d-flex justify-content-between align-items-center">
+                      <span><i className="bi bi-person-badge me-2"></i>Your Post</span>
+                      <Button
+                        variant="outline-light"
+                        size="sm"
+                        onClick={() => {
+                          setPostToBeDeletedId(post.id);
+                          setPostToBeDeletedTitle(post.title);
+                          setIsDeletePostDialogOpen(true);
+                        }}
+                      >
+                        <i className="bi bi-trash me-1"></i>Delete
+                      </Button>
+                    </Card.Header>
+                  )}
+                  <Card.Body>
+                    <div className="d-flex justify-content-between align-items-start mb-3">
+                      <h4 className="text-primary mb-0">{post.title}</h4>
+                      <small className="text-muted">
+                        <i className="bi bi-clock me-1"></i>
+                        {new Date(Number(post.createdAt)).toLocaleString(undefined, {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </small>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <span className="badge bg-info me-2">
+                        <i className="bi bi-person-circle me-1"></i>
+                        {post?.author?.username || `Anonymous ${post?.author?.role}`}
+                      </span>
+                    </div>
+                    
+                    <Card className="border-0 bg-light">
                       <Card.Body>
-                        <Card.Title className="d-flex justify-content-between">
-                          <div>Title: {post.title}</div>
-                          <div>
-                            author:{" "}
-                            {post?.author?.username ||
-                              `Anonymous ${post?.author?.role}`}
-                          </div>
-                        </Card.Title>
-                        {/* <hr /> */}
-                        {/* <Card.Text>Content{post.content}</Card.Text> */}
-                        <Card>
-                          <Card.Text style={{ whiteSpace: "pre-wrap" }}>
-                            {post.content}
-                          </Card.Text>
-                        </Card>
-                        <div className="d-flex justify-content-end">
-                          <span>
-                            Created at:{" "}
-                            {new Date(Number(post.createdAt)).toLocaleString(
-                              undefined,
-                              {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
+                        <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
+                          {post.content}
+                        </p>
+                      </Card.Body>
+                    </Card>
+
+                    <hr className="my-4" />
+
+                    <h5 className="text-secondary mb-3">
+                      <i className="bi bi-chat-dots me-2"></i>Comments ({post.comments.length})
+                    </h5>
+
+                    <div className="comments-section">
+                      {post.comments.map((comment, index) => (
+                        <div key={comment.id} className="comment-item mb-3 p-3 bg-light rounded">
+                          <div className="d-flex justify-content-between align-items-start">
+                            <div className="flex-grow-1">
+                              <div className="d-flex align-items-center mb-2">
+                                <strong className="text-primary me-2">
+                                  {comment?.resident?.username ?? `Anonymous ${comment?.resident?.role ?? ""}`}
+                                </strong>
+                                <small className="text-muted">
+                                  <i className="bi bi-clock me-1"></i>
+                                  {new Date(Number(comment.createdAt)).toLocaleString()}
+                                </small>
+                              </div>
+                              <p className="mb-0">{comment.text}</p>
+                            </div>
+                            {isLoggedIn && comment.authorid == loggedInUserID && (
+                              <Button
+                                variant="outline-danger"
+                                size="sm"
+                                onClick={async () => {
+                                  await deleteHelpRequestComment({
+                                    variables: {
+                                      deleteHelpRequestCommentId: comment.id,
+                                    },
+                                    refetchQueries: [
+                                      {
+                                        query: GET_HELP_REQUEST_POSTS,
+                                      },
+                                    ],
+                                  });
+                                }}
+                                className="ms-2"
+                              >
+                                <i className="bi bi-trash"></i>
+                              </Button>
                             )}
-                          </span>
+                          </div>
                         </div>
-
-                        <hr />
-
-                        <h5>Comments</h5>
-
-                        <ListGroup className="mt-3">
-                          {post.comments.map((comment, index) => (
-                            <ListGroup.Item key={comment.id}>
-                              <Container>
-                                {/* <Card
-                                id="individualCommentContainer"
-                                className="d-flex"
-                                > */}
-
-                                <div
-                                  id="individualCommentContainer"
-                                  // className="d-flex"
-                                >
-                                  <Row>
-                                    <div
-                                      id="commentAuthorName"
-                                      // className="flex-shrink-1"
-                                    >
-                                      <strong>
-                                        {/* {comment?.resident?.username
-                                        ? comment.resident.username
-                                        : `Anonymous ${
-                                          comment?.resident?.role || ""
-                                          }`} */}
-                                        {/* Sleeker version of above */}
-                                        {comment?.resident?.username ??
-                                          `Anonymous ${
-                                            comment?.resident?.role ?? ""
-                                          }`}
-                                      </strong>
-                                    </div>
-                                  </Row>
-                                  <Row>
-                                    <Col
-                                    // className="flex-grow-1"
-                                    >
-                                      <div id="commentText">{comment.text}</div>
-                                    </Col>
-                                    {comment.authorid == loggedInUserID && (
-                                      <Col xs="auto">
-                                        <div
-                                          id="commentDeleteButtonContainer"
-                                          // className="flex-shrink-1"
-                                        >
-                                          <Button
-                                            variant="danger"
-                                            style={{ fontSize: "small" }}
-                                            onClick={async () => {
-                                              await deleteHelpRequestComment({
-                                                variables: {
-                                                  deleteHelpRequestCommentId:
-                                                    comment.id,
-                                                },
-                                                refetchQueries: [
-                                                  {
-                                                    query:
-                                                      GET_HELP_REQUEST_POSTS,
-                                                  },
-                                                ],
-                                              });
-                                            }}
-                                          >
-                                            🗑️
-                                          </Button>
-                                        </div>
-                                      </Col>
-                                    )}
-                                  </Row>
-                                  {/* </Card> */}
-                                </div>
-                              </Container>
-                            </ListGroup.Item>
-                          ))}
-                        </ListGroup>
+                      ))}
+                    </div>
+                    <div className="mt-4">
+                      {isLoggedIn ? (
                         <Form
                           onSubmit={async (e) => {
                             e.preventDefault();
-                            const createCommentInputVariables =
-                              commentInputs[post.id];
-                            if (!createCommentInputVariables.text?.trim())
-                              return;
+                            const createCommentInputVariables = commentInputs[post.id];
+                            if (!createCommentInputVariables.text?.trim()) return;
 
                             await createHelpRequestComment({
                               variables: {
                                 input: {
                                   postid: post.id,
                                   text: createCommentInputVariables.text,
-                                  authorid:
-                                    createCommentInputVariables.authorid,
+                                  authorid: createCommentInputVariables.authorid,
                                 },
                               },
-                              refetchQueries: [
-                                { query: GET_HELP_REQUEST_POSTS },
-                              ],
+                              refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
                             }).then(() => {
-                              // Clear input
                               setCommentInputs((prev) => ({
                                 ...prev,
                                 [post.id]: {
@@ -280,64 +231,70 @@ const NeighborhoodHelpRequests = () => {
                             });
                           }}
                         >
-                          <Form.Group className="mt-3 mb-1">
+                          <div className="input-group">
                             <Form.Control
                               type="text"
-                              placeholder="Write a comment..."
+                              placeholder="Write a helpful comment..."
                               value={commentInputs[post.id]?.text || ""}
-                              onChange={
-                                (e) =>
-                                  setCommentInputs((prev) => ({
-                                    ...prev,
-                                    [post.id]: {
-                                      text: e.target.value,
-                                      authorid: loggedInUserID,
-                                    },
-                                  }))
-                                // authorid, postid, text
+                              onChange={(e) =>
+                                setCommentInputs((prev) => ({
+                                  ...prev,
+                                  [post.id]: {
+                                    text: e.target.value,
+                                    authorid: loggedInUserID,
+                                  },
+                                }))
                               }
+                              className="form-control-lg"
                             />
-                          </Form.Group>
-                          <div className="d-flex justify-content-end">
-                            <Button variant="primary" type="submit">
-                              Add Comment
+                            <Button variant="primary" type="submit" className="px-4">
+                              <i className="bi bi-send me-1"></i>Comment
                             </Button>
                           </div>
                         </Form>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-              );
-            })
-          ) : (
-            <p>Is NOT greater than 0</p>
-          )}
-        </Container>
-      </Card>
-      {/* <Container id="filterBarContainer">
-        <Row>
-          <Col id="filterButtonAllPosts">
-            <Button variant="primary">Primary</Button>
-          </Col>
-          <Col id="filterButtonMyPosts">
-            <Button variant="primary">Primary</Button>
-          </Col>
-        </Row>
-      </Container>
-      <h1>NeighborhoodHelpRequests</h1>; */}
+                      ) : (
+                        <div className="text-center p-3 bg-warning bg-opacity-10 rounded">
+                          <p className="text-muted mb-2">
+                            <i className="bi bi-lock-fill me-1"></i>
+                            Please log in to comment and help your neighbors
+                          </p>
+                          <Button 
+                            variant="outline-primary" 
+                            size="sm"
+                            onClick={() => { window.location.href = 'http://127.0.0.1:5173'; }}
+                          >
+                            <i className="bi bi-box-arrow-in-right me-1"></i>Login
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </Card.Body>
+                </Card>
+              </div>
+            );
+          })
+        ) : (
+          <div className="col-12">
+            <div className="text-center py-5">
+              <i className="bi bi-heart text-muted" style={{fontSize: '3rem'}}></i>
+              <h4 className="text-muted mt-3">No Help Requests Yet</h4>
+              <p className="text-muted">Be the first to ask for help or offer assistance to your community!</p>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Add Post Dialog */}
-      {/* New AddPostDialog */}
       <Modal
         show={isAddPostDialogOpen}
         onHide={() => {
           setIsAddPostDialogOpen(false);
-          setValidated(false); // reset validation on close
+          setValidated(false);
         }}
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Add Post</Modal.Title>
+          <Modal.Title>Add Help Request</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form
@@ -367,35 +324,36 @@ const NeighborhoodHelpRequests = () => {
               setIsAddPostDialogOpen(false);
             }}
           >
-            <Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Title</Form.Label>
               <Form.Control
                 required
                 type="text"
-                placeholder="Title"
+                placeholder="What do you need help with?"
                 value={postToBeCreatedTitle}
                 onChange={(e) => setPostToBeCreatedTitle(e.target.value)}
               />
               <Form.Control.Feedback type="invalid">
-                Please provide a post title.
+                Please provide a title for your help request.
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group>
-              <Form.Label>Content</Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
               <Form.Control
                 required
                 as="textarea"
-                placeholder="Content"
+                rows={4}
+                placeholder="Describe what you need help with in detail..."
                 value={postToBeCreatedContent}
                 onChange={(e) => setPostToBeCreatedContent(e.target.value)}
               />
               <Form.Control.Feedback type="invalid">
-                Please provide post content.
+                Please provide a description of your help request.
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Modal.Footer className="mt-3">
+            <Modal.Footer>
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -406,161 +364,27 @@ const NeighborhoodHelpRequests = () => {
                 Cancel
               </Button>
               <Button variant="success" type="submit">
-                ✏️ Create Post
+                <i className="bi bi-plus-circle me-1"></i>Create Help Request
               </Button>
             </Modal.Footer>
           </Form>
         </Modal.Body>
       </Modal>
-      {/* hot modal change b4 presentation */}
-      {/* <Modal
-        show={isAddPostDialogOpen}
-        onHide={() => setIsAddPostDialogOpen(false)}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Add Post</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group>
-              <Form.Label>Title</Form.Label>
-              <Form.Control
-                required
-                type="text"
-                placeholder="Title"
-                onChange={(e) => setPostToBeCreatedTitle(e.target.value)}
-              />
-              <Form.Control.Feedback type="invalid">
-                Please provide a post title.
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Content</Form.Label>
-              <Form.Control
-                required
-                as="textarea"
-                placeholder="Content"
-                onChange={(e) => setPostToBeCreatedContent(e.target.value)}
-              />
-              <Form.Control.Feedback type="invalid">
-                Please provide post content.
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setIsAddPostDialogOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="success"
-            onClick={async () => {
-              await createHelpRequestPost({
-                variables: {
-                  input: {
-                    title: postToBeCreatedTitle,
-                    content: postToBeCreatedContent,
-                    authorid: loggedInUserID,
-                  },
-                },
-                refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
-              });
-              setIsAddPostDialogOpen(false);
-            }}
-          >
-            ✏️ Create Post
-          </Button>
-        </Modal.Footer>
-      </Modal> */}
-      {/* OLD AddPostDialog */}
-      {/* {isAddPostDialogOpen && (
-        <div>
-          <h1>Add Post Dialog</h1>
-          <div className="modal">
-            <div className="modal-content">
-              <span
-                className="close-btn"
-                onClick={() => {
-                  setIsAddPostDialogOpen(false);
-                }}
-              >
-                &times;
-              </span>
-              <h2>Add Post</h2>
-              <br />
-              <>
-                <Form>
-                  <Form.Group>
-                    <Form.Label>title</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="title"
-                      onChange={(e) => {
-                        setPostToBeCreatedTitle(e.target.value);
-                      }}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>content</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      aria-label="With textarea"
-                      placeholder="content"
-                      onChange={(e) => {
-                        setPostToBeCreatedContent(e.target.value);
-                      }}
-                    />
-                  </Form.Group>
-                  <button
-                    className="add-btn"
-                    style={{ marginTop: "1rem" }}
-                    onClick={async () => {
-                      console.log("complete post create Click");
-                      await createHelpRequestPost({
-                        variables: {
-                          input: {
-                            title: postToBeCreatedTitle,
-                            content: postToBeCreatedContent,
-                            authorid: loggedInUserID,
-                          },
-                        },
-                        refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
-                      }).then(() => {
-                        // Clear input
-                        setPostToBeCreatedTitle(null);
-                        setPostToBeCreatedContent(null);
-                        console.log("Post Creation Success");
-                      });
-                      setIsAddPostDialogOpen(false);
-                    }}
-                  >
-                    ✏️ Complete Create Post
-                  </button>
-                </Form>
-              </>
-            </div>
-          </div>
-        </div>
-      )} */}
+
       {/* Delete Post Dialog */}
-      {/* New Delete Post Dialog */}
       <Modal
         show={isDeletePostDialogOpen}
         onHide={() => setIsDeletePostDialogOpen(false)}
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Delete Post</Modal.Title>
+          <Modal.Title>Delete Help Request</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete this post?
+            Are you sure you want to delete this help request?
             <br />
-            <strong>Post Title:</strong> {postToBeDeletedTitle}
+            <strong>Title:</strong> {postToBeDeletedTitle}
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -573,8 +397,6 @@ const NeighborhoodHelpRequests = () => {
           <Button
             variant="danger"
             onClick={async () => {
-              console.log("Complete delete post click");
-
               await deleteHelpRequestPost({
                 variables: {
                   deleteHelpRequestPostId: postToBeDeletedId,
@@ -583,60 +405,14 @@ const NeighborhoodHelpRequests = () => {
               });
 
               setPostToBeDeletedId(null);
-              console.log("Post Deletion Success");
               setIsDeletePostDialogOpen(false);
             }}
           >
-            🗑️ Delete Post
+            <i className="bi bi-trash me-1"></i>Delete
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* Old Delete Post Dialog */}
-      {/* {isDeletePostDialogOpen && (
-        <div>
-          <h1>Delete Post Dialog</h1>
-          <div className="modal">
-            <div className="modal-content">
-              <span
-                className="close-btn"
-                onClick={() => {
-                  setIsDeletePostDialogOpen(false);
-                }}
-              >
-                &times;
-              </span>
-              <h2>Delete Post</h2>
-              <br />
-              <strong>postToBeDeletedId:</strong>
-              {postToBeDeletedId}
-              <>
-                <button
-                  className="delete-btn"
-                  style={{ marginTop: "1rem" }}
-                  onClick={async () => {
-                    console.log("complete post create Click");
-                    // DeleteMutation
-                    await deleteHelpRequestPost({
-                      variables: {
-                        deleteHelpRequestPostId: postToBeDeletedId,
-                      },
-                      refetchQueries: [{ query: GET_HELP_REQUEST_POSTS }],
-                    });
-                    // Clear input
-                    setPostToBeDeletedId(null);
-                    console.log("Post Deletion Success");
-
-                    setIsDeletePostDialogOpen(false);
-                  }}
-                >
-                  🗑️ Complete Delete Post
-                </button>
-              </>
-            </div>
-          </div>
-        </div>
-      )} */}
-    </>
+    </Container>
   );
 };
 

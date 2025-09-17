@@ -57,11 +57,11 @@ const ResidentNavBar = () => {
                 </NavDropdown.Item>
               </NavDropdown> */}
             </Nav>
-            <Nav className="ms-auto">
+            <Nav className="ms-auto account-dropdown">
               {!isLoggedIn && (
                 <div className="text-center">
                   <p className="text-muted mb-2">Please log in to access community features</p>
-                  <Button variant="primary" onClick={() => window.open('http://localhost:5173', '_blank')}>
+                  <Button variant="primary" onClick={() => { window.location.href='http://127.0.0.1:5173'; }}>
                     Login
                   </Button>
                 </div>
@@ -70,6 +70,23 @@ const ResidentNavBar = () => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
+
+      {/* View-only banner for unauthenticated users */}
+      {!isLoggedIn && (
+        <div className="text-center py-2 mb-3" style={{background:'#fff3cd', borderTop:'1px solid #ffeeba', borderBottom:'1px solid #ffeeba'}}>
+          <span className="text-muted">
+            You are viewing the Resident Community Hub in view-only mode. Log in to post, request help, or write reviews.
+          </span>
+          <Button 
+            variant="outline-primary" 
+            size="sm" 
+            className="ms-2"
+            onClick={() => { window.location.href = 'http://127.0.0.1:5173'; }}
+          >
+            Log in
+          </Button>
+        </div>
+      )}
     </>
   );
 };

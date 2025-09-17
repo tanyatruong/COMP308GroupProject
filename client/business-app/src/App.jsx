@@ -7,7 +7,7 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
-import { Container, Nav, Navbar, Button } from "react-bootstrap";
+import { Container, Nav, Navbar, Button, NavDropdown } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -26,10 +26,39 @@ import Marketplace from "./components/residentCommunity/Marketplace/Marketplace"
 import BusinessDetails from "./components/residentCommunity/Marketplace/BusinessDetails";
 import NeighborhoodHelpRequests from "./components/residentCommunity/NeighborhoodHelpRequests/NeighborhoodHelpRequests";
 import IndividualDiscussion from "./components/residentCommunity/BulletinBoard/IndividualDiscussion";
+import AuthStatus from "./components/common/AuthStatus";
+import UserProfile from "./components/common/UserProfile";
 
 function App() {
-  const [userRole, setUserRole] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Synchronously capture session parameters on first load to avoid race conditions
+  if (typeof window !== 'undefined' && !window.__sessionSyncDone) {
+    try {
+      const url = new URL(window.location.href);
+      const uid = url.searchParams.get('uid') || url.searchParams.get('userId');
+      const uname = url.searchParams.get('username');
+      const r = url.searchParams.get('role');
+      if (uid && uname && r) {
+        localStorage.setItem('userId', uid);
+        localStorage.setItem('username', uname);
+        localStorage.setItem('role', r);
+        url.searchParams.delete('uid');
+        url.searchParams.delete('userId');
+        url.searchParams.delete('username');
+        url.searchParams.delete('role');
+        window.history.replaceState({}, document.title, url.pathname);
+      }
+    } catch {}
+    window.__sessionSyncDone = true;
+  }
+
+  const [userRole, setUserRole] = useState(() => localStorage.getItem('role'));
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const uid = localStorage.getItem('userId');
+    const uname = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+    return Boolean(uid && uname && role);
+  });
+  const [username, setUsername] = useState(() => localStorage.getItem('username'));
 
   // Check user role from localStorage
   const checkUserRole = () => {
@@ -42,13 +71,34 @@ function App() {
     if (userId && username && role) {
       setUserRole(role);
       setIsLoggedIn(true);
+      setUsername(username);
     } else {
       setUserRole(null);
       setIsLoggedIn(false);
+      setUsername(null);
     }
   };
 
   useEffect(() => {
+    // Sync from URL params if present
+    try {
+      const url = new URL(window.location.href);
+      const uid = url.searchParams.get('uid') || url.searchParams.get('userId');
+      const uname = url.searchParams.get('username');
+      const r = url.searchParams.get('role');
+      if (uid && uname && r) {
+        localStorage.setItem('userId', uid);
+        localStorage.setItem('username', uname);
+        localStorage.setItem('role', r);
+        // Clean query params to avoid re-processing on refresh
+        url.searchParams.delete('uid');
+        url.searchParams.delete('userId');
+        url.searchParams.delete('username');
+        url.searchParams.delete('role');
+        window.history.replaceState({}, document.title, url.pathname);
+      }
+    } catch {}
+
     // Check on mount
     checkUserRole();
     
@@ -86,9 +136,9 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Navbar bg="dark" variant="dark" expand="lg">
+        <Navbar bg="dark" variant="dark" expand="lg" className="px-2">
           <Container>
-            <Navbar.Brand as={Link} to="/">
+            <Navbar.Brand as={Link} to="/" className="text-white">
               {userRole === 'BusinessOwner' ? 'Business Dashboard' : 
                userRole === 'Resident' ? 'Resident Community Hub' : 
                userRole === 'CommunityOrganizer' ? 'Community Organizer Hub' :
@@ -104,7 +154,7 @@ function App() {
                     <Nav.Link as={Link} to="/business/reviews">Reviews</Nav.Link>
                   </>
                 )}
-                {isLoggedIn && (userRole === 'Resident' || userRole === 'CommunityOrganizer') && (
+                {(userRole === 'Resident' || userRole === 'CommunityOrganizer' || !isLoggedIn) && (
                   <>
                     <Nav.Link as={Link} to="/resident/bulletinboard">Bulletin Board</Nav.Link>
                     <Nav.Link as={Link} to="/resident/marketplace">Marketplace</Nav.Link>
@@ -114,22 +164,30 @@ function App() {
               </Nav>
               <Nav className="ms-auto">
                 {isLoggedIn ? (
-                  <Button 
-                    variant="outline-light" 
-                    onClick={() => {
+                  <NavDropdown 
+                    title={<span className="text-white">{username || 'Account'} <i className="bi bi-chevron-down"></i></span>} 
+                    align="end" 
+                    menuVariant="dark"
+                    className="text-white"
+                  >
+                    <NavDropdown.Item onClick={() => window.location.href = '/profile'}>
+                      View Profile
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item onClick={() => {
                       localStorage.removeItem('userId');
                       localStorage.removeItem('username');
                       localStorage.removeItem('role');
-                      window.location.reload();
-                    }}
-                  >
-                    Logout
-                  </Button>
+                      window.location.href = '/';
+                    }}>
+                      Logout
+                    </NavDropdown.Item>
+                  </NavDropdown>
                 ) : (
-                        <Button 
-                          variant="primary" 
-                          onClick={() => window.open('http://localhost:5174', '_blank')}
-                        >
+            <Button 
+              variant="primary" 
+              onClick={() => { window.location.href = 'http://127.0.0.1:5173'; }}
+            >
                           Login
                         </Button>
                 )}
@@ -147,59 +205,20 @@ function App() {
                 !isLoggedIn ? (
                   <div className="text-center p-5">
                     <h2>Welcome to the Community Platform</h2>
-                    <p>Please log in to access your dashboard</p>
+                    <p className="lead">Connect with your community and local businesses</p>
                     <div className="d-flex justify-content-center gap-3">
                       <Button 
                         variant="primary" 
-                        onClick={() => window.open('http://localhost:5174', '_blank')}
+                        onClick={() => { window.location.href = 'http://127.0.0.1:5173'; }}
                       >
                         Login
                       </Button>
-                      <Button 
-                        variant="outline-secondary" 
-                        onClick={() => window.location.reload()}
-                      >
-                        Refresh Status
-                      </Button>
                     </div>
-                    <p className="text-muted mt-3 small">
-                      If you just logged in, click "Refresh Status" to update your session
-                    </p>
-                    <div className="mt-3 p-3 bg-light rounded">
-                      <small className="text-muted">
-                        Debug Info: User Role: {userRole || 'None'}, Logged In: {isLoggedIn ? 'Yes' : 'No'}<br/>
-                        Check browser console for detailed localStorage values
-                      </small>
-                      <div className="mt-2 d-flex gap-2">
-                        <Button 
-                          variant="outline-info" 
-                          size="sm"
-                          onClick={() => {
-                            console.log('Current localStorage:', {
-                              userId: localStorage.getItem('userId'),
-                              username: localStorage.getItem('username'),
-                              role: localStorage.getItem('role')
-                            });
-                            checkUserRole();
-                          }}
-                        >
-                          Debug localStorage
-                        </Button>
-                        <Button 
-                          variant="outline-warning" 
-                          size="sm"
-                          onClick={() => {
-                            // Test with demo resident
-                            localStorage.setItem('userId', '67fbccd0b088a381cdcef65d');
-                            localStorage.setItem('username', 'sarah_johnson');
-                            localStorage.setItem('role', 'Resident');
-                            console.log('Set test localStorage for Resident');
-                            checkUserRole();
-                          }}
-                        >
-                          Test Resident Login
-                        </Button>
-                      </div>
+                    <div className="mt-4">
+                      <p className="text-muted">
+                        <i className="bi bi-people me-2"></i>
+                        Browse community posts, marketplace, and help requests
+                      </p>
                     </div>
                   </div>
                 ) : userRole === 'BusinessOwner' ? (
@@ -222,28 +241,26 @@ function App() {
               </>
             )}
 
-            {/* Resident routes - accessible to Resident and CommunityOrganizer */}
-            {isLoggedIn && (userRole === 'Resident' || userRole === 'CommunityOrganizer') && (
-              <>
-                <Route path="/resident" element={<ResidentDashboard />} />
-                <Route path="/resident/bulletinboard" element={<BulletinBoard />} />
-                <Route path="/resident/marketplace" element={<Marketplace />} />
-                <Route
-                  path="/resident/marketplace/businessdetails/:businessId"
-                  element={<BusinessDetails />}
-                />
-                <Route
-                  path="/resident/neighborhoodhelprequests"
-                  element={<NeighborhoodHelpRequests />}
-                />
-                <Route
-                  path="/resident/bulletinboard/:postId"
-                  element={<IndividualDiscussion />}
-                />
-              </>
-            )}
+            {/* Resident routes - publicly viewable (actions gated inside components) */}
+            <Route path="/resident" element={<ResidentDashboard />} />
+            <Route path="/resident/bulletinboard" element={<BulletinBoard />} />
+            <Route path="/resident/marketplace" element={<Marketplace />} />
+            <Route
+              path="/resident/marketplace/businessdetails/:businessId"
+              element={<BusinessDetails />}
+            />
+            <Route
+              path="/resident/neighborhoodhelprequests"
+              element={<NeighborhoodHelpRequests />}
+            />
+            <Route
+              path="/resident/bulletinboard/:postId"
+              element={<IndividualDiscussion />}
+            />
 
             {/* Authentication routes */}
+            <Route path="/auth" element={<AuthStatus />} />
+            <Route path="/profile" element={<UserProfile />} />
             <Route path="/login" element={
               <div className="text-center p-5">
                 <h2>Please use the Auth App at <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer">http://localhost:5173</a></h2>
@@ -257,7 +274,7 @@ function App() {
                 <p>You don't have permission to access this page.</p>
                 <Button 
                   variant="primary" 
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => window.location.href = 'http://127.0.0.1:5173/'}
                 >
                   Go Home
                 </Button>
