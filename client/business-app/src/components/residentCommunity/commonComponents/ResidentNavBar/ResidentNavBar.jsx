@@ -59,7 +59,7 @@ const ResidentNavBar = () => {
                   Logout
                 </Button>
               ) : (
-                <Button variant="primary" onClick={() => navigate('/login')}>
+                <Button variant="primary" onClick={() => window.open('http://localhost:3001', '_blank')}>
                   Login
                 </Button>
               )}

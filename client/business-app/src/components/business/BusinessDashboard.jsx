@@ -13,32 +13,37 @@ const BusinessDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', variant: 'info' });
 
   // Set up user data from localStorage
   useEffect(() => {
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
     
     console.log("LocalStorage userId:", userId);
     console.log("LocalStorage username:", username);
+    console.log("LocalStorage role:", role);
     
-    if (userId) {
+    if (userId && username && role) {
       const loggedInUser = {
         id: userId,
-        role: 'BusinessOwner',
-        username: username || 'BusinessOwner'
+        role: role,
+        username: username
       };
       console.log("Setting user state:", loggedInUser);
       setUser(loggedInUser);
+      setIsLoggedIn(true);
     } else {
-      // For testing purposes only
+      // For testing purposes only - but mark as not logged in
       console.log("No userId in localStorage, using test ID");
       setUser({
         id: '67fbccd0b088a381cdcef65c',
         role: 'BusinessOwner',
         username: 'Test User'
       });
+      setIsLoggedIn(false);
     }
   }, []);
 
@@ -91,8 +96,17 @@ const BusinessDashboard = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('role');
     
+    // Update state
+    setIsLoggedIn(false);
+    setUser(null);
+    
     // Navigate to home
     navigate('/');
+  };
+
+  const handleLogin = () => {
+    // Open auth app in new tab
+    window.open('http://localhost:3001', '_blank');
   };
 
   // Navigation functions
@@ -121,9 +135,15 @@ const BusinessDashboard = () => {
                 <h1 className="mb-2 fw-bold">🏢 Business Owner Dashboard</h1>
                 <p className="mb-0 opacity-75">Manage your business profile, promotions, and customer reviews</p>
               </div>
-              <Button variant="light" onClick={handleLogout} className="px-4 py-2">
-                <i className="bi bi-box-arrow-right me-2"></i>Logout
-              </Button>
+              {isLoggedIn ? (
+                <Button variant="light" onClick={handleLogout} className="px-4 py-2">
+                  <i className="bi bi-box-arrow-right me-2"></i>Logout
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={handleLogin} className="px-4 py-2">
+                  <i className="bi bi-box-arrow-in-right me-2"></i>Login
+                </Button>
+              )}
             </Col>
           </Row>
         </Container>

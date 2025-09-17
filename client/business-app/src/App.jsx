@@ -110,6 +110,9 @@ function App() {
             <Route path="/business/create-offer" element={<CreateOffer />} />
             <Route path="/business/reviews" element={<ReviewsList />} />
 
+            {/* Authentication routes */}
+            <Route path="/login" element={<div className="text-center p-5"><h2>Please use the Auth App at <a href="http://localhost:3001" target="_blank" rel="noopener noreferrer">http://localhost:3001</a></h2></div>} />
+            
             {/* Resident routes */}
             <Route path="/resident" element={<ResidentDashboard />} />
             <Route path="/resident/bulletinboard" element={<BulletinBoard />} />
