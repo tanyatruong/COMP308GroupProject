@@ -50,13 +50,16 @@ const LogIn = () => {
                 localStorage.setItem('role', user.role);
                 
                 if(user.role === "BusinessOwner"){
-                    navigate('/businessdashboard');
+                    // Redirect to business app
+                    window.location.href = 'http://localhost:3003';
                 }
                 if(user.role === "Resident"){
-                    navigate('/residentdashboard');
+                    // Redirect to business app resident view
+                    window.location.href = 'http://localhost:3003/resident';
                 }
                 if(user.role === "CommunityOrganizer"){
-                    navigate('/residentdashboard');
+                    // Redirect to business app resident view
+                    window.location.href = 'http://localhost:3003/resident';
                 }
             }
         }catch(err){

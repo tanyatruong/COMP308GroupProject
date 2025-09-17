@@ -86,6 +86,11 @@ const Home = () => {
                     <i className="bi bi-info-circle me-1"></i>
                     Demo accounts available - check the documentation for login credentials
                   </small>
+                  <br />
+                  <small className="text-muted">
+                    <i className="bi bi-arrow-right me-1"></i>
+                    After login, you'll be redirected to the appropriate dashboard
+                  </small>
                 </div>
               </Card.Body>
             </Card>
