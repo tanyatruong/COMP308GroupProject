@@ -103,7 +103,7 @@ function App() {
 
             {/* Business routes */}
             <Route path="/business" element={<BusinessDashboard />} />
-            <Route path="/business/profile"element={<BusinessProfile onlyDisplay={true} />}/>
+            <Route path="/business/profile" element={<BusinessProfile onlyDisplay={true} />}/>
             <Route path="/business/create-profile" element={<CreateBusinessProfile />} />
             
             <Route path="/business/offers" element={<OffersList />} />
