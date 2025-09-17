@@ -106,24 +106,30 @@ const BusinessDashboard = () => {
   const hasBusinessProfile = !error && data && data.businessProfileByOwner;
 
   return (
-    <Container fluid className="py-4">
+    <div className="App">
       {notification.show && (
-        <Alert variant={notification.variant} onClose={() => setNotification({ ...notification, show: false })} dismissible>
+        <Alert variant={notification.variant} onClose={() => setNotification({ ...notification, show: false })} dismissible className="m-3">
           {notification.message}
         </Alert>
       )}
   
-      <Row className="mb-4">
-        <Col className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-          <div>
-            <h2 className="mb-0">Business Owner Dashboard</h2>
-            <small className="text-muted">Manage your business profile, promotions, and reviews</small>
-          </div>
-          <Button variant="outline-danger" onClick={handleLogout}>
-            Logout
-          </Button>
-        </Col>
-      </Row>
+      <div className="dashboard-header">
+        <Container fluid>
+          <Row className="align-items-center">
+            <Col className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div>
+                <h1 className="mb-2 fw-bold">🏢 Business Owner Dashboard</h1>
+                <p className="mb-0 opacity-75">Manage your business profile, promotions, and customer reviews</p>
+              </div>
+              <Button variant="light" onClick={handleLogout} className="px-4 py-2">
+                <i className="bi bi-box-arrow-right me-2"></i>Logout
+              </Button>
+            </Col>
+          </Row>
+        </Container>
+      </div>
+
+      <Container fluid className="py-4">
   
       {!hasBusinessProfile ? (
         <CreateBusinessProfile onSuccess={handleProfileCreated} />
@@ -132,15 +138,15 @@ const BusinessDashboard = () => {
           {/* Navigation Toolbar */}
           <Row className="mb-4">
             <Col>
-              <div className="btn-group d-flex flex-wrap gap-2">
-                <Button variant="outline-primary" className="flex-fill" onClick={navigateToProfile}>
-                  🏢 Profile
+              <div className="btn-group d-flex flex-wrap gap-3">
+                <Button variant="primary" className="flex-fill px-4 py-3" onClick={navigateToProfile}>
+                  <i className="bi bi-building me-2"></i>Business Profile
                 </Button>
-                <Button variant="outline-primary" className="flex-fill" onClick={navigateToOffers}>
-                  💡 Promotions
+                <Button variant="outline-primary" className="flex-fill px-4 py-3" onClick={navigateToOffers}>
+                  <i className="bi bi-megaphone me-2"></i>Promotions
                 </Button>
-                <Button variant="outline-primary" className="flex-fill" onClick={navigateToReviews}>
-                  ⭐ Reviews
+                <Button variant="outline-primary" className="flex-fill px-4 py-3" onClick={navigateToReviews}>
+                  <i className="bi bi-star me-2"></i>Customer Reviews
                 </Button>
               </div>
             </Col>
@@ -149,54 +155,98 @@ const BusinessDashboard = () => {
           {/* Dashboard Overview Cards */}
           <Row className="g-4 mb-4">
             <Col md={4}>
-              <Card className="h-100 shadow-sm border-0">
-                <Card.Body className="text-center">
-                  <h5 className="fw-semibold">Business Profile</h5>
-                  <p className="text-muted">{data.businessProfileByOwner.businessName}</p>
-                  <Button variant="primary" onClick={navigateToProfile}>View Profile</Button>
+              <Card className="h-100 dashboard-card fade-in">
+                <Card.Body className="text-center p-4">
+                  <div className="mb-3">
+                    <i className="bi bi-building text-primary" style={{fontSize: '3rem'}}></i>
+                  </div>
+                  <h5 className="fw-bold mb-3">Business Profile</h5>
+                  <p className="text-muted mb-3">{data.businessProfileByOwner.businessName}</p>
+                  <Button variant="primary" onClick={navigateToProfile} className="px-4">
+                    <i className="bi bi-eye me-2"></i>View Profile
+                  </Button>
                 </Card.Body>
               </Card>
             </Col>
             <Col md={4}>
-              <Card className="h-100 shadow-sm border-0">
-                <Card.Body className="text-center">
-                  <h5 className="fw-semibold">Promotions</h5>
-                  <p className="text-muted">{data.businessProfileByOwner.offers?.length || 0} Active Offers</p>
+              <Card className="h-100 dashboard-card fade-in">
+                <Card.Body className="text-center p-4">
+                  <div className="mb-3">
+                    <i className="bi bi-megaphone text-success" style={{fontSize: '3rem'}}></i>
+                  </div>
+                  <h5 className="fw-bold mb-3">Promotions</h5>
+                  <p className="text-muted mb-3">{data.businessProfileByOwner.offers?.length || 0} Active Offers</p>
                   <div className="d-flex justify-content-center gap-2">
-                    <Button variant="primary" onClick={navigateToCreateOffer}>+ New</Button>
-                    <Button variant="outline-primary" onClick={navigateToOffers}>View All</Button>
+                    <Button variant="success" onClick={navigateToCreateOffer} className="px-3">
+                      <i className="bi bi-plus me-1"></i>New
+                    </Button>
+                    <Button variant="outline-primary" onClick={navigateToOffers} className="px-3">
+                      <i className="bi bi-list me-1"></i>All
+                    </Button>
                   </div>
                 </Card.Body>
               </Card>
             </Col>
             <Col md={4}>
-              <Card className="h-100 shadow-sm border-0">
-                <Card.Body className="text-center">
-                  <h5 className="fw-semibold">Customer Reviews</h5>
-                  <p className="text-muted">{data.businessProfileByOwner.reviews?.length || 0} Reviews</p>
-                  <Button variant="primary" onClick={navigateToReviews}>View Reviews</Button>
+              <Card className="h-100 dashboard-card fade-in">
+                <Card.Body className="text-center p-4">
+                  <div className="mb-3">
+                    <i className="bi bi-star text-warning" style={{fontSize: '3rem'}}></i>
+                  </div>
+                  <h5 className="fw-bold mb-3">Customer Reviews</h5>
+                  <p className="text-muted mb-3">{data.businessProfileByOwner.reviews?.length || 0} Reviews</p>
+                  <Button variant="warning" onClick={navigateToReviews} className="px-4">
+                    <i className="bi bi-star me-2"></i>View Reviews
+                  </Button>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
   
-          {/* Recent Activity */}
-          <Card className="border-0 shadow-sm">
-            <Card.Header className="bg-white border-0">
-              <h5 className="mb-0">Welcome to your Business Dashboard</h5>
+          {/* Welcome Section */}
+          <Card className="dashboard-card">
+            <Card.Header className="bg-gradient text-white border-0" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+              <h4 className="mb-0">
+                <i className="bi bi-info-circle me-2"></i>Welcome to your Business Dashboard
+              </h4>
             </Card.Header>
-            <Card.Body>
-              <p className="text-muted">Here are a few introductions</p>
-              <ul className="mb-0">
-                <li>✅ COMP308 - Emerging Technologies | Winter 2025 </li>
-                <li>✅ Representing from Group 1</li>
-                <li>✅ Tanya Truong is in charge of the Business Owner feature.</li>
-              </ul>
+            <Card.Body className="p-4">
+              <p className="text-muted mb-3">Here's what you can do with your business dashboard:</p>
+              <Row>
+                <Col md={4}>
+                  <div className="d-flex align-items-center mb-3">
+                    <i className="bi bi-check-circle-fill text-success me-3" style={{fontSize: '1.5rem'}}></i>
+                    <div>
+                      <h6 className="mb-1">COMP308 - Emerging Technologies</h6>
+                      <small className="text-muted">Winter 2025</small>
+                    </div>
+                  </div>
+                </Col>
+                <Col md={4}>
+                  <div className="d-flex align-items-center mb-3">
+                    <i className="bi bi-people-fill text-primary me-3" style={{fontSize: '1.5rem'}}></i>
+                    <div>
+                      <h6 className="mb-1">Group 1 Project</h6>
+                      <small className="text-muted">Community Platform</small>
+                    </div>
+                  </div>
+                </Col>
+                <Col md={4}>
+                  <div className="d-flex align-items-center mb-3">
+                    <i className="bi bi-person-badge-fill text-warning me-3" style={{fontSize: '1.5rem'}}></i>
+                    <div>
+                      <h6 className="mb-1">Tanya Truong</h6>
+                      <small className="text-muted">Business Owner Feature</small>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
             </Card.Body>
           </Card>
         </>
       )}
-    </Container>
+      </Container>
+    </div>
   );
 };
 
