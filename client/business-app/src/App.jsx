@@ -113,12 +113,12 @@ function App() {
                     Logout
                   </Button>
                 ) : (
-                  <Button 
-                    variant="primary" 
-                    onClick={() => window.open('http://localhost:5173', '_blank')}
-                  >
-                    Login
-                  </Button>
+                        <Button 
+                          variant="primary" 
+                          onClick={() => window.open('http://localhost:5174', '_blank')}
+                        >
+                          Login
+                        </Button>
                 )}
               </Nav>
             </Navbar.Collapse>
@@ -138,7 +138,7 @@ function App() {
                     <div className="d-flex justify-content-center gap-3">
                       <Button 
                         variant="primary" 
-                        onClick={() => window.open('http://localhost:5173', '_blank')}
+                        onClick={() => window.open('http://localhost:5174', '_blank')}
                       >
                         Login
                       </Button>
@@ -176,15 +176,15 @@ function App() {
                           variant="outline-warning" 
                           size="sm"
                           onClick={() => {
-                            // Test with demo business owner
-                            localStorage.setItem('userId', '67fbccd0b088a381cdcef65c');
-                            localStorage.setItem('username', 'tony_restaurant');
-                            localStorage.setItem('role', 'BusinessOwner');
-                            console.log('Set test localStorage for BusinessOwner');
+                            // Test with demo resident
+                            localStorage.setItem('userId', '67fbccd0b088a381cdcef65d');
+                            localStorage.setItem('username', 'sarah_johnson');
+                            localStorage.setItem('role', 'Resident');
+                            console.log('Set test localStorage for Resident');
                             checkUserRole();
                           }}
                         >
-                          Test Business Login
+                          Test Resident Login
                         </Button>
                       </div>
                     </div>

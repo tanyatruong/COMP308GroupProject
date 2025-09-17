@@ -64,13 +64,13 @@ const LogIn = () => {
                 }
                 if(user.role === "Resident"){
                     console.log('Redirecting to resident view...');
-                    // Redirect to business app resident view
-                    window.location.href = 'http://localhost:3003/resident';
+                    // Redirect to business app (resident features are on the same app)
+                    window.location.href = 'http://localhost:3003';
                 }
                 if(user.role === "CommunityOrganizer"){
                     console.log('Redirecting to community organizer view...');
-                    // Redirect to business app resident view
-                    window.location.href = 'http://localhost:3003/resident';
+                    // Redirect to business app (community organizer features are on the same app)
+                    window.location.href = 'http://localhost:3003';
                 }
             }
         }catch(err){
