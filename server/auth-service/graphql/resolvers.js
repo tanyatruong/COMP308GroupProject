@@ -45,6 +45,15 @@ const resolvers = {
     },
     Query: {
         me: async (_, __, {user}) => {
+            if (!user) {
+                return null;
+            }
+            
+            if (!user.role) {
+                console.error("User object missing role:", user);
+                return null;
+            }
+            
             switch(user.role){
                 case "Resident":
                     const resident = await Resident.findById(user.id);
@@ -56,7 +65,8 @@ const resolvers = {
                     const businessOwner = await BusinessOwner.findById(user.id);
                     return businessOwner;
                 default:
-                    throw new Error("Unable to process user.")
+                    console.error("Unknown user role:", user.role);
+                    return null;
             }
         },
         residents: async (_, __) => {
