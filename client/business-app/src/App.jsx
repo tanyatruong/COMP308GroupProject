@@ -39,10 +39,14 @@ function App() {
       const r = url.searchParams.get('role');
       console.log('🔄 Business App - URL params detected:', { uid, uname, r });
       if (uid && uname && r) {
+        // Clear existing localStorage first
+        localStorage.clear();
+        // Set new session data
         localStorage.setItem('userId', uid);
         localStorage.setItem('username', uname);
         localStorage.setItem('role', r);
         console.log('✅ Business App - URL params synced to localStorage');
+        // Clean URL
         url.searchParams.delete('uid');
         url.searchParams.delete('userId');
         url.searchParams.delete('username');
@@ -128,10 +132,10 @@ function App() {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Also check periodically in case localStorage was updated in same tab
-    const interval = setInterval(() => {
-      checkUserRole();
-    }, 500); // Check more frequently
+        // Also check periodically in case localStorage was updated in same tab
+        const interval = setInterval(() => {
+          checkUserRole();
+        }, 2000); // Check every 2 seconds
     
     // Check when page becomes visible (user might have logged in in another tab)
     const handleVisibilityChange = () => {

@@ -59,13 +59,9 @@ const LogIn = () => {
                 console.log('🔐 Login successful, user:', user);
                 
                 // Clear any stale session values first
-                try{
-                  localStorage.removeItem('userId');
-                  localStorage.removeItem('username');
-                  localStorage.removeItem('role');
-                }catch{}
+                localStorage.clear();
                 
-                // Save (for this origin only)
+                // Save session data
                 localStorage.setItem('userId', user.id);
                 localStorage.setItem('username', username);
                 localStorage.setItem('role', user.role);
@@ -74,7 +70,7 @@ const LogIn = () => {
                 // Show success message
                 setError('Login successful! Redirecting...');
 
-                // Redirect to business app with session parameters so it can sync localStorage
+                // Redirect to business app with session parameters
                 const targetBase = 'http://127.0.0.1:3003';
                 const path = user.role === 'Resident' || user.role === 'CommunityOrganizer' ? '/resident' : '/';
                 const params = new URLSearchParams({
@@ -85,10 +81,8 @@ const LogIn = () => {
                 const redirectUrl = `${targetBase}${path}?${params}`;
                 console.log('🔐 Redirecting to:', redirectUrl);
                 
-                // Add a small delay to show the success message
-                setTimeout(() => {
-                    window.location.href = redirectUrl;
-                }, 1000);
+                // Redirect immediately
+                window.location.href = redirectUrl;
             } else {
                 console.log('🔐 Login failed - no user data');
                 setError('Login failed - no user data returned');
