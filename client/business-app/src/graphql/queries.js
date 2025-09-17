@@ -168,6 +168,13 @@ export const GET_ALL_OFFERS = gql`
       createdAt
       business {
         id
+        businessName
+        averageRating
+        businessTags
+        location {
+          city
+          address
+        }
       }
     }
   }

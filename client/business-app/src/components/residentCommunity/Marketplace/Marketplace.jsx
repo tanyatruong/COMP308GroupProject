@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import {
   Container,
   Row,
@@ -27,21 +27,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import { format, isValid } from "date-fns";
 
-import { GET_ALL_OFFERS, GET_BUSINESS_PROFILE_BY_ID } from "../../../graphql/queries";
+import { GET_ALL_OFFERS } from "../../../graphql/queries";
 
 const PublicMarketplace = () => {
   const navigate = useNavigate();
 
   const [offers, setOffers] = useState([]);
   const [filteredOffers, setFilteredOffers] = useState([]);
-  const [businessProfiles, setBusinessProfiles] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [sortOption, setSortOption] = useState("newest");
   const [availableTags, setAvailableTags] = useState([]);
 
   const { loading: offersLoading, error: offersError, data: offersData } = useQuery(GET_ALL_OFFERS);
-  const [fetchBusinessProfileQuery, { loading: profilesLoading }] = useLazyQuery(GET_BUSINESS_PROFILE_BY_ID);
 
   useEffect(() => {
     if (offersData && offersData.offers) {
@@ -49,33 +47,16 @@ const PublicMarketplace = () => {
       setOffers(activeOffers);
       setFilteredOffers(activeOffers);
 
-      const uniqueBusinessIds = [...new Set(activeOffers.map((offer) => offer.business?.id).filter(Boolean))];
-      fetchBusinessProfiles(uniqueBusinessIds);
-    }
-  }, [offersData]);
-
-  const fetchBusinessProfiles = async (businessIds) => {
-    if (!businessIds.length) return;
-    const newProfiles = { ...businessProfiles };
-
-    try {
-      for (const id of businessIds) {
-        const { data } = await fetchBusinessProfileQuery({ variables: { businessId: id } });
-        if (data?.businessProfile) {
-          newProfiles[id] = data.businessProfile;
-        }
-      }
-      setBusinessProfiles(newProfiles);
-
+      // Extract tags from business information in offers
       const tagSet = new Set();
-      Object.values(newProfiles).forEach((profile) => {
-        profile.businessTags?.forEach((tag) => tagSet.add(tag));
+      activeOffers.forEach((offer) => {
+        if (offer.business?.businessTags) {
+          offer.business.businessTags.forEach((tag) => tagSet.add(tag));
+        }
       });
       setAvailableTags(Array.from(tagSet));
-    } catch (err) {
-      console.error("Error fetching business profiles:", err);
     }
-  };
+  }, [offersData]);
 
   useEffect(() => {
     let result = [...offers];
@@ -83,19 +64,17 @@ const PublicMarketplace = () => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       result = result.filter((offer) => {
-        const profile = businessProfiles[offer.business?.id];
         return (
           offer.title?.toLowerCase().includes(searchLower) ||
           offer.content?.toLowerCase().includes(searchLower) ||
-          profile?.businessName?.toLowerCase().includes(searchLower)
+          offer.business?.businessName?.toLowerCase().includes(searchLower)
         );
       });
     }
 
     if (selectedTags.length > 0) {
       result = result.filter((offer) => {
-        const profile = businessProfiles[offer.business?.id];
-        return selectedTags.some((tag) => profile?.businessTags?.includes(tag));
+        return selectedTags.some((tag) => offer.business?.businessTags?.includes(tag));
       });
     }
 
@@ -114,7 +93,7 @@ const PublicMarketplace = () => {
     }
 
     setFilteredOffers(result);
-  }, [offers, searchTerm, selectedTags, sortOption, businessProfiles]);
+  }, [offers, searchTerm, selectedTags, sortOption]);
 
   const handleTagSelect = (tag) =>
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
@@ -132,13 +111,11 @@ const PublicMarketplace = () => {
     );
   };
 
-  const getBusinessProfile = (offer) => businessProfiles[offer.business?.id];
-  
   const navigateToBusinessDetails = (businessId) => {
     navigate(`/resident/marketplace/businessdetails/${businessId}`);
   };
 
-  if (offersLoading || profilesLoading) {
+  if (offersLoading) {
     return (
       <Container className="mt-5 text-center">
         <Spinner animation="border" />
@@ -237,7 +214,7 @@ const PublicMarketplace = () => {
       <Row>
         {filteredOffers.length > 0 ? (
           filteredOffers.map((offer) => {
-            const profile = getBusinessProfile(offer);
+            const business = offer.business;
             return (
               <Col md={6} lg={4} key={offer.id} className="mb-4">
                 <Card className="shadow-sm h-100">
@@ -251,26 +228,26 @@ const PublicMarketplace = () => {
                     <div 
                       className="mb-3 p-2 bg-light rounded" 
                       style={{ cursor: 'pointer' }} 
-                      onClick={() => profile && navigateToBusinessDetails(profile.id)}
+                      onClick={() => business && navigateToBusinessDetails(business.id)}
                     >
                       <div className="d-flex justify-content-between align-items-center mb-2">
-                        <h6 className="mb-0">{profile?.businessName || "Unknown Business"}</h6>
-                        {profile?.averageRating > 0 && (
+                        <h6 className="mb-0">{business?.businessName || "Unknown Business"}</h6>
+                        {business?.averageRating > 0 && (
                           <div className="d-flex align-items-center">
-                            <small className="text-muted me-1">{profile.averageRating.toFixed(1)}</small>
-                            {renderStars(profile.averageRating)}
+                            <small className="text-muted me-1">{business.averageRating.toFixed(1)}</small>
+                            {renderStars(business.averageRating)}
                           </div>
                         )}
                       </div>
-                      {profile?.location?.city && (
+                      {business?.location?.city && (
                         <div className="small mb-1 text-muted">
                           <GeoAlt className="me-1" size={14} />
-                          {profile.location.city}
-                          {profile.location.address && `, ${profile.location.address}`}
+                          {business.location.city}
+                          {business.location.address && `, ${business.location.address}`}
                         </div>
                       )}
                       <div className="mt-2">
-                        {profile?.businessTags?.map((tag) => (
+                        {business?.businessTags?.map((tag) => (
                           <Badge key={tag} bg="secondary" className="me-1 mb-1" onClick={(e) => {
                             e.stopPropagation(); // Prevent business profile navigation
                             handleTagSelect(tag);
