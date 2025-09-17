@@ -32,10 +32,12 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Check user role from localStorage
-  useEffect(() => {
+  const checkUserRole = () => {
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
     const role = localStorage.getItem('role');
+    
+    console.log('Checking user role:', { userId, username, role });
     
     if (userId && username && role) {
       setUserRole(role);
@@ -44,6 +46,28 @@ function App() {
       setUserRole(null);
       setIsLoggedIn(false);
     }
+  };
+
+  useEffect(() => {
+    // Check on mount
+    checkUserRole();
+    
+    // Listen for storage changes (when user logs in from another tab)
+    const handleStorageChange = (e) => {
+      if (e.key === 'userId' || e.key === 'username' || e.key === 'role') {
+        checkUserRole();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically in case localStorage was updated in same tab
+    const interval = setInterval(checkUserRole, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -111,12 +135,29 @@ function App() {
                   <div className="text-center p-5">
                     <h2>Welcome to the Community Platform</h2>
                     <p>Please log in to access your dashboard</p>
-                    <Button 
-                      variant="primary" 
-                      onClick={() => window.open('http://localhost:5173', '_blank')}
-                    >
-                      Login
-                    </Button>
+                    <div className="d-flex justify-content-center gap-3">
+                      <Button 
+                        variant="primary" 
+                        onClick={() => window.open('http://localhost:5173', '_blank')}
+                      >
+                        Login
+                      </Button>
+                      <Button 
+                        variant="outline-secondary" 
+                        onClick={() => window.location.reload()}
+                      >
+                        Refresh Status
+                      </Button>
+                    </div>
+                    <p className="text-muted mt-3 small">
+                      If you just logged in, click "Refresh Status" to update your session
+                    </p>
+                    <div className="mt-3 p-3 bg-light rounded">
+                      <small className="text-muted">
+                        Debug Info: User Role: {userRole || 'None'}, Logged In: {isLoggedIn ? 'Yes' : 'No'}<br/>
+                        Check browser console for detailed localStorage values
+                      </small>
+                    </div>
                   </div>
                 ) : userRole === 'BusinessOwner' ? (
                   <BusinessDashboard />
