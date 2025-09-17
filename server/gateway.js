@@ -14,8 +14,13 @@ app.use(
   cors({
     origin: [
       "http://localhost:3003",
+      "http://localhost:3001",
       "http://localhost:5173",
       "http://localhost:5174",
+      "http://127.0.0.1:3003",
+      "http://127.0.0.1:3001",
+      "http://127.0.0.1:5173",
+      "http://127.0.0.1:5174",
       "https://studio.apollographql.com",
     ],
     credentials: true,
@@ -26,10 +31,10 @@ app.use(
 const gateway = new ApolloGateway({
   supergraphSdl: new IntrospectAndCompose({
     subgraphs: [
-      { name: "community", url: "http://localhost:4004/graphql" },
-      { name: "auth", url: "http://localhost:4001/graphql" },
-      { name: "business", url: "http://localhost:4002/graphql" },
-      { name: "ai", url: "http://localhost:4003/graphql" },
+      { name: "community", url: "http://127.0.0.1:4004/graphql" },
+      { name: "auth", url: "http://127.0.0.1:4001/graphql" },
+      { name: "business", url: "http://127.0.0.1:4002/graphql" },
+      { name: "ai", url: "http://127.0.0.1:4003/graphql" },
     ],
   }),
   buildService({ name, url }) {

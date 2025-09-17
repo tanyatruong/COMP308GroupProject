@@ -52,21 +52,26 @@ const getResidents = async () => {
 const resolvers = {
     Query: {
         analyzeSentiment: async (_, { reviews }, { user, genAI }) => {
-            if (!user) {
-                throw new Error("Unauthorized access. Please log in.");
-            }
+            // Allow public access to sentiment analysis for business reviews
             if (reviews.length === 0){
-                return "No reviews";
+                return "No reviews available for analysis.";
             }
-            const response = await genAI.models.generateContent({
-                model: "gemini-2.0-flash",
-                contents: `
-                    Analyze the sentiment of the following reviews and provide a short summary.
-                    Provide only a paragraph summarizing the sentiment of the reviews with no other characters or text.
-                    ${reviews.join('\n')}
-                `
-            });
-            return response.text;
+            try {
+                const response = await genAI.models.generateContent({
+                    model: "gemini-2.0-flash",
+                    contents: `
+                        Analyze the sentiment of the following customer reviews and provide a concise summary.
+                        Focus on overall customer satisfaction, common themes, and key feedback points.
+                        Provide only a paragraph summarizing the sentiment of the reviews with no other characters or text.
+                        Reviews:
+                        ${reviews.join('\n')}
+                    `
+                });
+                return response.text;
+            } catch (error) {
+                console.error("Error generating sentiment analysis:", error);
+                return "Unable to analyze reviews at this time.";
+            }
         },
         summarizeDiscussion: async (_, { posts }, { user, genAI}) => {
             if (!user) {
