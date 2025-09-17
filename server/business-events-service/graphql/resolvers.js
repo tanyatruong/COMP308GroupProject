@@ -23,7 +23,12 @@ const resolvers = {
       return { __typename: 'BusinessOwner', id: parent.businessOwner };
     },
     location: async (parent) => {
-      return { __typename: 'Location', id: parent.location };
+      // Handle both cases: when location is an ID or when it's a populated object
+      if (typeof parent.location === 'string' || parent.location._id) {
+        const locationId = parent.location._id || parent.location;
+        return await Location.findById(locationId);
+      }
+      return parent.location;
     }
   },
   Offer: {
@@ -64,7 +69,12 @@ const resolvers = {
       return { __typename: 'CommunityOrganizer', id: parent.author };
     },
     location: async (parent) => {
-      return { __typename: 'Location', id: parent.location };
+      // Handle both cases: when location is an ID or when it's a populated object
+      if (typeof parent.location === 'string' || parent.location._id) {
+        const locationId = parent.location._id || parent.location;
+        return await Location.findById(locationId);
+      }
+      return parent.location;
     },
     participants: async (parent) => {
       return parent.participants.map(id => ({ __typename: 'Resident', id }));

@@ -105,8 +105,8 @@ const BusinessDashboard = () => {
   };
 
   const handleLogin = () => {
-    // Open auth app in new tab
-    window.open('http://localhost:3001', '_blank');
+    // Open shell app (auth) in new tab
+    window.open('http://localhost:5173', '_blank');
   };
 
   // Navigation functions
