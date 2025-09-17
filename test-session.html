@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Session Test</title>
+</head>
+<body>
+    <h1>Session Test</h1>
+    
+    <div>
+        <h3>Current Session Data:</h3>
+        <p>User ID: <span id="userId"></span></p>
+        <p>Username: <span id="username"></span></p>
+        <p>Role: <span id="role"></span></p>
+        <p>Is Logged In: <span id="isLoggedIn"></span></p>
+    </div>
+    
+    <div>
+        <h3>Set Session Data:</h3>
+        <input type="text" id="setUserId" placeholder="User ID" value="68ca3c2095a4d28cf9fc8710">
+        <input type="text" id="setUsername" placeholder="Username" value="tony_restaurant">
+        <select id="setRole">
+            <option value="BusinessOwner">Business Owner</option>
+            <option value="Resident">Resident</option>
+            <option value="CommunityOrganizer">Community Organizer</option>
+        </select>
+        <button onclick="setSession()">Set Session</button>
+        <button onclick="clearSession()">Clear Session</button>
+    </div>
+    
+    <div>
+        <h3>Test Business App:</h3>
+        <button onclick="testBusinessApp()">Open Business App</button>
+        <button onclick="testBusinessAppWithParams()">Open Business App with URL Params</button>
+    </div>
+
+    <script>
+        function updateDisplay() {
+            document.getElementById('userId').textContent = localStorage.getItem('userId') || 'Not set';
+            document.getElementById('username').textContent = localStorage.getItem('username') || 'Not set';
+            document.getElementById('role').textContent = localStorage.getItem('role') || 'Not set';
+            
+            const uid = localStorage.getItem('userId');
+            const uname = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            const loggedIn = Boolean(uid && uname && role);
+            document.getElementById('isLoggedIn').textContent = loggedIn ? 'Yes' : 'No';
+        }
+        
+        function setSession() {
+            const userId = document.getElementById('setUserId').value;
+            const username = document.getElementById('setUsername').value;
+            const role = document.getElementById('setRole').value;
+            
+            localStorage.setItem('userId', userId);
+            localStorage.setItem('username', username);
+            localStorage.setItem('role', role);
+            
+            updateDisplay();
+            console.log('Session set:', { userId, username, role });
+        }
+        
+        function clearSession() {
+            localStorage.removeItem('userId');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            
+            updateDisplay();
+            console.log('Session cleared');
+        }
+        
+        function testBusinessApp() {
+            window.open('http://127.0.0.1:3003', '_blank');
+        }
+        
+        function testBusinessAppWithParams() {
+            const userId = localStorage.getItem('userId');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            if (userId && username && role) {
+                const params = new URLSearchParams({
+                    uid: userId,
+                    username: username,
+                    role: role,
+                }).toString();
+                const url = `http://127.0.0.1:3003?${params}`;
+                console.log('Opening with params:', url);
+                window.open(url, '_blank');
+            } else {
+                alert('Please set session data first');
+            }
+        }
+        
+        // Update display on load
+        updateDisplay();
+        
+        // Listen for storage changes
+        window.addEventListener('storage', updateDisplay);
+    </script>
+</body>
+</html>

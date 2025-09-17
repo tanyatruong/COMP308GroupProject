@@ -55,14 +55,24 @@ function App() {
     window.__sessionSyncDone = true;
   }
 
-  const [userRole, setUserRole] = useState(() => localStorage.getItem('role'));
+  const [userRole, setUserRole] = useState(() => {
+    const role = localStorage.getItem('role');
+    console.log('🔍 Business App - Initial userRole from localStorage:', role);
+    return role;
+  });
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const uid = localStorage.getItem('userId');
     const uname = localStorage.getItem('username');
     const role = localStorage.getItem('role');
-    return Boolean(uid && uname && role);
+    const loggedIn = Boolean(uid && uname && role);
+    console.log('🔍 Business App - Initial isLoggedIn:', loggedIn, { uid, uname, role });
+    return loggedIn;
   });
-  const [username, setUsername] = useState(() => localStorage.getItem('username'));
+  const [username, setUsername] = useState(() => {
+    const uname = localStorage.getItem('username');
+    console.log('🔍 Business App - Initial username from localStorage:', uname);
+    return uname;
+  });
 
   // Check user role from localStorage
   const checkUserRole = () => {
@@ -208,30 +218,38 @@ function App() {
             <Route
               path="/"
               element={
-                !isLoggedIn ? (
-                  <div className="text-center p-5">
-                    <h2>Welcome to the Community Platform</h2>
-                    <p className="lead">Connect with your community and local businesses</p>
-                    <div className="d-flex justify-content-center gap-3">
-                      <Button 
-                        variant="primary" 
-                        onClick={() => { window.location.href = 'http://127.0.0.1:5173'; }}
-                      >
-                        Login
-                      </Button>
-                    </div>
-                    <div className="mt-4">
-                      <p className="text-muted">
-                        <i className="bi bi-people me-2"></i>
-                        Browse community posts, marketplace, and help requests
-                      </p>
-                    </div>
-                  </div>
-                ) : userRole === 'BusinessOwner' ? (
-                  <BusinessDashboard />
-                ) : (
-                  <ResidentDashboard />
-                )
+                (() => {
+                  console.log('🎯 Business App - Route decision:', { isLoggedIn, userRole });
+                  if (!isLoggedIn) {
+                    console.log('👋 Business App - Showing welcome page (not logged in)');
+                    return (
+                      <div className="text-center p-5">
+                        <h2>Welcome to the Community Platform</h2>
+                        <p className="lead">Connect with your community and local businesses</p>
+                        <div className="d-flex justify-content-center gap-3">
+                          <Button 
+                            variant="primary" 
+                            onClick={() => { window.location.href = 'http://127.0.0.1:5173'; }}
+                          >
+                            Login
+                          </Button>
+                        </div>
+                        <div className="mt-4">
+                          <p className="text-muted">
+                            <i className="bi bi-people me-2"></i>
+                            Browse community posts, marketplace, and help requests
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  } else if (userRole === 'BusinessOwner') {
+                    console.log('🏢 Business App - Showing BusinessDashboard for BusinessOwner');
+                    return <BusinessDashboard />;
+                  } else {
+                    console.log('🏘️ Business App - Showing ResidentDashboard for role:', userRole);
+                    return <ResidentDashboard />;
+                  }
+                })()
               }
             />
 
