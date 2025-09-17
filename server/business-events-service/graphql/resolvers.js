@@ -31,7 +31,7 @@ const resolvers = {
       return await Offer.findById(ref.id);
     },
     business: async (parent) => {
-      return { __typename: 'BusinessProfile', id: parent.business };
+      return await BusinessProfile.findById(parent.business);
     }
   },
   Review: {
@@ -39,7 +39,7 @@ const resolvers = {
       return await Review.findById(ref.id);
     },
     businessProfile: async (parent) => {
-      return { __typename: 'BusinessProfile', id: parent.businessProfile };
+      return await BusinessProfile.findById(parent.businessProfile);
     },
     author: async (parent) => {
       return { __typename: 'Resident', id: parent.author };
