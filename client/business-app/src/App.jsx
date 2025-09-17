@@ -55,6 +55,7 @@ function App() {
     // Listen for storage changes (when user logs in from another tab)
     const handleStorageChange = (e) => {
       if (e.key === 'userId' || e.key === 'username' || e.key === 'role') {
+        console.log('Storage change detected:', e.key, e.newValue);
         checkUserRole();
       }
     };
@@ -62,10 +63,22 @@ function App() {
     window.addEventListener('storage', handleStorageChange);
     
     // Also check periodically in case localStorage was updated in same tab
-    const interval = setInterval(checkUserRole, 1000);
+    const interval = setInterval(() => {
+      checkUserRole();
+    }, 500); // Check more frequently
+    
+    // Check when page becomes visible (user might have logged in in another tab)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkUserRole();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(interval);
     };
   }, []);

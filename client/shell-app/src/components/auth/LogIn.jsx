@@ -57,21 +57,24 @@ const LogIn = () => {
                     role: localStorage.getItem('role')
                 });
                 
-                if(user.role === "BusinessOwner"){
-                    console.log('Redirecting to business app...');
-                    // Redirect to business app
-                    window.location.href = 'http://localhost:3003';
-                }
-                if(user.role === "Resident"){
-                    console.log('Redirecting to resident view...');
-                    // Redirect to business app (resident features are on the same app)
-                    window.location.href = 'http://localhost:3003';
-                }
-                if(user.role === "CommunityOrganizer"){
-                    console.log('Redirecting to community organizer view...');
-                    // Redirect to business app (community organizer features are on the same app)
-                    window.location.href = 'http://localhost:3003';
-                }
+                // Add a small delay to ensure localStorage is set
+                setTimeout(() => {
+                    if(user.role === "BusinessOwner"){
+                        console.log('Redirecting to business app...');
+                        // Redirect to business app
+                        window.location.href = 'http://localhost:3003';
+                    }
+                    if(user.role === "Resident"){
+                        console.log('Redirecting to resident view...');
+                        // Redirect to business app (resident features are on the same app)
+                        window.location.href = 'http://localhost:3003';
+                    }
+                    if(user.role === "CommunityOrganizer"){
+                        console.log('Redirecting to community organizer view...');
+                        // Redirect to business app (community organizer features are on the same app)
+                        window.location.href = 'http://localhost:3003';
+                    }
+                }, 100);
             }
         }catch(err){
             setError(err.message);

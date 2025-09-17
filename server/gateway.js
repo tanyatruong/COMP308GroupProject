@@ -15,6 +15,7 @@ app.use(
     origin: [
       "http://localhost:3003",
       "http://localhost:5173",
+      "http://localhost:5174",
       "https://studio.apollographql.com",
     ],
     credentials: true,
