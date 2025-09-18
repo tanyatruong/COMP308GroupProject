@@ -38,6 +38,8 @@ function App() {
       const uname = url.searchParams.get('username');
       const r = url.searchParams.get('role');
       console.log('🔄 Business App - URL params detected:', { uid, uname, r });
+      console.log('🔄 Business App - Full URL:', window.location.href);
+      console.log('🔄 Business App - Search params:', window.location.search);
       if (uid && uname && r) {
         // Clear existing localStorage first
         localStorage.clear();
@@ -52,6 +54,13 @@ function App() {
         url.searchParams.delete('username');
         url.searchParams.delete('role');
         window.history.replaceState({}, document.title, url.pathname);
+      } else {
+        console.log('❌ Business App - Missing URL params, checking localStorage');
+        console.log('❌ Business App - Current localStorage:', {
+          userId: localStorage.getItem('userId'),
+          username: localStorage.getItem('username'),
+          role: localStorage.getItem('role')
+        });
       }
     } catch (error) {
       console.error('Error syncing URL params:', error);

@@ -80,6 +80,8 @@ const LogIn = () => {
                 }).toString();
                 const redirectUrl = `${targetBase}${path}?${params}`;
                 console.log('🔐 Redirecting to:', redirectUrl);
+                console.log('🔐 URL components:', { targetBase, path, params });
+                console.log('🔐 User data:', { id: user.id, username, role: user.role });
                 
                 // Redirect immediately
                 window.location.href = redirectUrl;
