@@ -83,6 +83,9 @@ const LogIn = () => {
                 console.log('🔐 URL components:', { targetBase, path, params });
                 console.log('🔐 User data:', { id: user.id, username, role: user.role });
                 
+                // Show the redirect URL for debugging
+                alert(`Redirecting to: ${redirectUrl}`);
+                
                 // Redirect immediately
                 window.location.href = redirectUrl;
             } else {
