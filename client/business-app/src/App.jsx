@@ -295,6 +295,32 @@ function App() {
               </div>
             } />
             
+            {/* Test files - allow access */}
+            <Route path="/test-session.html" element={
+              <div className="text-center p-5">
+                <h2>Test Session Page</h2>
+                <p>This page should be accessed via the shell app at <a href="http://127.0.0.1:5173/test-session.html" target="_blank">http://127.0.0.1:5173/test-session.html</a></p>
+                <Button 
+                  variant="primary" 
+                  onClick={() => window.location.href = 'http://127.0.0.1:5173/test-session.html'}
+                >
+                  Open Test Page
+                </Button>
+              </div>
+            } />
+            <Route path="/test-login.html" element={
+              <div className="text-center p-5">
+                <h2>Test Login Page</h2>
+                <p>This page should be accessed via the shell app at <a href="http://127.0.0.1:5173/test-login.html" target="_blank">http://127.0.0.1:5173/test-login.html</a></p>
+                <Button 
+                  variant="primary" 
+                  onClick={() => window.location.href = 'http://127.0.0.1:5173/test-login.html'}
+                >
+                  Open Test Page
+                </Button>
+              </div>
+            } />
+
             {/* Fallback for unauthorized access */}
             <Route path="*" element={
               <div className="text-center p-5">
