@@ -108,12 +108,13 @@ services:
       - key: GEMINI_API_KEY
         sync: false
 
-  # Shell App (Auth App)
-  - type: static_site
+  # Shell App (Auth App) - Now as web service
+  - type: web
     name: shell-app
+    env: node
     plan: free
     buildCommand: cd client/shell-app && npm install && npm run build
-    staticPublishPath: client/shell-app/dist
+    startCommand: cd client/shell-app && npx serve -s dist -l $PORT
     envVars:
       - key: VITE_GRAPHQL_URL
         fromService:
@@ -122,21 +123,22 @@ services:
           property: host
       - key: VITE_BUSINESS_APP_URL
         fromService:
-          type: static_site
+          type: web
           name: business-app
           property: host
       - key: VITE_AUTH_APP_URL
         fromService:
-          type: static_site
+          type: web
           name: shell-app
           property: host
 
-  # Business App
-  - type: static_site
+  # Business App - Now as web service
+  - type: web
     name: business-app
+    env: node
     plan: free
     buildCommand: cd client/business-app && npm install && npm run build
-    staticPublishPath: client/business-app/dist
+    startCommand: cd client/business-app && npx serve -s dist -l $PORT
     envVars:
       - key: VITE_GRAPHQL_URL
         fromService:
@@ -145,12 +147,12 @@ services:
           property: host
       - key: VITE_BUSINESS_APP_URL
         fromService:
-          type: static_site
+          type: web
           name: business-app
           property: host
       - key: VITE_AUTH_APP_URL
         fromService:
-          type: static_site
+          type: web
           name: shell-app
           property: host
 
