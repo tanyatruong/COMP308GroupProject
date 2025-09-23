@@ -60,7 +60,15 @@ const startServer = async () => {
 
     // Connect to MongoDB
     try {
-        await mongoose.connect(process.env.MONGO_URI);
+        const mongoUri = process.env.MONGO_URI;
+        console.log('MongoDB URI:', mongoUri ? 'Present' : 'Missing');
+        console.log('MongoDB URI format:', mongoUri ? mongoUri.substring(0, 20) + '...' : 'N/A');
+        
+        if (!mongoUri) {
+            throw new Error('MONGO_URI environment variable is not set');
+        }
+        
+        await mongoose.connect(mongoUri);
         console.log('Connected to MongoDB');
     } catch (error) {
         console.error('MongoDB connection error:', error);

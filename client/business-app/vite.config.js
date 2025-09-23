@@ -18,12 +18,7 @@ export default defineConfig({
         "./OffersList": "./src/components/business/Offers/OffersList",
         "./CreateOffer": "./src/components/business/Offers/CreateOffer",
         "./ReviewsList": "./src/components/business/Reviews/ReviewsList",
-        "./ResidentDashboard": "./src/components/residentCommunity/residentDashboard/ResidentDashboard",
-        "./BulletinBoard": "./src/components/residentCommunity/bulletinBoard/BulletinBoard",
-        "./IndividualDiscussion": "/src/components/residentCommunity/bulletinBoard/IndividualDiscussion",
-        "./NeighborhoodHelpRequests": "/src/components/residentCommunity/NeighborhoodHelpRequests/NeighborhoodHelpRequests",
-        "./Marketplace": "/src/components/residentCommunity/Marketplace/Marketplace",
-        "./BusinessDetails": "/src/components/residentCommunity/Marketplace/BusinessDetails"
+        "./AuthenticatedApp": "./src/components/AuthenticatedApp"
       },
       shared: [
         "react",

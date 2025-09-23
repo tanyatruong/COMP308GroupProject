@@ -15,4 +15,7 @@ export default defineConfig({
       shared: ['react', 'react-dom', '@apollo/client', 'graphql', 'react-bootstrap', 'react-router-dom'],
     }),
   ],
+  build: {
+    target: 'es2022', // Support top-level await
+  },
 });

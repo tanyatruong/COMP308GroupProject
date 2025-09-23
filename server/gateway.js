@@ -44,6 +44,13 @@ const getServiceUrl = (serviceHost, defaultPort, defaultHost = "127.0.0.1") => {
   return `http://${defaultHost}:${defaultPort}/graphql`;
 };
 
+// Log service URLs for debugging
+console.log('Service URLs:');
+console.log('Community:', getServiceUrl(process.env.COMMUNITY_SERVICE_URL, 4004));
+console.log('Auth:', getServiceUrl(process.env.AUTH_SERVICE_URL, 4001));
+console.log('Business:', getServiceUrl(process.env.BUSINESS_SERVICE_URL, 4002));
+console.log('AI:', getServiceUrl(process.env.AI_SERVICE_URL, 4003));
+
 const gateway = new ApolloGateway({
   supergraphSdl: new IntrospectAndCompose({
     subgraphs: [
