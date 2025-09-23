@@ -31,24 +31,37 @@ app.use(
   })
 );
 
+// Construct service URLs for production
+const getServiceUrl = (serviceHost, defaultPort, defaultHost = "127.0.0.1") => {
+  if (serviceHost) {
+    // If it's already a full URL, use it
+    if (serviceHost.startsWith('http')) {
+      return `${serviceHost}/graphql`;
+    }
+    // Otherwise, construct the URL
+    return `http://${serviceHost}/graphql`;
+  }
+  return `http://${defaultHost}:${defaultPort}/graphql`;
+};
+
 const gateway = new ApolloGateway({
   supergraphSdl: new IntrospectAndCompose({
     subgraphs: [
       { 
         name: "community", 
-        url: process.env.COMMUNITY_SERVICE_URL || "http://127.0.0.1:4004/graphql" 
+        url: getServiceUrl(process.env.COMMUNITY_SERVICE_URL, 4004) 
       },
       { 
         name: "auth", 
-        url: process.env.AUTH_SERVICE_URL || "http://127.0.0.1:4001/graphql" 
+        url: getServiceUrl(process.env.AUTH_SERVICE_URL, 4001) 
       },
       { 
         name: "business", 
-        url: process.env.BUSINESS_SERVICE_URL || "http://127.0.0.1:4002/graphql" 
+        url: getServiceUrl(process.env.BUSINESS_SERVICE_URL, 4002) 
       },
       { 
         name: "ai", 
-        url: process.env.AI_SERVICE_URL || "http://127.0.0.1:4003/graphql" 
+        url: getServiceUrl(process.env.AI_SERVICE_URL, 4003) 
       },
     ],
   }),
@@ -86,4 +99,10 @@ server.start().then(() => {
       `GraphQL endpoint: http://localhost:${port}${server.graphqlPath}`
     );
   });
+}).catch((error) => {
+  console.error('Failed to start gateway:', error);
+  console.log('Retrying in 5 seconds...');
+  setTimeout(() => {
+    process.exit(1);
+  }, 5000);
 });
