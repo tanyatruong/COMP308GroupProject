@@ -111,7 +111,6 @@ services:
   # Shell App (Auth App)
   - type: static_site
     name: shell-app
-    env: static
     plan: free
     buildCommand: cd client/shell-app && npm install && npm run build
     staticPublishPath: client/shell-app/dist
@@ -135,7 +134,6 @@ services:
   # Business App
   - type: static_site
     name: business-app
-    env: static
     plan: free
     buildCommand: cd client/business-app && npm install && npm run build
     staticPublishPath: client/business-app/dist
