@@ -11,12 +11,12 @@
     "deploy": "npm run build && npm run preview"
   },
   "dependencies": {
-    "@apollo/client": "^3.13.6",
+    "@apollo/client": "^3.14.0",
     "bootstrap": "^5.3.2",
     "business-app": "file:",
     "date-fns": "^2.30.0",
     "formik": "^2.4.6",
-    "graphql": "^16.10.0",
+    "graphql": "^16.11.0",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-bootstrap-icons": "^1.11.5",

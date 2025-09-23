@@ -10,12 +10,26 @@ const cors = require("cors");
 const { GoogleGenAI } = require("@google/genai");
 const tf = require('@tensorflow/tfjs');
 const path = require("path");
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 const app = express();
-const port = 4003;
+const port = process.env.PORT || 4003;
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Add CORS support
+app.use(cors({
+    origin: [
+        'http://localhost:4000',
+        'http://localhost:5173',
+        'https://studio.apollographql.com',
+        // Render deployment URLs will be added dynamically
+        ...(process.env.RENDER_EXTERNAL_URL ? [process.env.RENDER_EXTERNAL_URL] : []),
+        ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
+    ],
+    credentials: true,
+    exposedHeaders: ['Set-Cookie']
+}));
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 app.use('/models', express.static(path.join(__dirname, 'volunteerEventMatching')));

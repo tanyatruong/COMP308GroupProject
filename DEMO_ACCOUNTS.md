@@ -7,14 +7,14 @@ This document contains all the demo accounts and test data created for the Commu
 **All passwords are: `password123`**
 
 ### 👥 Resident Accounts
-1. **sarah_johnson** - Community events, volunteering, local businesses
-2. **mike_chen** - Technology, networking, food
-3. **emma_wilson** - Art, culture, community service
-4. **david_brown** - Sports, fitness, outdoor activities
-5. **lisa_garcia** - Education, children, family events
+1. **john_doe** - Community events, volunteering, local businesses
+2. **sarah_johnson** - Technology, networking, food
+3. **mike_chen** - Art, culture, community service
+4. **emma_wilson** - Sports, fitness, outdoor activities
+5. **david_brown** - Education, children, family events
 
 ### 🏢 Business Owner Accounts
-1. **tony_restaurant** - Tony's Italian Bistro
+1. **sarah_restaurant** - Sarah's Italian Bistro
 2. **maria_cafe** - Maria's Coffee Corner
 3. **john_gym** - FitLife Gym & Wellness
 4. **sophie_salon** - Sophie's Beauty Studio
@@ -25,7 +25,7 @@ This document contains all the demo accounts and test data created for the Commu
 
 ## 🏪 Business Profiles Created
 
-### 1. Tony's Italian Bistro
+### 1. Sarah's Italian Bistro
 - **Location**: 123 King Street West, Toronto, M5V 3A8
 - **Description**: Authentic Italian cuisine with fresh ingredients
 - **Tags**: restaurant, italian, family-friendly, fine-dining
@@ -76,7 +76,7 @@ This document contains all the demo accounts and test data created for the Commu
 
 ## ⭐ Sample Reviews Created
 
-- **Tony's Italian Bistro**: 5-star and 3-star reviews with responses
+- **Sarah's Italian Bistro**: 5-star and 3-star reviews with responses
 - **Maria's Coffee Corner**: 5-star review praising coffee and WiFi
 - **FitLife Gym**: 5-star review highlighting facilities and staff
 - **Sophie's Beauty Studio**: 4-star review praising haircut service
@@ -93,14 +93,14 @@ This document contains all the demo accounts and test data created for the Commu
 ## 🧪 Testing Scenarios
 
 ### Business Owner Testing
-1. Login as any business owner (e.g., `tony_restaurant`)
+1. Login as any business owner (e.g., `sarah_restaurant`)
 2. View business profile and edit details
 3. Create new promotional offers
 4. Respond to customer reviews
 5. View analytics and ratings
 
 ### Resident Testing
-1. Login as any resident (e.g., `sarah_johnson`)
+1. Login as any resident (e.g., `john_doe`)
 2. Browse marketplace and view business details
 3. Read and write reviews
 4. Participate in community discussions
@@ -136,10 +136,22 @@ This document contains all the demo accounts and test data created for the Commu
 
 To refresh the demo data, run:
 ```bash
-node demo-data.js
+node setup-demo-data.js
 ```
 
 This will clear the existing data and create fresh demo accounts and content.
+
+## 🚀 Production Deployment
+
+After deploying to Render.com, you can seed the production database by:
+
+1. **Connect to your deployed services**
+2. **Run the setup script** with your production GraphQL endpoint:
+   ```bash
+   GRAPHQL_URL=https://your-gateway-url.onrender.com/graphql node setup-demo-data.js
+   ```
+
+This ensures your deployed application has all the demo data for testing.
 
 ---
 

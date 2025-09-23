@@ -5,8 +5,12 @@ const { BusinessOwner } = require('../models/BusinessOwner.js');
 const { CommunityOrganizer } = require('../models/CommunityOrganizer.js');
 const { Location } = require('../models/Location.js');
 const dotenv = require('dotenv');
-dotenv.config();
+const path = require('path');
+dotenv.config({ path: path.join(__dirname, '../../../.env') });
 const SECRET_KEY = process.env.SECRET_KEY;
+
+console.log('Resolvers SECRET_KEY loaded:', SECRET_KEY ? 'YES' : 'NO');
+console.log('Resolvers SECRET_KEY length:', SECRET_KEY ? SECRET_KEY.length : 0);
 
 const resolvers = {
     Location: {
@@ -162,7 +166,12 @@ const resolvers = {
                         throw new Error("Invalid username or password.");
                     }
                     const residentToken = jwt.sign({id: resident._id, role: resident.role}, SECRET_KEY, {expiresIn: '1h'});
-                    res.cookie("token", residentToken, {httpOnly: true, secure: false, samesite: 'lax'});
+                    res.cookie("token", residentToken, {
+                        httpOnly: true, 
+                        secure: process.env.NODE_ENV === 'production', 
+                        samesite: 'lax', 
+                        domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+                    });
                     return resident;
                     break;
 
@@ -176,7 +185,12 @@ const resolvers = {
                         throw new Error('Invalid username or password.');
                     }
                     const coToken = jwt.sign({id: communityOrganizer._id, role: communityOrganizer.role}, SECRET_KEY, {expiresIn: '1h'});
-                    res.cookie("token", coToken, {httpOnly: true, secure: false, samesite: 'lax'});
+                    res.cookie("token", coToken, {
+                        httpOnly: true, 
+                        secure: process.env.NODE_ENV === 'production', 
+                        samesite: 'lax', 
+                        domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+                    });
                     return communityOrganizer;
                     break;
 
@@ -190,7 +204,12 @@ const resolvers = {
                         throw new Error("Invalid username or password.");
                     }
                     const boToken = jwt.sign({id: businessOwner._id, role: businessOwner.role}, SECRET_KEY, {expiresIn: '1h'});
-                    res.cookie("token", boToken, {httpOnly: true, secure: false, samesite: 'lax'});
+                    res.cookie("token", boToken, {
+                        httpOnly: true, 
+                        secure: process.env.NODE_ENV === 'production', 
+                        samesite: 'lax', 
+                        domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+                    });
                     return businessOwner;
                     break;
                 default:
@@ -198,7 +217,12 @@ const resolvers = {
             }
         },
         logout: async(_, __, {res}) => {
-            res.clearCookie("token", {httpOnly: true, secure: false, samesite: 'lax'});
+            res.clearCookie("token", {
+                httpOnly: true, 
+                secure: process.env.NODE_ENV === 'production', 
+                samesite: 'lax', 
+                domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+            });
             return true;
         }
     }

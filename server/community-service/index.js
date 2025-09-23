@@ -22,10 +22,11 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-dotenv.config();
+const path = require("path");
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const app = express();
-const port = 4004;
+const port = process.env.PORT || 4004;
 
 // Middleware
 app.use(express.json());
@@ -36,6 +37,9 @@ app.use(
       "http://localhost:4000",
       "http://localhost:5173",
       "https://studio.apollographql.com",
+      // Render deployment URLs will be added dynamically
+      ...(process.env.RENDER_EXTERNAL_URL ? [process.env.RENDER_EXTERNAL_URL] : []),
+      ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
     ],
     credentials: true,
     exposedHeaders: ["Set-Cookie"],

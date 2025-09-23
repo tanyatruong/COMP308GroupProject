@@ -7,7 +7,7 @@ const {
 } = require("@apollo/gateway");
 const cors = require("cors");
 
-const port = 4000;
+const port = process.env.PORT || 4000;
 const app = express();
 
 app.use(
@@ -22,6 +22,9 @@ app.use(
       "http://127.0.0.1:5173",
       "http://127.0.0.1:5174",
       "https://studio.apollographql.com",
+      // Render deployment URLs will be added dynamically
+      ...(process.env.RENDER_EXTERNAL_URL ? [process.env.RENDER_EXTERNAL_URL] : []),
+      ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
     ],
     credentials: true,
     exposedHeaders: ["Set-Cookie"],
@@ -31,10 +34,22 @@ app.use(
 const gateway = new ApolloGateway({
   supergraphSdl: new IntrospectAndCompose({
     subgraphs: [
-      { name: "community", url: "http://127.0.0.1:4004/graphql" },
-      { name: "auth", url: "http://127.0.0.1:4001/graphql" },
-      { name: "business", url: "http://127.0.0.1:4002/graphql" },
-      { name: "ai", url: "http://127.0.0.1:4003/graphql" },
+      { 
+        name: "community", 
+        url: process.env.COMMUNITY_SERVICE_URL || "http://127.0.0.1:4004/graphql" 
+      },
+      { 
+        name: "auth", 
+        url: process.env.AUTH_SERVICE_URL || "http://127.0.0.1:4001/graphql" 
+      },
+      { 
+        name: "business", 
+        url: process.env.BUSINESS_SERVICE_URL || "http://127.0.0.1:4002/graphql" 
+      },
+      { 
+        name: "ai", 
+        url: process.env.AI_SERVICE_URL || "http://127.0.0.1:4003/graphql" 
+      },
     ],
   }),
   buildService({ name, url }) {

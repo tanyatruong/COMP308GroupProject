@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Tokens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            color: green;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clear Authentication Tokens</h1>
+        <p>This page will clear all stored authentication tokens from your browser.</p>
+        <p>Use this if you're experiencing authentication errors after the server was restarted.</p>
+        
+        <button onclick="clearAllTokens()">Clear All Tokens</button>
+        <button onclick="goToLogin()">Go to Login</button>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        async function clearAllTokens() {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = 'Clearing tokens...';
+            
+            try {
+                // Clear localStorage
+                localStorage.clear();
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                
+                // Clear cookies by calling the server endpoint
+                const response = await fetch('http://localhost:4001/clear-tokens', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = '<div class="success">✅ All tokens cleared successfully! You can now try logging in again.</div>';
+                } else {
+                    messageDiv.innerHTML = '<div class="error">❌ Error clearing server tokens, but local storage was cleared.</div>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+            }
+        }
+        
+        function goToLogin() {
+            window.location.href = 'http://localhost:5173/login';
+        }
+    </script>
+</body>
+</html>

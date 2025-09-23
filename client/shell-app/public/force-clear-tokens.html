@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Clear All Tokens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .steps {
+            text-align: left;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Force Clear All Tokens</h1>
+        <p>This page will completely clear all authentication tokens and cached data to fix login issues.</p>
+        
+        <div id="status"></div>
+        
+        <button onclick="clearEverything()">🧹 Clear Everything</button>
+        <button onclick="testLogin()">🧪 Test Login</button>
+        <button onclick="goToLogin()">🔐 Go to Login</button>
+        
+        <div class="steps">
+            <h3>What this does:</h3>
+            <ol>
+                <li>Clears all localStorage data</li>
+                <li>Clears all sessionStorage data</li>
+                <li>Clears all cookies</li>
+                <li>Calls server to clear server-side tokens</li>
+                <li>Forces a hard refresh</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        async function clearEverything() {
+            updateStatus('🧹 Starting complete cleanup...', 'info');
+            
+            try {
+                // Clear localStorage
+                localStorage.clear();
+                updateStatus('✅ Cleared localStorage', 'success');
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                updateStatus('✅ Cleared sessionStorage', 'success');
+                
+                // Clear all cookies
+                document.cookie.split(";").forEach(function(c) { 
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                });
+                updateStatus('✅ Cleared all cookies', 'success');
+                
+                // Call server to clear tokens
+                try {
+                    const response = await fetch('http://localhost:4001/clear-tokens', {
+                        method: 'GET',
+                        credentials: 'include'
+                    });
+                    if (response.ok) {
+                        updateStatus('✅ Cleared server-side tokens', 'success');
+                    } else {
+                        updateStatus('⚠️ Server token clear failed, but local cleanup done', 'error');
+                    }
+                } catch (error) {
+                    updateStatus('⚠️ Could not reach server, but local cleanup done', 'error');
+                }
+                
+                updateStatus('🎉 Complete cleanup finished! You can now try logging in.', 'success');
+                
+                // Force a hard refresh after 2 seconds
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 2000);
+                
+            } catch (error) {
+                updateStatus('❌ Error during cleanup: ' + error.message, 'error');
+            }
+        }
+
+        async function testLogin() {
+            updateStatus('🧪 Testing login...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:4000/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: `
+                            mutation Login($role: String!, $username: String!, $password: String!) {
+                                Login(role: $role, username: $username, password: $password) {
+                                    ... on Resident {
+                                        id
+                                        username
+                                        role
+                                    }
+                                }
+                            }
+                        `,
+                        variables: {
+                            role: "Resident",
+                            username: "john_doe",
+                            password: "password123"
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.errors) {
+                    updateStatus('❌ Login test failed: ' + result.errors[0].message, 'error');
+                } else {
+                    updateStatus('✅ Login test successful! Server is working correctly.', 'success');
+                }
+            } catch (error) {
+                updateStatus('❌ Login test error: ' + error.message, 'error');
+            }
+        }
+
+        function goToLogin() {
+            window.location.href = 'http://localhost:5173/login';
+        }
+    </script>
+</body>
+</html>

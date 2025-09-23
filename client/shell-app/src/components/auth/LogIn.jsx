@@ -3,20 +3,24 @@ import { Card, Container, Form, Button, Alert} from 'react-bootstrap'
 import './auth.css';
 import {gql, useMutation} from '@apollo/client'
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const LOGIN = gql`
     mutation Login($role: String!, $username: String!, $password: String!) {
         Login(role: $role, username: $username, password: $password) {
         ... on Resident {
             id
+            username
             role
             }
         ... on BusinessOwner {
             id
+            username
             role
             }
         ... on CommunityOrganizer {
             id
+            username
             role
             }
         }
@@ -25,6 +29,7 @@ const LOGIN = gql`
 
 const LogIn = () => {
     const navigate = useNavigate();
+    const { checkAuth } = useAuth();
     const [role, setRole] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -46,35 +51,11 @@ const LogIn = () => {
                 const user = response.data.Login;
                 console.log('Login successful:', user);
                 
-                // Save user data to localStorage
-                localStorage.setItem('userId', user.id);
-                localStorage.setItem('username', username);
-                localStorage.setItem('role', user.role);
+                // Refresh auth state
+                await checkAuth();
                 
-                console.log('localStorage set:', {
-                    userId: localStorage.getItem('userId'),
-                    username: localStorage.getItem('username'),
-                    role: localStorage.getItem('role')
-                });
-                
-                // Add a small delay to ensure localStorage is set
-                setTimeout(() => {
-                    if(user.role === "BusinessOwner"){
-                        console.log('Redirecting to business app...');
-                        // Redirect to business app
-                        window.location.href = 'http://localhost:3003';
-                    }
-                    if(user.role === "Resident"){
-                        console.log('Redirecting to resident view...');
-                        // Redirect to business app (resident features are on the same app)
-                        window.location.href = 'http://localhost:3003';
-                    }
-                    if(user.role === "CommunityOrganizer"){
-                        console.log('Redirecting to community organizer view...');
-                        // Redirect to business app (community organizer features are on the same app)
-                        window.location.href = 'http://localhost:3003';
-                    }
-                }, 100);
+                // Redirect to home page to show authenticated state
+                navigate('/');
             }
         }catch(err){
             setError(err.message);

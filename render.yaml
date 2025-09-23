@@ -1,0 +1,167 @@
+services:
+  # Gateway Service
+  - type: web
+    name: community-gateway
+    env: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && node gateway.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        fromDatabase:
+          name: community-platform-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: COMMUNITY_SERVICE_URL
+        fromService:
+          type: web
+          name: community-service
+          property: host
+      - key: AUTH_SERVICE_URL
+        fromService:
+          type: web
+          name: auth-service
+          property: host
+      - key: BUSINESS_SERVICE_URL
+        fromService:
+          type: web
+          name: business-service
+          property: host
+      - key: AI_SERVICE_URL
+        fromService:
+          type: web
+          name: ai-service
+          property: host
+
+  # Auth Service
+  - type: web
+    name: auth-service
+    env: node
+    plan: free
+    buildCommand: cd server/auth-service && npm install
+    startCommand: cd server/auth-service && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        fromDatabase:
+          name: community-platform-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+
+  # Business Events Service
+  - type: web
+    name: business-service
+    env: node
+    plan: free
+    buildCommand: cd server/business-events-service && npm install
+    startCommand: cd server/business-events-service && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        fromDatabase:
+          name: community-platform-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+
+  # Community Service
+  - type: web
+    name: community-service
+    env: node
+    plan: free
+    buildCommand: cd server/community-service && npm install
+    startCommand: cd server/community-service && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        fromDatabase:
+          name: community-platform-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+
+  # AI Service
+  - type: web
+    name: ai-service
+    env: node
+    plan: free
+    buildCommand: cd server/ai-service && npm install
+    startCommand: cd server/ai-service && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        fromDatabase:
+          name: community-platform-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # Shell App (Auth App)
+  - type: web
+    name: shell-app
+    env: static
+    plan: free
+    buildCommand: cd client/shell-app && npm install && npm run build
+    staticPublishPath: client/shell-app/dist
+    envVars:
+      - key: VITE_GRAPHQL_URL
+        fromService:
+          type: web
+          name: community-gateway
+          property: host
+          envVarKey: VITE_GRAPHQL_URL
+      - key: VITE_BUSINESS_APP_URL
+        fromService:
+          type: web
+          name: business-app
+          property: host
+          envVarKey: VITE_BUSINESS_APP_URL
+      - key: VITE_AUTH_APP_URL
+        fromService:
+          type: web
+          name: shell-app
+          property: host
+          envVarKey: VITE_AUTH_APP_URL
+
+  # Business App
+  - type: web
+    name: business-app
+    env: static
+    plan: free
+    buildCommand: cd client/business-app && npm install && npm run build
+    staticPublishPath: client/business-app/dist
+    envVars:
+      - key: VITE_GRAPHQL_URL
+        fromService:
+          type: web
+          name: community-gateway
+          property: host
+          envVarKey: VITE_GRAPHQL_URL
+      - key: VITE_BUSINESS_APP_URL
+        fromService:
+          type: web
+          name: business-app
+          property: host
+          envVarKey: VITE_BUSINESS_APP_URL
+      - key: VITE_AUTH_APP_URL
+        fromService:
+          type: web
+          name: shell-app
+          property: host
+          envVarKey: VITE_AUTH_APP_URL
+
+databases:
+  - name: community-platform-db
+    plan: free

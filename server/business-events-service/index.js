@@ -6,11 +6,12 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 
 const { typeDefs } = require('./graphql/typeDefs.js');
 const { resolvers } = require('./graphql/resolvers.js');
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 4002;
@@ -19,7 +20,14 @@ const PORT = process.env.PORT || 4002;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: ['http://localhost:3003', 'http://localhost:5173', 'https://studio.apollographql.com'],
+    origin: [
+        'http://localhost:3003', 
+        'http://localhost:5173', 
+        'https://studio.apollographql.com',
+        // Render deployment URLs will be added dynamically
+        ...(process.env.RENDER_EXTERNAL_URL ? [process.env.RENDER_EXTERNAL_URL] : []),
+        ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
+    ],
     credentials: true,
     exposedHeaders: ['Set-Cookie'],
 }));

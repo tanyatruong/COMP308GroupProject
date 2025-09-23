@@ -35,6 +35,7 @@ This is a full-stack community platform that connects residents, businesses, and
 - Node.js (v18 or higher)
 - MongoDB Atlas account
 - Gemini API key
+- Render.com account (for deployment)
 
 ### Installation
 
@@ -231,6 +232,84 @@ This project is part of COMP308 - Emerging Technologies course at Centennial Col
 - Payment integration
 - Multi-language support
 - Advanced analytics dashboard
+
+## 🚀 Deployment on Render.com
+
+### Quick Deploy with Blueprint
+
+1. **Fork this repository** to your GitHub account
+2. **Connect to Render**:
+   - Go to [render.com](https://render.com)
+   - Sign up/login with your GitHub account
+   - Click "New +" → "Blueprint"
+   - Connect your forked repository
+3. **Configure Environment Variables**:
+   - Set `MONGO_URI` to your MongoDB Atlas connection string
+   - Set `GEMINI_API_KEY` to your Google Gemini API key
+   - Set `SECRET_KEY` (Render will auto-generate this)
+4. **Deploy**: Click "Apply" and wait for all services to deploy
+5. **Access your app**: Use the provided URLs from Render dashboard
+
+### Manual Deployment
+
+If you prefer manual setup:
+
+1. **Create a MongoDB Database**:
+   - Go to Render dashboard → "New +" → "Database"
+   - Choose "MongoDB" → "Free" plan
+   - Note the connection string
+
+2. **Deploy Services** (in this order):
+   ```
+   1. auth-service
+   2. business-service  
+   3. community-service
+   4. ai-service
+   5. community-gateway
+   6. shell-app (static site)
+   7. business-app (static site)
+   ```
+
+3. **Environment Variables for each service**:
+   ```
+   NODE_ENV=production
+   MONGO_URI=<your_mongodb_connection_string>
+   SECRET_KEY=<generate_a_secure_random_string>
+   GEMINI_API_KEY=<your_gemini_api_key>
+   ```
+
+4. **For Static Sites**, add:
+   ```
+   VITE_GRAPHQL_URL=https://your-gateway-url.onrender.com/graphql
+   VITE_BUSINESS_APP_URL=https://your-business-app-url.onrender.com
+   VITE_AUTH_APP_URL=https://your-shell-app-url.onrender.com
+   ```
+
+### Post-Deployment Setup
+
+1. **Seed Demo Data**:
+   ```bash
+   # Run the setup script to create demo users and data
+   node setup-demo-data.js
+   ```
+
+2. **Test the Application**:
+   - Visit your shell app URL
+   - Use demo credentials from `DEMO_ACCOUNTS.md`
+   - Test all features and user flows
+
+### Environment Variables Reference
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|----------|
+| `MONGO_URI` | MongoDB connection string | ✅ | - |
+| `SECRET_KEY` | JWT secret key | ✅ | Auto-generated |
+| `GEMINI_API_KEY` | Google Gemini API key | ✅ | - |
+| `NODE_ENV` | Environment mode | ❌ | `development` |
+| `PORT` | Server port | ❌ | Service-specific |
+| `VITE_GRAPHQL_URL` | GraphQL endpoint for clients | ❌ | `http://localhost:4000/graphql` |
+| `VITE_BUSINESS_APP_URL` | Business app URL | ❌ | `http://localhost:3003` |
+| `VITE_AUTH_APP_URL` | Auth app URL | ❌ | `http://localhost:5173` |
 
 ## 📞 Support
 
