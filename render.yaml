@@ -109,10 +109,10 @@ services:
         sync: false
 
   # Shell App (Auth App)
-  - type: web
+  - type: static
     name: shell-app
     env: static
-    plan: starter
+    plan: free
     buildCommand: cd client/shell-app && npm install && npm run build
     staticPublishPath: client/shell-app/dist
     envVars:
@@ -123,20 +123,20 @@ services:
           property: host
       - key: VITE_BUSINESS_APP_URL
         fromService:
-          type: web
+          type: static
           name: business-app
           property: host
       - key: VITE_AUTH_APP_URL
         fromService:
-          type: web
+          type: static
           name: shell-app
           property: host
 
   # Business App
-  - type: web
+  - type: static
     name: business-app
     env: static
-    plan: starter
+    plan: free
     buildCommand: cd client/business-app && npm install && npm run build
     staticPublishPath: client/business-app/dist
     envVars:
@@ -147,12 +147,12 @@ services:
           property: host
       - key: VITE_BUSINESS_APP_URL
         fromService:
-          type: web
+          type: static
           name: business-app
           property: host
       - key: VITE_AUTH_APP_URL
         fromService:
-          type: web
+          type: static
           name: shell-app
           property: host
 
