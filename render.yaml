@@ -109,7 +109,7 @@ services:
         sync: false
 
   # Shell App (Auth App)
-  - type: static_site
+  - type: static
     name: shell-app
     env: static
     plan: free
@@ -123,17 +123,17 @@ services:
           property: host
       - key: VITE_BUSINESS_APP_URL
         fromService:
-          type: static_site
+          type: static
           name: business-app
           property: host
       - key: VITE_AUTH_APP_URL
         fromService:
-          type: static_site
+          type: static
           name: shell-app
           property: host
 
   # Business App
-  - type: static_site
+  - type: static
     name: business-app
     env: static
     plan: free
@@ -147,12 +147,12 @@ services:
           property: host
       - key: VITE_BUSINESS_APP_URL
         fromService:
-          type: static_site
+          type: static
           name: business-app
           property: host
       - key: VITE_AUTH_APP_URL
         fromService:
-          type: static_site
+          type: static
           name: shell-app
           property: host
 
