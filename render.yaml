@@ -121,19 +121,16 @@ services:
           type: web
           name: community-gateway
           property: host
-          envVarKey: VITE_GRAPHQL_URL
       - key: VITE_BUSINESS_APP_URL
         fromService:
           type: web
           name: business-app
           property: host
-          envVarKey: VITE_BUSINESS_APP_URL
       - key: VITE_AUTH_APP_URL
         fromService:
           type: web
           name: shell-app
           property: host
-          envVarKey: VITE_AUTH_APP_URL
 
   # Business App
   - type: web
@@ -148,19 +145,16 @@ services:
           type: web
           name: community-gateway
           property: host
-          envVarKey: VITE_GRAPHQL_URL
       - key: VITE_BUSINESS_APP_URL
         fromService:
           type: web
           name: business-app
           property: host
-          envVarKey: VITE_BUSINESS_APP_URL
       - key: VITE_AUTH_APP_URL
         fromService:
           type: web
           name: shell-app
           property: host
-          envVarKey: VITE_AUTH_APP_URL
 
 databases:
   - name: community-platform-db
