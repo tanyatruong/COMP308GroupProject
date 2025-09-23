@@ -112,7 +112,7 @@ services:
   - type: web
     name: shell-app
     env: static
-    plan: free
+    plan: starter
     buildCommand: cd client/shell-app && npm install && npm run build
     staticPublishPath: client/shell-app/dist
     envVars:
@@ -136,7 +136,7 @@ services:
   - type: web
     name: business-app
     env: static
-    plan: free
+    plan: starter
     buildCommand: cd client/business-app && npm install && npm run build
     staticPublishPath: client/business-app/dist
     envVars:
