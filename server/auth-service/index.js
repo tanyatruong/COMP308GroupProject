@@ -69,7 +69,14 @@ const startServer = async () => {
     await server.start();
     server.applyMiddleware({app});
 
-    mongoose.connect(process.env.MONGO_URI);
+    // Connect to MongoDB
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('Connected to MongoDB');
+    } catch (error) {
+        console.error('MongoDB connection error:', error);
+        process.exit(1);
+    }
 
     app.listen(port, () => {
         console.log(`Auth service started on port ${port}`);
