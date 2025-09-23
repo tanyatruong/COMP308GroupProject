@@ -13,7 +13,6 @@
   "dependencies": {
     "@apollo/client": "^3.14.0",
     "bootstrap": "^5.3.2",
-    "business-app": "file:",
     "date-fns": "^2.30.0",
     "formik": "^2.4.6",
     "graphql": "^16.11.0",
@@ -22,6 +21,7 @@
     "react-bootstrap-icons": "^1.11.5",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.0",
+    "serve": "^14.2.1",
     "yup": "^1.6.1"
   },
   "devDependencies": {
