@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const aiServiceEndpoint = 'http://localhost:4003/graphql';
+const aiServiceEndpoint = process.env.AI_SERVICE_URL ? `${process.env.AI_SERVICE_URL}/graphql` : 'http://localhost:4003/graphql';
 
 // Function to find volunteer matches using AI for an event
 async function findVolunteersForEvent(event, residents) {

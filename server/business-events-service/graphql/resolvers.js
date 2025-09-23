@@ -6,7 +6,7 @@ const { Location } = require('../models/Location');
 const { analyzeReviewSentiment, suggestEventTime } = require('../services/aiService');
 const { findVolunteersForEvent, findVolunteersForHelpRequest } = require('../services/aiVolunteerService');
 
-const aiServiceEndpoint = 'http://localhost:4003/graphql';
+const aiServiceEndpoint = process.env.AI_SERVICE_URL ? `${process.env.AI_SERVICE_URL}/graphql` : 'http://localhost:4003/graphql';
 
 const resolvers = {
   BusinessProfile: {
