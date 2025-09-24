@@ -6,6 +6,7 @@ const {
   IntrospectAndCompose,
 } = require("@apollo/gateway");
 const cors = require("cors");
+const fetch = require("node-fetch");
 
 const port = process.env.PORT || 4000;
 const app = express();
