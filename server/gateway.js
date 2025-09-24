@@ -44,6 +44,50 @@ const getServiceUrl = (serviceHost, defaultPort, defaultHost = "127.0.0.1") => {
   return `http://${defaultHost}:${defaultPort}/graphql`;
 };
 
+// Health check function
+const checkServiceHealth = async (url) => {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: '{ __typename }' })
+    });
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+};
+
+// Wait for services to be ready
+const waitForServices = async (serviceUrls, maxRetries = 30, delay = 2000) => {
+  console.log('Waiting for services to be ready...');
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    console.log(`Attempt ${attempt}/${maxRetries}: Checking service health...`);
+    
+    const healthChecks = await Promise.all(
+      serviceUrls.map(async (url) => {
+        const isHealthy = await checkServiceHealth(url);
+        console.log(`${url}: ${isHealthy ? '✅ Ready' : '❌ Not ready'}`);
+        return isHealthy;
+      })
+    );
+    
+    if (healthChecks.every(healthy => healthy)) {
+      console.log('✅ All services are ready!');
+      return true;
+    }
+    
+    if (attempt < maxRetries) {
+      console.log(`⏳ Waiting ${delay}ms before retry...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  console.log('❌ Services not ready after maximum retries');
+  return false;
+};
+
 // Log service URLs for debugging
 console.log('Service URLs:');
 console.log('Community:', getServiceUrl(process.env.COMMUNITY_SERVICE_URL, 4004));
@@ -51,24 +95,31 @@ console.log('Auth:', getServiceUrl(process.env.AUTH_SERVICE_URL, 4001));
 console.log('Business:', getServiceUrl(process.env.BUSINESS_SERVICE_URL, 4002));
 console.log('AI:', getServiceUrl(process.env.AI_SERVICE_URL, 4003));
 
+const serviceUrls = [
+  getServiceUrl(process.env.COMMUNITY_SERVICE_URL, 4004),
+  getServiceUrl(process.env.AUTH_SERVICE_URL, 4001),
+  getServiceUrl(process.env.BUSINESS_SERVICE_URL, 4002),
+  getServiceUrl(process.env.AI_SERVICE_URL, 4003)
+];
+
 const gateway = new ApolloGateway({
   supergraphSdl: new IntrospectAndCompose({
     subgraphs: [
       { 
         name: "community", 
-        url: getServiceUrl(process.env.COMMUNITY_SERVICE_URL, 4004) 
+        url: serviceUrls[0] 
       },
       { 
         name: "auth", 
-        url: getServiceUrl(process.env.AUTH_SERVICE_URL, 4001) 
+        url: serviceUrls[1] 
       },
       { 
         name: "business", 
-        url: getServiceUrl(process.env.BUSINESS_SERVICE_URL, 4002) 
+        url: serviceUrls[2] 
       },
       { 
         name: "ai", 
-        url: getServiceUrl(process.env.AI_SERVICE_URL, 4003) 
+        url: serviceUrls[3] 
       },
     ],
   }),
@@ -98,18 +149,29 @@ const server = new ApolloServer({
   context: ({ req, res }) => ({ req, res }),
 });
 
-server.start().then(() => {
-  server.applyMiddleware({ app, cors: false });
-  app.listen({ port: port }, () => {
-    console.log(`Gateway running on port ${port}`);
-    console.log(
-      `GraphQL endpoint: http://localhost:${port}${server.graphqlPath}`
-    );
-  });
-}).catch((error) => {
-  console.error('Failed to start gateway:', error);
-  console.log('Retrying in 5 seconds...');
-  setTimeout(() => {
+// Start server with health checks
+const startServer = async () => {
+  try {
+    // Wait for services to be ready
+    const servicesReady = await waitForServices(serviceUrls);
+    
+    if (!servicesReady) {
+      console.error('❌ Failed to start gateway: Services not ready');
+      process.exit(1);
+    }
+    
+    // Start the gateway
+    await server.start();
+    server.applyMiddleware({ app, cors: false });
+    
+    app.listen({ port: port }, () => {
+      console.log(`✅ Gateway running on port ${port}`);
+      console.log(`GraphQL endpoint: http://localhost:${port}${server.graphqlPath}`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start gateway:', error);
     process.exit(1);
-  }, 5000);
-});
+  }
+};
+
+startServer();
